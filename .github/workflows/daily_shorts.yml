@@ -55,6 +55,10 @@ jobs:
           restore-keys: used-topics-
 
       - name: Run shorts pipeline
+        env:
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          YOUTUBE_CLIENT_SECRETS_PATH: client_secrets.json
+          MADE_FOR_KIDS: "false"
         run: python main.py --type shorts
 
       - name: Save upload log as artifact
