@@ -6,6 +6,7 @@ load_dotenv()
 # API Keys
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+PEXELS_API_KEY = os.getenv("PEXELS_API_KEY", "")
 KLING_ACCESS_KEY = os.getenv("KLING_ACCESS_KEY")
 KLING_SECRET_KEY = os.getenv("KLING_SECRET_KEY")
 PIKA_API_KEY = os.getenv("PIKA_API_KEY")
