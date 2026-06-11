@@ -7,6 +7,10 @@ import subprocess
 
 
 def _ffmpeg():
+    import shutil
+    # Prefer system ffmpeg (has full codec/filter support including drawtext)
+    if shutil.which("ffmpeg"):
+        return "ffmpeg"
     try:
         import imageio_ffmpeg
         return imageio_ffmpeg.get_ffmpeg_exe()
@@ -61,7 +65,7 @@ def create_scene_video(
         f":line_spacing=20"
     )
 
-    subprocess.run([
+    result = subprocess.run([
         _ffmpeg(), "-y",
         "-f", "lavfi",
         "-i", f"color=c={bg}:size={w}x{h}:duration={duration}:rate={fps}",
@@ -70,7 +74,10 @@ def create_scene_video(
         "-pix_fmt", "yuv420p",
         "-crf", "23",
         output_path
-    ], check=True, capture_output=True)
+    ], capture_output=True, text=True)
+    if result.returncode != 0:
+        print(f"FFmpeg error:\n{result.stderr[-2000:]}")
+        raise subprocess.CalledProcessError(result.returncode, result.args)
 
     return output_path
 
