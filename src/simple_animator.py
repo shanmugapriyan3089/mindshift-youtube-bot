@@ -1,14 +1,9 @@
 """
-Creates animated scene videos locally using Pillow + FFmpeg.
-No external AI API needed — 100% free, runs on any machine.
-
-Style: Dark background + bold white text + animated reveal (like Productive Peter)
+Fast scene video generation using pure FFmpeg drawtext filter.
+No frame-by-frame rendering — generates each scene in 2-3 seconds.
 """
 import os
 import subprocess
-import textwrap
-from PIL import Image, ImageDraw, ImageFont
-from config import REGULAR_VIDEO, SHORTS_VIDEO
 
 
 def _ffmpeg():
@@ -18,78 +13,9 @@ def _ffmpeg():
     except Exception:
         return "ffmpeg"
 
-FONT_PATH = os.path.join(os.path.dirname(__file__), "..", "assets", "fonts", "bold.ttf")
-FALLBACK_FONT_SIZE = 72
 
-
-def _get_font(size: int):
-    try:
-        return ImageFont.truetype(FONT_PATH, size)
-    except Exception:
-        try:
-            # Try system fonts on Windows
-            return ImageFont.truetype("C:/Windows/Fonts/arialbd.ttf", size)
-        except Exception:
-            return ImageFont.load_default()
-
-
-def _hex_to_rgb(hex_color: str) -> tuple:
-    hex_color = hex_color.lstrip("#")
-    return tuple(int(hex_color[i:i+2], 16) for i in (0, 2, 4))
-
-
-def _create_frame(
-    text: str,
-    bg_color: str,
-    width: int,
-    height: int,
-    progress: float,  # 0.0 to 1.0 — used for text reveal animation
-) -> Image.Image:
-    """Create a single frame with animated text reveal."""
-    img = Image.new("RGB", (width, height), _hex_to_rgb(bg_color))
-    draw = ImageDraw.Draw(img)
-
-    # Accent line at top
-    accent_color = (99, 102, 241)  # indigo
-    draw.rectangle([0, 0, width, 8], fill=accent_color)
-    draw.rectangle([0, height - 8, width, height], fill=accent_color)
-
-    # Main text
-    font_size = width // 12
-    font = _get_font(font_size)
-
-    # Wrap text to fit width
-    wrapped = textwrap.fill(text, width=18)
-    lines = wrapped.split("\n")
-
-    # Reveal characters based on progress
-    visible_chars = int(len(text) * min(progress * 3, 1.0))
-    revealed_text = text[:visible_chars]
-    wrapped_revealed = textwrap.fill(revealed_text, width=18)
-
-    # Calculate total text height
-    line_height = font_size + 20
-    total_h = len(lines) * line_height
-    y_start = (height - total_h) // 2
-
-    # Draw shadow first
-    shadow_offset = 4
-    rev_lines = wrapped_revealed.split("\n")
-    for i, line in enumerate(rev_lines):
-        bbox = draw.textbbox((0, 0), line, font=font)
-        text_w = bbox[2] - bbox[0]
-        x = (width - text_w) // 2
-        y = y_start + i * line_height
-        draw.text((x + shadow_offset, y + shadow_offset), line, font=font, fill=(0, 0, 0, 128))
-        draw.text((x, y), line, font=font, fill=(255, 255, 255))
-
-    # Progress bar at bottom
-    bar_h = 6
-    bar_y = height - bar_h - 20
-    draw.rectangle([40, bar_y, width - 40, bar_y + bar_h], fill=(50, 50, 80))
-    draw.rectangle([40, bar_y, int(40 + (width - 80) * progress), bar_y + bar_h], fill=accent_color)
-
-    return img
+def _hex_to_ffmpeg_color(hex_color: str) -> str:
+    return hex_color.replace("#", "0x")
 
 
 def create_scene_video(
@@ -99,39 +25,46 @@ def create_scene_video(
     output_path: str,
     video_type: str = "regular",
 ) -> str:
-    """
-    Generate a single scene video as .mp4
-    Uses frame-by-frame Pillow rendering → FFmpeg encodes to video
-    """
+    """Generate a scene video using FFmpeg drawtext — fast, no Pillow needed."""
+    from config import REGULAR_VIDEO, SHORTS_VIDEO
     spec = REGULAR_VIDEO if video_type == "regular" else SHORTS_VIDEO
     w, h = spec["width"], spec["height"]
     fps = spec["fps"]
-    total_frames = duration * fps
 
-    frames_dir = output_path.replace(".mp4", "_frames")
-    os.makedirs(frames_dir, exist_ok=True)
-    os.makedirs(os.path.dirname(output_path), exist_ok=True)
+    os.makedirs(os.path.dirname(output_path) if os.path.dirname(output_path) else ".", exist_ok=True)
 
-    print(f"    Rendering {total_frames} frames...")
-    for i in range(total_frames):
-        progress = i / total_frames
-        frame = _create_frame(text, bg_color, w, h, progress)
-        frame.save(os.path.join(frames_dir, f"frame_{i:05d}.png"))
+    bg = _hex_to_ffmpeg_color(bg_color)
+    accent = "0x6366f1"
 
-    # Encode frames to video with FFmpeg
+    # Clean text for FFmpeg (escape special chars)
+    safe_text = text.replace("'", "\\'").replace(":", "\\:").replace("\\", "\\\\")
+
+    font_size = w // 10
+    bar_h = 8
+
+    # Use drawtext filter — generates video directly without frame rendering
+    vf = (
+        f"drawbox=x=0:y=0:w={w}:h={bar_h}:color={accent}:t=fill,"
+        f"drawbox=x=0:y={h-bar_h}:w={w}:h={bar_h}:color={accent}:t=fill,"
+        f"drawtext=text='{safe_text}'"
+        f":fontsize={font_size}"
+        f":fontcolor=white"
+        f":x=(w-text_w)/2:y=(h-text_h)/2"
+        f":shadowcolor=black:shadowx=4:shadowy=4"
+        f":line_spacing=20"
+        f":font=Arial"
+    )
+
     subprocess.run([
         _ffmpeg(), "-y",
-        "-framerate", str(fps),
-        "-i", os.path.join(frames_dir, "frame_%05d.png"),
+        "-f", "lavfi",
+        "-i", f"color=c={bg}:size={w}x{h}:duration={duration}:rate={fps}",
+        "-vf", vf,
         "-c:v", "libx264",
         "-pix_fmt", "yuv420p",
         "-crf", "23",
         output_path
     ], check=True, capture_output=True)
-
-    # Cleanup frames
-    import shutil
-    shutil.rmtree(frames_dir, ignore_errors=True)
 
     return output_path
 
