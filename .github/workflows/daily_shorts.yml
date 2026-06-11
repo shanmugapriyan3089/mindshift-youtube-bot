@@ -20,8 +20,8 @@ jobs:
           python-version: '3.11'
           cache: 'pip'
 
-      - name: Install FFmpeg and fonts
-        run: sudo apt-get install -y ffmpeg fonts-dejavu-core fonts-dejavu-extra
+      - name: Install FFmpeg, fonts and espeak
+        run: sudo apt-get install -y ffmpeg fonts-dejavu-core fonts-dejavu-extra espeak libespeak1
 
       - name: Install dependencies
         run: pip install -r requirements.txt
@@ -60,7 +60,7 @@ jobs:
           YOUTUBE_CLIENT_SECRETS_PATH: client_secrets.json
           MADE_FOR_KIDS: "false"
           PYTHONUNBUFFERED: "1"
-        run: python -u main.py --type shorts
+        run: timeout 600 python -u main.py --type shorts
 
       - name: Save upload log as artifact
         uses: actions/upload-artifact@v4
