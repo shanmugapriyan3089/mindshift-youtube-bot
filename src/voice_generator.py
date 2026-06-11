@@ -18,7 +18,7 @@ BABY_VOICE_OPTIONS = [
 
 async def _generate_async(text: str, output_path: str, voice: str, rate: str, pitch: str):
     communicate = edge_tts.Communicate(text, voice, rate=rate, pitch=pitch)
-    await communicate.save(output_path)
+    await asyncio.wait_for(communicate.save(output_path), timeout=60)
 
 
 def generate_voiceover(

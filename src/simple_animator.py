@@ -307,39 +307,46 @@ def _create_frame(
 
 def create_scene_video(
     text: str,
-    bg_color: str,  # kept for API compatibility, not used
+    bg_color: str,
     duration: int,
     output_path: str,
     video_type: str = "regular",
     scene_idx: int = 0,
 ) -> str:
+    """
+    Generate one high-quality PNG frame, then loop it with FFmpeg.
+    Takes 2-3 seconds instead of minutes.
+    """
     from config import REGULAR_VIDEO, SHORTS_VIDEO
     spec = REGULAR_VIDEO if video_type == "regular" else SHORTS_VIDEO
     w, h = spec["width"], spec["height"]
-    total_frames = duration * FPS
 
-    frames_dir = tempfile.mkdtemp(prefix="frames_")
     os.makedirs(os.path.dirname(output_path) if os.path.dirname(output_path) else ".", exist_ok=True)
 
-    # Truncate text if too long
     safe_text = text[:40].upper()
 
-    print(f"    Rendering {total_frames} frames at {FPS}fps...")
-    for i in range(total_frames):
-        frame = _create_frame(safe_text, w, h, i, total_frames, scene_idx)
-        frame.save(os.path.join(frames_dir, f"f{i:05d}.png"))
+    # Generate ONE frame at full quality
+    print(f"    Generating frame...")
+    frame = _create_frame(safe_text, w, h, 0, 1, scene_idx)
+    tmp_png = output_path.replace(".mp4", "_frame.png")
+    frame.save(tmp_png, quality=95)
 
+    # FFmpeg loops the single image into a video
     result = subprocess.run([
         _ffmpeg(), "-y",
-        "-framerate", str(FPS),
-        "-i", os.path.join(frames_dir, "f%05d.png"),
+        "-loop", "1",
+        "-i", tmp_png,
+        "-t", str(duration),
         "-c:v", "libx264",
         "-pix_fmt", "yuv420p",
+        "-r", "24",
         "-crf", "20",
         output_path
     ], capture_output=True, text=True)
 
-    shutil.rmtree(frames_dir, ignore_errors=True)
+    # Cleanup temp PNG
+    if os.path.exists(tmp_png):
+        os.remove(tmp_png)
 
     if result.returncode != 0:
         print(f"FFmpeg error:\n{result.stderr[-1000:]}")
