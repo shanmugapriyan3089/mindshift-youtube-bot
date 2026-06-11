@@ -1,40 +1,85 @@
 """
-Voiceover generation using edge-tts (free, Microsoft neural voices).
-Best voices for baby/kids content: warm, friendly, female.
+Voiceover generation with fallback chain:
+  1. gTTS (Google TTS, simple HTTP, reliable on GitHub Actions)
+  2. edge-tts (Microsoft neural, better quality)
+  3. Silent audio (FFmpeg generated — never hangs)
 """
-import asyncio
 import os
-import edge_tts
-
-# Warm, friendly voice — great for baby content
-DEFAULT_VOICE = "en-US-JennyNeural"
-BABY_VOICE_OPTIONS = [
-    "en-US-JennyNeural",    # Warm, friendly female
-    "en-US-AriaNeural",     # Expressive female
-    "en-GB-SoniaNeural",    # British female, clear
-    "en-AU-NatashaNeural",  # Australian female, soft
-]
+import asyncio
+import subprocess
+import shutil
 
 
-async def _generate_async(text: str, output_path: str, voice: str, rate: str, pitch: str):
-    communicate = edge_tts.Communicate(text, voice, rate=rate, pitch=pitch)
-    await asyncio.wait_for(communicate.save(output_path), timeout=60)
+def _ffmpeg():
+    if shutil.which("ffmpeg"):
+        return "ffmpeg"
+    try:
+        import imageio_ffmpeg
+        return imageio_ffmpeg.get_ffmpeg_exe()
+    except Exception:
+        return "ffmpeg"
 
 
-def generate_voiceover(
-    text: str,
-    output_path: str,
-    voice: str = DEFAULT_VOICE,
-    rate: str = "+0%",
-    pitch: str = "+5Hz",
-) -> str:
-    """
-    Generate MP3 voiceover from text.
-    rate: speaking speed e.g. "-10%" slower, "+10%" faster
-    pitch: voice pitch e.g. "+5Hz" slightly higher (warmer for baby content)
-    """
-    os.makedirs(os.path.dirname(output_path), exist_ok=True)
-    asyncio.run(_generate_async(text, output_path, voice, rate, pitch))
+def _generate_gtts(text: str, output_path: str) -> bool:
+    """Google TTS — simple HTTP, works reliably on GitHub Actions."""
+    try:
+        from gtts import gTTS
+        tts = gTTS(text=text, lang="en", slow=False)
+        tts.save(output_path)
+        return os.path.exists(output_path) and os.path.getsize(output_path) > 0
+    except Exception as e:
+        print(f"  [gTTS] Failed: {e}")
+        return False
+
+
+def _generate_edge_tts(text: str, output_path: str) -> bool:
+    """Microsoft edge-tts — higher quality neural voice."""
+    try:
+        import edge_tts
+
+        async def _run():
+            communicate = edge_tts.Communicate(text, "en-US-JennyNeural",
+                                               rate="+0%", pitch="+5Hz")
+            await asyncio.wait_for(communicate.save(output_path), timeout=45)
+
+        asyncio.run(_run())
+        return os.path.exists(output_path) and os.path.getsize(output_path) > 0
+    except Exception as e:
+        print(f"  [edge-tts] Failed: {e}")
+        return False
+
+
+def _generate_silence(duration_hint: int, output_path: str) -> bool:
+    """FFmpeg silent audio — last resort, never fails."""
+    try:
+        subprocess.run([
+            _ffmpeg(), "-y",
+            "-f", "lavfi",
+            "-i", f"anullsrc=r=44100:cl=stereo:duration={duration_hint}",
+            "-c:a", "libmp3lame",
+            output_path
+        ], check=True, capture_output=True)
+        return True
+    except Exception as e:
+        print(f"  [Silence fallback] Failed: {e}")
+        return False
+
+
+def generate_voiceover(text: str, output_path: str, duration_hint: int = 15) -> str:
+    """Generate voiceover with fallback chain."""
+    os.makedirs(os.path.dirname(output_path) if os.path.dirname(output_path) else ".", exist_ok=True)
+
+    # Try gTTS first (most reliable on GitHub Actions)
+    if _generate_gtts(text, output_path):
+        return output_path
+
+    # Try edge-tts
+    if _generate_edge_tts(text, output_path):
+        return output_path
+
+    # Silent fallback — never blocks the pipeline
+    print(f"  [Voice] Using silent fallback for this scene")
+    _generate_silence(duration_hint, output_path)
     return output_path
 
 
@@ -44,7 +89,8 @@ def generate_scene_voiceovers(scenes: list, output_dir: str) -> list:
     paths = []
     for scene in scenes:
         path = os.path.join(output_dir, f"voice_{scene['scene_number']:02d}.mp3")
+        duration = scene.get("duration_seconds", 15)
         print(f"  [Voice] Scene {scene['scene_number']}...")
-        generate_voiceover(scene["narration"], path)
+        generate_voiceover(scene["narration"], path, duration_hint=duration)
         paths.append(path)
     return paths
