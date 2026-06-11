@@ -1,0 +1,10 @@
+.env
+client_secrets.json
+client_secret*.json
+youtube_token.pickle
+youtube_token.pickle
+output/
+assets/music/
+__pycache__/
+*.pyc
+.DS_Store

@@ -1,0 +1,65 @@
+name: Daily Shorts Video
+
+on:
+  schedule:
+    - cron: '30 9 * * *'  # 3:00 PM IST (9:30 AM UTC)
+  workflow_dispatch:        # Manual trigger button in GitHub
+
+jobs:
+  generate-shorts-video:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install FFmpeg
+        run: sudo apt-get install -y ffmpeg
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Create .env from secrets
+        run: |
+          cat > .env << EOF
+          GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}
+          KLING_ACCESS_KEY=${{ secrets.KLING_ACCESS_KEY }}
+          KLING_SECRET_KEY=${{ secrets.KLING_SECRET_KEY }}
+          PIKA_API_KEY=${{ secrets.PIKA_API_KEY }}
+          HAILUO_API_KEY=${{ secrets.HAILUO_API_KEY }}
+          HAILUO_GROUP_ID=${{ secrets.HAILUO_GROUP_ID }}
+          RUNWAY_API_KEY=${{ secrets.RUNWAY_API_KEY }}
+          YOUTUBE_CLIENT_SECRETS_PATH=client_secrets.json
+          MADE_FOR_KIDS=true
+          EOF
+
+      - name: Restore YouTube token
+        run: echo "${{ secrets.YOUTUBE_TOKEN }}" | base64 -d > youtube_token.pickle
+        continue-on-error: true
+
+      - name: Write YouTube client secrets
+        run: echo '${{ secrets.YOUTUBE_CLIENT_SECRETS }}' > client_secrets.json
+
+      - name: Restore used topics log
+        uses: actions/cache@v4
+        with:
+          path: used_topics.json
+          key: used-topics-${{ github.run_number }}
+          restore-keys: used-topics-
+
+      - name: Run shorts pipeline
+        run: python main.py --type shorts
+
+      - name: Save upload log as artifact
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: upload-log-shorts-${{ github.run_number }}
+          path: upload_log.json
