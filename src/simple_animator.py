@@ -36,23 +36,29 @@ def create_scene_video(
     bg = _hex_to_ffmpeg_color(bg_color)
     accent = "0x6366f1"
 
-    # Clean text for FFmpeg (escape special chars)
-    safe_text = text.replace("'", "\\'").replace(":", "\\:").replace("\\", "\\\\")
+    # Strip characters that break FFmpeg drawtext escaping
+    safe_text = (text.replace("'", "")
+                     .replace('"', "")
+                     .replace(":", " ")
+                     .replace("\\", "")
+                     .replace("%", "percent")
+                     .replace("\n", " "))
 
     font_size = w // 10
     bar_h = 8
 
     # Use drawtext filter — generates video directly without frame rendering
+    # fontfile uses DejaVu Bold (available on Ubuntu/GitHub Actions)
     vf = (
         f"drawbox=x=0:y=0:w={w}:h={bar_h}:color={accent}:t=fill,"
         f"drawbox=x=0:y={h-bar_h}:w={w}:h={bar_h}:color={accent}:t=fill,"
         f"drawtext=text='{safe_text}'"
+        f":fontfile=/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
         f":fontsize={font_size}"
         f":fontcolor=white"
         f":x=(w-text_w)/2:y=(h-text_h)/2"
         f":shadowcolor=black:shadowx=4:shadowy=4"
         f":line_spacing=20"
-        f":font=Arial"
     )
 
     subprocess.run([
