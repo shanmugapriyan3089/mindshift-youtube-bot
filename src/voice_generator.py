@@ -1,10 +1,12 @@
 """
-Voiceover pipeline:
-1. edge-tts  — Microsoft Jenny Neural (natural, en-US-JennyNeural)
-2. gTTS      — Google HTTP TTS fallback
-3. espeak    — offline fallback
-4. silence   — last resort
-All TTS runs in subprocess with hard timeout to prevent pipeline hanging.
+Voiceover pipeline (best free quality):
+1. Kokoro-82M   — near-ElevenLabs quality, open source, offline after first download
+2. edge-tts     — Microsoft Jenny Neural, natural, free
+3. gTTS         — Google HTTP TTS, decent fallback
+4. espeak       — offline last resort
+5. silence      — absolute fallback
+
+All TTS runs in isolated subprocess with hard timeout — pipeline never hangs.
 """
 import os
 import sys
@@ -22,8 +24,55 @@ def _ffmpeg():
         return "ffmpeg"
 
 
+# ── 1. Kokoro-82M ─────────────────────────────────────────────────────────────
+
+def _generate_kokoro(text: str, output_path: str, timeout: int = 90) -> bool:
+    """
+    Kokoro-82M — open source, near-ElevenLabs quality.
+    Voice: af_nicole (American female, clear and natural).
+    Model auto-downloads to ~/.cache/huggingface on first run (~300 MB).
+    """
+    wav_path = output_path.replace(".mp3", "_kok.wav")
+    try:
+        script = (
+            "import sys, numpy as np, soundfile as sf\n"
+            "from kokoro import KPipeline\n"
+            "pipe = KPipeline(lang_code='a')\n"
+            f"chunks = [a for _,_,a in pipe({repr(text[:500])}, voice='af_nicole', speed=1.05)]\n"
+            "if not chunks: sys.exit(1)\n"
+            f"sf.write({repr(wav_path)}, np.concatenate(chunks), 24000)\n"
+        )
+        r = subprocess.run(
+            [sys.executable, "-c", script],
+            timeout=timeout, capture_output=True, text=True
+        )
+        if r.returncode != 0:
+            print(f"  [Kokoro] stderr: {r.stderr[-300:]}")
+            return False
+        if not os.path.exists(wav_path) or os.path.getsize(wav_path) < 1000:
+            return False
+        # Convert wav → mp3
+        subprocess.run(
+            [_ffmpeg(), "-y", "-i", wav_path,
+             "-c:a", "libmp3lame", "-q:a", "2", output_path],
+            check=True, capture_output=True, timeout=30
+        )
+        return os.path.exists(output_path) and os.path.getsize(output_path) > 500
+    except subprocess.TimeoutExpired:
+        print(f"  [Kokoro] Timed out after {timeout}s")
+        return False
+    except Exception as e:
+        print(f"  [Kokoro] Error: {e}")
+        return False
+    finally:
+        if os.path.exists(wav_path):
+            os.remove(wav_path)
+
+
+# ── 2. edge-tts (Microsoft Jenny Neural) ─────────────────────────────────────
+
 def _generate_edge_tts(text: str, output_path: str, timeout: int = 45) -> bool:
-    """edge-tts Jenny Neural — natural female voice, run in isolated subprocess."""
+    """Microsoft Azure neural TTS via edge-tts — free, no API key."""
     try:
         script = (
             "import asyncio, edge_tts\n"
@@ -33,54 +82,46 @@ def _generate_edge_tts(text: str, output_path: str, timeout: int = 45) -> bool:
             f"    await c.save({repr(output_path)})\n"
             "asyncio.run(run())\n"
         )
-        result = subprocess.run(
+        r = subprocess.run(
             [sys.executable, "-c", script],
-            timeout=timeout,
-            capture_output=True,
-            text=True
+            timeout=timeout, capture_output=True, text=True
         )
-        if result.returncode != 0:
-            print(f"  [edge-tts] stderr: {result.stderr[-200:]}")
-        return (result.returncode == 0
+        if r.returncode != 0:
+            print(f"  [edge-tts] stderr: {r.stderr[-200:]}")
+        return (r.returncode == 0
                 and os.path.exists(output_path)
                 and os.path.getsize(output_path) > 500)
     except subprocess.TimeoutExpired:
-        print(f"  [edge-tts] Timed out after {timeout}s — killing")
+        print(f"  [edge-tts] Timed out after {timeout}s")
         return False
     except Exception as e:
         print(f"  [edge-tts] Error: {e}")
         return False
 
 
+# ── 3. gTTS ───────────────────────────────────────────────────────────────────
+
 def _generate_gtts(text: str, output_path: str) -> bool:
-    """gTTS fallback — simple HTTP, no WebSocket."""
     try:
         script = (
             f"from gtts import gTTS\n"
-            f"tts = gTTS(text={repr(text[:400])}, lang='en', slow=False, tld='com')\n"
-            f"tts.save({repr(output_path)})\n"
+            f"gTTS(text={repr(text[:400])}, lang='en', slow=False).save({repr(output_path)})\n"
         )
-        result = subprocess.run(
+        r = subprocess.run(
             [sys.executable, "-c", script],
-            timeout=45,
-            capture_output=True,
-            text=True
+            timeout=45, capture_output=True, text=True
         )
-        if result.returncode != 0:
-            print(f"  [gTTS] stderr: {result.stderr[-200:]}")
-        return (result.returncode == 0
+        return (r.returncode == 0
                 and os.path.exists(output_path)
                 and os.path.getsize(output_path) > 500)
-    except subprocess.TimeoutExpired:
-        print("  [gTTS] Timed out")
-        return False
     except Exception as e:
         print(f"  [gTTS] Error: {e}")
         return False
 
 
+# ── 4. espeak ─────────────────────────────────────────────────────────────────
+
 def _generate_espeak(text: str, output_path: str) -> bool:
-    """Offline fallback using espeak."""
     if not shutil.which("espeak"):
         return False
     try:
@@ -104,6 +145,8 @@ def _generate_espeak(text: str, output_path: str) -> bool:
         return False
 
 
+# ── 5. Silence ────────────────────────────────────────────────────────────────
+
 def _generate_silence(duration: int, output_path: str) -> bool:
     try:
         subprocess.run([
@@ -117,25 +160,32 @@ def _generate_silence(duration: int, output_path: str) -> bool:
         return False
 
 
+# ── Main entry ────────────────────────────────────────────────────────────────
+
 def generate_voiceover(text: str, output_path: str, duration_hint: int = 15) -> str:
     os.makedirs(
         os.path.dirname(output_path) if os.path.dirname(output_path) else ".",
         exist_ok=True
     )
 
+    print("  [Voice] Kokoro-82M (best quality)...")
+    if _generate_kokoro(text, output_path):
+        print("  [Voice] Kokoro OK ✓")
+        return output_path
+
     print("  [Voice] edge-tts (Jenny Neural)...")
     if _generate_edge_tts(text, output_path):
-        print("  [Voice] edge-tts OK")
+        print("  [Voice] edge-tts OK ✓")
         return output_path
 
     print("  [Voice] gTTS fallback...")
     if _generate_gtts(text, output_path):
-        print("  [Voice] gTTS OK")
+        print("  [Voice] gTTS OK ✓")
         return output_path
 
     print("  [Voice] espeak fallback...")
     if _generate_espeak(text, output_path):
-        print("  [Voice] espeak OK")
+        print("  [Voice] espeak OK ✓")
         return output_path
 
     print("  [Voice] silence fallback")

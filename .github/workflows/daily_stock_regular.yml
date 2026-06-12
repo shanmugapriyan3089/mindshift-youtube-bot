@@ -21,7 +21,13 @@ jobs:
           cache: 'pip'
 
       - name: Install FFmpeg and fonts
-        run: sudo apt-get install -y ffmpeg fonts-dejavu-core fonts-dejavu-extra
+        run: sudo apt-get install -y ffmpeg fonts-dejavu-core fonts-dejavu-extra espeak libespeak1 espeak-ng libespeak-ng1
+
+      - name: Cache Kokoro model
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/huggingface/hub
+          key: kokoro-model-${{ runner.os }}-v1
 
       - name: Install dependencies
         run: pip install -r requirements.txt
