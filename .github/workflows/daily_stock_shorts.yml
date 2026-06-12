@@ -2,7 +2,7 @@ name: Stock Footage — Shorts
 
 on:
   schedule:
-    - cron: '30 12 * * *'  # 6:00 PM IST (12:30 PM UTC)
+    - cron: '0 10 * * *'   # 3:30 PM IST (10:00 AM UTC)
   workflow_dispatch:
 
 jobs:
