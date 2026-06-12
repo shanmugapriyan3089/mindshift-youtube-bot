@@ -293,14 +293,10 @@ def _create_frame(
         font_size = max(28, w // 22)
         _draw_text_banner(draw, text, w, h, font_size)
 
-    # Scene number indicator dots at top
-    dot_y = int(h * 0.03)
-    total_dots = 4
-    for d in range(total_dots):
-        dot_x = w // 2 + (d - total_dots // 2) * int(w * 0.04)
-        color = ACCENT_COLOR if d == scene_idx % 4 else (180, 200, 220)
-        r = int(w * 0.01)
-        draw.ellipse([dot_x - r, dot_y - r, dot_x + r, dot_y + r], fill=color)
+    # Channel watermark top-right
+    font_sm = _get_font(max(20, w // 40))
+    draw.text((w - int(w*0.02) - 200, int(h*0.02)), "MindShift",
+              fill=(100, 140, 180), font=font_sm)
 
     return img
 
