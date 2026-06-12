@@ -53,11 +53,12 @@ Respond ONLY with valid JSON, no markdown fences, no extra text:
   "scenes": [
     {{
       "scene_number": 1,
-      "keyword": "2-3 word Pexels search term for background footage e.g. busy office people",
+      "keyword": "busy office people",
       "duration_seconds": 12,
       "narration": "What if I told you that 95% of your decisions are made subconsciously? That means you're not as in control as you think...",
       "text_overlay": "YOU ARE NOT IN CONTROL",
       "keyword": "human brain psychology",
+      "bullets": ["Fact or stat about this scene", "Key insight", "Action step"],
       "bg_color": "#1a1a2e"
     }}
   ]
