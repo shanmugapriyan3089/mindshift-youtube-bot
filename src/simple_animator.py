@@ -289,87 +289,95 @@ def _money(draw, cx, cy, s):
 # Left figure A at ~25% width, Right figure B at ~75% width
 # Both at same cy ~58% height so they're big and centred
 
+def _scene_positions(w, h, s):
+    """Return (ax, ay, bx, by, prop_y, label_y) that work for both orientations."""
+    cy    = int(h * 0.63)
+    # Prop sits at top; for landscape push it higher so label clears the bubbles
+    prop_y  = int(h * 0.13)
+    label_y = int(h * 0.24) if h > w else int(h * 0.21)
+    return int(w*0.25), cy, int(w*0.75), cy, prop_y, label_y
+
+
+def _half_w(w):
+    """Max bubble width = 44% of canvas so two bubbles never collide."""
+    return int(w * 0.44)
+
+
 def _scene_hook(draw, w, h, s, bubble_fs):
-    """Hook: B is shocked, A points at stat and explains."""
-    cy = int(h * 0.63)
-    ax, ay = int(w*0.25), cy
-    bx, by_ = int(w*0.75), cy
+    ax, ay, bx, by_, prop_y, label_y = _scene_positions(w, h, s)
+    hw = _half_w(w)
 
-    # Prop at top-centre
-    _clock(draw, w//2, int(h*0.17), s*0.95, hour=2)
-    _label(draw, w//2, int(h*0.30), "2 AM SCROLLING", int(bubble_fs*0.9), RED)
+    _clock(draw, w//2, prop_y, s*0.95, hour=2)
+    _label(draw, w//2, label_y, "2 AM SCROLLING", int(bubble_fs*0.9), RED)
 
-    # Figures
     _figure(draw, ax, ay,  s, pose="pointing_r", emotion="excited")
     _figure(draw, bx, by_, s, pose="shocked",    emotion="shocked", flip=True)
 
-    # Separate speech bubbles — left pinned left, right pinned right
-    _bubble(draw, ax, ay - int(100*s), "Did you know this?!",
-            w, bubble_fs, tail="left", anchor="right")
+    _bubble(draw, ax, ay - int(100*s), "Did you know?!",
+            hw, bubble_fs, tail="left", anchor="right")
     _bubble(draw, bx, by_ - int(100*s), "Wait... WHAT?!",
-            w, bubble_fs, tail="right", fill=(255,240,240), anchor="left")
+            hw, bubble_fs, tail="right", fill=(255,240,240), anchor="left")
 
-    _arrow(draw, w//2, int(h*0.32), int(w*0.40), int(h*0.52), BLUE, max(2, int(3*s)))
+    _arrow(draw, w//2, label_y + int(bubble_fs*0.8),
+           int(w*0.40), int(h*0.52), BLUE, max(2, int(3*s)))
 
 
 def _scene_problem(draw, w, h, s, bubble_fs):
-    """Problem: A explains the trap, B looks sad and stuck."""
-    cy = int(h * 0.63)
-    ax, ay = int(w*0.25), cy
-    bx, by_ = int(w*0.75), cy
+    ax, ay, bx, by_, prop_y, label_y = _scene_positions(w, h, s)
+    hw = _half_w(w)
 
-    _brain(draw, w//2, int(h*0.17), s*0.9)
-    _label(draw, w//2, int(h*0.30), "OLD PATTERN", int(bubble_fs*0.9), PURPLE)
+    _brain(draw, w//2, prop_y, s*0.9)
+    _label(draw, w//2, label_y, "OLD PATTERN", int(bubble_fs*0.9), PURPLE)
 
     _figure(draw, ax, ay,  s, pose="talking",  emotion="thinking")
     _figure(draw, bx, by_, s, pose="thinking", emotion="sad", flip=True)
 
-    _bubble(draw, ax, ay - int(100*s), "Your brain is stuck!",
-            w, bubble_fs, tail="left", anchor="right")
+    _bubble(draw, ax, ay - int(100*s), "Brain stuck in loop!",
+            hw, bubble_fs, tail="left", anchor="right")
     _thought_bubble(draw, bx, by_ - int(100*s), "Why can't I change?", w, bubble_fs)
 
-    _arrow(draw, w//2, int(h*0.32), int(w*0.60), int(h*0.52), PURPLE, max(2, int(3*s)))
+    _arrow(draw, w//2, label_y + int(bubble_fs*0.8),
+           int(w*0.60), int(h*0.52), PURPLE, max(2, int(3*s)))
 
 
 def _scene_solution(draw, w, h, s, bubble_fs):
-    """Solution: A excited about the fix, B has aha moment."""
-    cy = int(h * 0.63)
-    ax, ay = int(w*0.25), cy
-    bx, by_ = int(w*0.75), cy
+    ax, ay, bx, by_, prop_y, label_y = _scene_positions(w, h, s)
+    hw = _half_w(w)
 
-    _lightbulb(draw, w//2, int(h*0.15), s*1.0)
-    _label(draw, w//2, int(h*0.30), "THE KEY INSIGHT", int(bubble_fs*0.9), GREEN)
+    _lightbulb(draw, w//2, prop_y, s*1.0)
+    _label(draw, w//2, label_y, "THE KEY INSIGHT", int(bubble_fs*0.9), GREEN)
 
     _figure(draw, ax, ay,  s, pose="excited",    emotion="excited")
     _figure(draw, bx, by_, s, pose="pointing_l", emotion="happy", flip=True)
 
     _bubble(draw, ax, ay - int(100*s), "Here's the secret!",
-            w, bubble_fs, tail="left", anchor="right")
-    _bubble(draw, bx, by_ - int(100*s), "This changes everything!",
-            w, bubble_fs, tail="right", fill=(240,255,240), anchor="left")
+            hw, bubble_fs, tail="left", anchor="right")
+    _bubble(draw, bx, by_ - int(100*s), "This is the key!",
+            hw, bubble_fs, tail="right", fill=(240,255,240), anchor="left")
 
-    _arrow(draw, w//2, int(h*0.32), int(w*0.40), int(h*0.52), GREEN, max(2, int(3*s)))
+    _arrow(draw, w//2, label_y + int(bubble_fs*0.8),
+           int(w*0.40), int(h*0.52), GREEN, max(2, int(3*s)))
 
 
 def _scene_result(draw, w, h, s, bubble_fs):
-    """Result: both figures celebrating together."""
-    cy = int(h * 0.63)
-    ax, ay = int(w*0.25), cy
-    bx, by_ = int(w*0.75), cy
+    ax, ay, bx, by_, prop_y, label_y = _scene_positions(w, h, s)
+    hw = _half_w(w)
 
-    _trophy(draw, w//2, int(h*0.16), s*0.95)
-    _label(draw, w//2, int(h*0.30), "NEW YOU", int(bubble_fs*0.9), GREEN)
+    _trophy(draw, w//2, prop_y, s*0.95)
+    _label(draw, w//2, label_y, "NEW YOU", int(bubble_fs*0.9), GREEN)
 
     _figure(draw, ax, ay,  s, pose="excited", emotion="excited")
     _figure(draw, bx, by_, s, pose="excited", emotion="excited", flip=True)
 
-    _bubble(draw, ax, ay - int(100*s), "Subscribe for more!",
-            w, bubble_fs, tail="left", anchor="right")
-    _bubble(draw, bx, by_ - int(100*s), "This actually works!",
-            w, bubble_fs, tail="right", fill=(255,255,220), anchor="left")
+    _bubble(draw, ax, ay - int(100*s), "Subscribe now!",
+            hw, bubble_fs, tail="left", anchor="right")
+    _bubble(draw, bx, by_ - int(100*s), "It works!!",
+            hw, bubble_fs, tail="right", fill=(255,255,220), anchor="left")
 
-    _arrow(draw, w//2, int(h*0.32), int(w*0.38), int(h*0.52), ORANGE, max(2, int(3*s)))
-    _arrow(draw, w//2, int(h*0.32), int(w*0.62), int(h*0.52), ORANGE, max(2, int(3*s)))
+    _arrow(draw, w//2, label_y + int(bubble_fs*0.8),
+           int(w*0.38), int(h*0.52), ORANGE, max(2, int(3*s)))
+    _arrow(draw, w//2, label_y + int(bubble_fs*0.8),
+           int(w*0.62), int(h*0.52), ORANGE, max(2, int(3*s)))
 
 
 SCENE_FNS = [_scene_hook, _scene_problem, _scene_solution, _scene_result]
@@ -386,9 +394,9 @@ def _create_frame(text, narration, w, h, scene_idx):
     for i in range(0, w, max(1, w//16)): draw.line([i,0,i,h], fill=gc, width=1)
     for i in range(0, h, max(1, h//22)): draw.line([0,i,w,i], fill=gc, width=1)
 
-    # Scale — portrait Shorts need much larger figures
-    s = 2.5 if h > w else 1.3
-    bubble_fs = max(26, w // 24) if h > w else max(22, w // 30)
+    # Scale — portrait needs bigger figures; landscape uses height-based sizes
+    s = 2.5 if h > w else 1.9
+    bubble_fs = max(28, w // 28) if h > w else max(22, h // 26)
 
     SCENE_FNS[scene_idx % 4](draw, w, h, s, bubble_fs)
 
