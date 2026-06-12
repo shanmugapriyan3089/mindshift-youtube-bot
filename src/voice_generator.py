@@ -1,6 +1,10 @@
 """
-Voiceover using gTTS (Google TTS - simple HTTP, most reliable on GitHub Actions).
-Falls back to espeak, then silence.
+Voiceover pipeline:
+1. edge-tts  — Microsoft Jenny Neural (natural, en-US-JennyNeural)
+2. gTTS      — Google HTTP TTS fallback
+3. espeak    — offline fallback
+4. silence   — last resort
+All TTS runs in subprocess with hard timeout to prevent pipeline hanging.
 """
 import os
 import sys
@@ -18,8 +22,38 @@ def _ffmpeg():
         return "ffmpeg"
 
 
+def _generate_edge_tts(text: str, output_path: str, timeout: int = 45) -> bool:
+    """edge-tts Jenny Neural — natural female voice, run in isolated subprocess."""
+    try:
+        script = (
+            "import asyncio, edge_tts\n"
+            "async def run():\n"
+            f"    c = edge_tts.Communicate({repr(text[:500])}, "
+            "'en-US-JennyNeural', rate='+5%', pitch='+0Hz')\n"
+            f"    await c.save({repr(output_path)})\n"
+            "asyncio.run(run())\n"
+        )
+        result = subprocess.run(
+            [sys.executable, "-c", script],
+            timeout=timeout,
+            capture_output=True,
+            text=True
+        )
+        if result.returncode != 0:
+            print(f"  [edge-tts] stderr: {result.stderr[-200:]}")
+        return (result.returncode == 0
+                and os.path.exists(output_path)
+                and os.path.getsize(output_path) > 500)
+    except subprocess.TimeoutExpired:
+        print(f"  [edge-tts] Timed out after {timeout}s — killing")
+        return False
+    except Exception as e:
+        print(f"  [edge-tts] Error: {e}")
+        return False
+
+
 def _generate_gtts(text: str, output_path: str) -> bool:
-    """gTTS in subprocess with hard timeout — simple HTTP, no WebSocket issues."""
+    """gTTS fallback — simple HTTP, no WebSocket."""
     try:
         script = (
             f"from gtts import gTTS\n"
@@ -33,10 +67,12 @@ def _generate_gtts(text: str, output_path: str) -> bool:
             text=True
         )
         if result.returncode != 0:
-            print(f"  [gTTS stderr]: {result.stderr[-200:]}")
-        return result.returncode == 0 and os.path.exists(output_path) and os.path.getsize(output_path) > 500
+            print(f"  [gTTS] stderr: {result.stderr[-200:]}")
+        return (result.returncode == 0
+                and os.path.exists(output_path)
+                and os.path.getsize(output_path) > 500)
     except subprocess.TimeoutExpired:
-        print(f"  [gTTS] Timed out")
+        print("  [gTTS] Timed out")
         return False
     except Exception as e:
         print(f"  [gTTS] Error: {e}")
@@ -50,7 +86,8 @@ def _generate_espeak(text: str, output_path: str) -> bool:
     try:
         wav = output_path.replace(".mp3", "_esp.wav")
         r = subprocess.run(
-            ["espeak", "-v", "en-us+f3", "-s", "155", "-a", "180", "-w", wav, text[:400]],
+            ["espeak", "-v", "en-us+f3", "-s", "155", "-a", "180",
+             "-w", wav, text[:400]],
             capture_output=True, timeout=20
         )
         if r.returncode != 0 or not os.path.exists(wav):
@@ -71,7 +108,7 @@ def _generate_silence(duration: int, output_path: str) -> bool:
     try:
         subprocess.run([
             _ffmpeg(), "-y", "-f", "lavfi",
-            "-i", f"anullsrc=r=44100:cl=stereo",
+            "-i", "anullsrc=r=44100:cl=stereo",
             "-t", str(duration),
             "-c:a", "libmp3lame", "-q:a", "9", output_path
         ], check=True, capture_output=True, timeout=30)
@@ -81,19 +118,27 @@ def _generate_silence(duration: int, output_path: str) -> bool:
 
 
 def generate_voiceover(text: str, output_path: str, duration_hint: int = 15) -> str:
-    os.makedirs(os.path.dirname(output_path) if os.path.dirname(output_path) else ".", exist_ok=True)
+    os.makedirs(
+        os.path.dirname(output_path) if os.path.dirname(output_path) else ".",
+        exist_ok=True
+    )
 
-    print(f"  [Voice] gTTS...")
+    print("  [Voice] edge-tts (Jenny Neural)...")
+    if _generate_edge_tts(text, output_path):
+        print("  [Voice] edge-tts OK")
+        return output_path
+
+    print("  [Voice] gTTS fallback...")
     if _generate_gtts(text, output_path):
-        print(f"  [Voice] gTTS OK")
+        print("  [Voice] gTTS OK")
         return output_path
 
-    print(f"  [Voice] espeak fallback...")
+    print("  [Voice] espeak fallback...")
     if _generate_espeak(text, output_path):
-        print(f"  [Voice] espeak OK")
+        print("  [Voice] espeak OK")
         return output_path
 
-    print(f"  [Voice] silence fallback")
+    print("  [Voice] silence fallback")
     _generate_silence(duration_hint, output_path)
     return output_path
 
