@@ -1,0 +1,64 @@
+name: Mixed — Regular Video (Cartoon + Stock)
+
+on:
+  schedule:
+    - cron: '0 9 * * *'   # 2:30 PM IST (9:00 AM UTC)
+  workflow_dispatch:
+
+jobs:
+  generate-mixed-regular:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install system deps
+        run: sudo apt-get install -y ffmpeg fonts-dejavu-core fonts-dejavu-extra espeak libespeak1
+
+      - name: Install Python deps
+        run: pip install -r requirements.txt
+
+      - name: Create .env
+        run: |
+          echo "GROQ_API_KEY=${{ secrets.GROQ_API_KEY }}" > .env
+          echo "PEXELS_API_KEY=${{ secrets.PEXELS_API_KEY }}" >> .env
+          echo "YOUTUBE_CLIENT_SECRETS_PATH=client_secrets.json" >> .env
+          echo "MADE_FOR_KIDS=false" >> .env
+
+      - name: Restore YouTube token
+        run: echo "${{ secrets.YOUTUBE_TOKEN }}" | base64 -d > youtube_token.pickle
+        continue-on-error: true
+
+      - name: Write YouTube client secrets
+        run: echo '${{ secrets.YOUTUBE_CLIENT_SECRETS }}' > client_secrets.json
+
+      - name: Restore used topics log
+        uses: actions/cache@v4
+        with:
+          path: used_topics_mixed.json
+          key: used-topics-mixed-${{ github.run_number }}
+          restore-keys: used-topics-mixed-
+
+      - name: Run mixed pipeline (regular)
+        env:
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
+          YOUTUBE_CLIENT_SECRETS_PATH: client_secrets.json
+          MADE_FOR_KIDS: "false"
+          PYTHONUNBUFFERED: "1"
+        run: timeout 3000 python -u main_mixed.py --type regular
+
+      - name: Save upload log
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: upload-log-mixed-regular-${{ github.run_number }}
+          path: upload_log.json
