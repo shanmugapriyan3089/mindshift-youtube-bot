@@ -71,7 +71,8 @@ def _generate_silence(duration: int, output_path: str) -> bool:
     try:
         subprocess.run([
             _ffmpeg(), "-y", "-f", "lavfi",
-            "-i", f"sine=frequency=1:duration={duration}",
+            "-i", f"anullsrc=r=44100:cl=stereo",
+            "-t", str(duration),
             "-c:a", "libmp3lame", "-q:a", "9", output_path
         ], check=True, capture_output=True, timeout=30)
         return True
