@@ -21,7 +21,7 @@ jobs:
           cache: 'pip'
 
       - name: Install system deps
-        run: sudo apt-get install -y ffmpeg fonts-dejavu-core fonts-dejavu-extra espeak libespeak1 espeak-ng libespeak-ng1
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg fonts-dejavu-core fonts-dejavu-extra espeak libespeak1 espeak-ng libespeak-ng1
 
       - name: Cache Kokoro model
         uses: actions/cache@v4
