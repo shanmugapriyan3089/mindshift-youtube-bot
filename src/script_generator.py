@@ -1,6 +1,7 @@
 import json
 import re
 import random
+import datetime
 from groq import Groq
 from config import GROQ_API_KEY, DAILY_TOPICS, REGULAR_VIDEO, SHORTS_VIDEO
 
@@ -81,8 +82,8 @@ Respond ONLY with valid JSON, no markdown fences, no extra text:
     return data
 
 
-def pick_topic(used_topics: list = None) -> str:
-    available = [t for t in DAILY_TOPICS if t not in (used_topics or [])]
-    if not available:
-        available = DAILY_TOPICS
-    return random.choice(available)
+def pick_topic(slot_index: int = 0) -> str:
+    """Deterministically pick a topic by date + slot so all 6 daily workflows get different topics."""
+    day = datetime.date.today().timetuple().tm_yday  # 1-365
+    idx = (day * 6 + slot_index) % len(DAILY_TOPICS)
+    return DAILY_TOPICS[idx]

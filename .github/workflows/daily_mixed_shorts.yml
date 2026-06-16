@@ -60,6 +60,7 @@ jobs:
           YOUTUBE_CLIENT_SECRETS_PATH: client_secrets.json
           MADE_FOR_KIDS: "false"
           PYTHONUNBUFFERED: "1"
+          PIPELINE_SLOT: "5"
         run: timeout 3000 python -u main_mixed.py --type shorts
 
       - name: Save upload log

@@ -11,7 +11,6 @@ import os
 import sys
 import argparse
 import tempfile
-import json
 
 sys.path.insert(0, os.path.dirname(__file__))
 
@@ -22,23 +21,6 @@ from src.voice_generator import generate_scene_voiceovers
 from src.video_assembler import assemble_video, generate_thumbnail
 from src.youtube_uploader import upload_video, save_upload_log
 
-USED_TOPICS_FILE = "used_topics_stock.json"
-
-
-def load_used_topics() -> list:
-    if os.path.exists(USED_TOPICS_FILE):
-        with open(USED_TOPICS_FILE) as f:
-            return json.load(f)
-    return []
-
-
-def save_used_topic(topic: str):
-    topics = load_used_topics()
-    topics.append(topic)
-    topics = topics[-30:]
-    with open(USED_TOPICS_FILE, "w") as f:
-        json.dump(topics, f, indent=2)
-
 
 def run_pipeline(video_type: str = "regular"):
     print(f"\n{'='*55}")
@@ -48,8 +30,9 @@ def run_pipeline(video_type: str = "regular"):
 
     output_dir = REGULAR_OUTPUT_DIR if video_type == "regular" else SHORTS_OUTPUT_DIR
 
-    # 1. Pick topic
-    topic = pick_topic(load_used_topics())
+    # 1. Pick topic — slot 2/3 reserved for stock pipelines
+    slot = int(os.getenv("PIPELINE_SLOT", "2"))
+    topic = pick_topic(slot)
     print(f"[1/6] Topic: {topic}\n")
 
     # 2. Generate script
@@ -94,7 +77,6 @@ def run_pipeline(video_type: str = "regular"):
         video_type=video_type,
     )
 
-    save_used_topic(topic)
     save_upload_log(video_id, script["title"], topic, f"stock_{video_type}")
 
     print(f"\n{'='*55}")

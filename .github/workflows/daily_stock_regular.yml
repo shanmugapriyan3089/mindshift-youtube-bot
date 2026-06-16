@@ -52,6 +52,7 @@ jobs:
           PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
           YOUTUBE_CLIENT_SECRETS_PATH: client_secrets.json
           MADE_FOR_KIDS: "false"
+          PIPELINE_SLOT: "2"
         run: python main_stock.py --type regular
 
       - name: Save upload log
