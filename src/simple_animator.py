@@ -3,8 +3,16 @@ Productive Peter style — TWO stick figures interacting like a cartoon.
 Figure A explains/teaches, Figure B reacts (shocked/curious/excited).
 Large figures, speech bubbles between them, props as context.
 """
-import os, math, subprocess, shutil, textwrap
+import os, math, subprocess, shutil, textwrap, random
 from PIL import Image, ImageDraw, ImageFont
+
+# Varied B-figure reactions per scene type (hook/problem/solution/result)
+_REACTIONS = [
+    ["Wait... seriously?!", "That's unreal!", "I had no idea!", "No way...", "Whoa, really?!"],
+    ["Why does this happen?", "This is my life...", "I feel this so much!", "Makes sense now...", "Been there..."],
+    ["This changes everything!", "So simple!", "Game changer!", "I need this now!", "Why didn't I know?!"],
+    ["It actually works!", "Life changed!", "I'm doing this!", "Starting today!", "Thank you!!"],
+]
 
 BG     = (245, 248, 252)
 LINE   = (15,  15,  15)
@@ -303,7 +311,7 @@ def _half_w(w):
     return int(w * 0.44)
 
 
-def _scene_hook(draw, w, h, s, bubble_fs):
+def _scene_hook(draw, w, h, s, bubble_fs, bubble_a, bubble_b):
     ax, ay, bx, by_, prop_y, label_y = _scene_positions(w, h, s)
     hw = _half_w(w)
 
@@ -313,16 +321,16 @@ def _scene_hook(draw, w, h, s, bubble_fs):
     _figure(draw, ax, ay,  s, pose="pointing_r", emotion="excited")
     _figure(draw, bx, by_, s, pose="shocked",    emotion="shocked", flip=True)
 
-    _bubble(draw, ax, ay - int(100*s), "Did you know?!",
+    _bubble(draw, ax, ay - int(100*s), bubble_a,
             hw, bubble_fs, tail="left", anchor="right")
-    _bubble(draw, bx, by_ - int(100*s), "Wait... WHAT?!",
+    _bubble(draw, bx, by_ - int(100*s), bubble_b,
             hw, bubble_fs, tail="right", fill=(255,240,240), anchor="left")
 
     _arrow(draw, w//2, label_y + int(bubble_fs*0.8),
            int(w*0.40), int(h*0.52), BLUE, max(2, int(3*s)))
 
 
-def _scene_problem(draw, w, h, s, bubble_fs):
+def _scene_problem(draw, w, h, s, bubble_fs, bubble_a, bubble_b):
     ax, ay, bx, by_, prop_y, label_y = _scene_positions(w, h, s)
     hw = _half_w(w)
 
@@ -332,15 +340,15 @@ def _scene_problem(draw, w, h, s, bubble_fs):
     _figure(draw, ax, ay,  s, pose="talking",  emotion="thinking")
     _figure(draw, bx, by_, s, pose="thinking", emotion="sad", flip=True)
 
-    _bubble(draw, ax, ay - int(100*s), "Brain stuck in loop!",
+    _bubble(draw, ax, ay - int(100*s), bubble_a,
             hw, bubble_fs, tail="left", anchor="right")
-    _thought_bubble(draw, bx, by_ - int(100*s), "Why can't I change?", w, bubble_fs)
+    _thought_bubble(draw, bx, by_ - int(100*s), bubble_b, w, bubble_fs)
 
     _arrow(draw, w//2, label_y + int(bubble_fs*0.8),
            int(w*0.60), int(h*0.52), PURPLE, max(2, int(3*s)))
 
 
-def _scene_solution(draw, w, h, s, bubble_fs):
+def _scene_solution(draw, w, h, s, bubble_fs, bubble_a, bubble_b):
     ax, ay, bx, by_, prop_y, label_y = _scene_positions(w, h, s)
     hw = _half_w(w)
 
@@ -350,16 +358,16 @@ def _scene_solution(draw, w, h, s, bubble_fs):
     _figure(draw, ax, ay,  s, pose="excited",    emotion="excited")
     _figure(draw, bx, by_, s, pose="pointing_l", emotion="happy", flip=True)
 
-    _bubble(draw, ax, ay - int(100*s), "Here's the secret!",
+    _bubble(draw, ax, ay - int(100*s), bubble_a,
             hw, bubble_fs, tail="left", anchor="right")
-    _bubble(draw, bx, by_ - int(100*s), "This is the key!",
+    _bubble(draw, bx, by_ - int(100*s), bubble_b,
             hw, bubble_fs, tail="right", fill=(240,255,240), anchor="left")
 
     _arrow(draw, w//2, label_y + int(bubble_fs*0.8),
            int(w*0.40), int(h*0.52), GREEN, max(2, int(3*s)))
 
 
-def _scene_result(draw, w, h, s, bubble_fs):
+def _scene_result(draw, w, h, s, bubble_fs, bubble_a, bubble_b):
     ax, ay, bx, by_, prop_y, label_y = _scene_positions(w, h, s)
     hw = _half_w(w)
 
@@ -369,9 +377,9 @@ def _scene_result(draw, w, h, s, bubble_fs):
     _figure(draw, ax, ay,  s, pose="excited", emotion="excited")
     _figure(draw, bx, by_, s, pose="excited", emotion="excited", flip=True)
 
-    _bubble(draw, ax, ay - int(100*s), "Subscribe now!",
+    _bubble(draw, ax, ay - int(100*s), bubble_a,
             hw, bubble_fs, tail="left", anchor="right")
-    _bubble(draw, bx, by_ - int(100*s), "It works!!",
+    _bubble(draw, bx, by_ - int(100*s), bubble_b,
             hw, bubble_fs, tail="right", fill=(255,255,220), anchor="left")
 
     _arrow(draw, w//2, label_y + int(bubble_fs*0.8),
@@ -398,7 +406,13 @@ def _create_frame(text, narration, w, h, scene_idx):
     s = 2.5 if h > w else 1.9
     bubble_fs = max(28, w // 28) if h > w else max(22, h // 26)
 
-    SCENE_FNS[scene_idx % 4](draw, w, h, s, bubble_fs)
+    # Dynamic bubble text from actual script narration
+    words = narration.split() if narration else text.split()
+    bubble_a = " ".join(words[:9]) if words else text[:40]
+    scene_type = scene_idx % 4
+    bubble_b = random.choice(_REACTIONS[scene_type])
+
+    SCENE_FNS[scene_type](draw, w, h, s, bubble_fs, bubble_a, bubble_b)
 
     # Yellow banner
     bfs = max(36, w // 17)
