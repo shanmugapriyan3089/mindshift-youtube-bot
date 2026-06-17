@@ -58,9 +58,14 @@ def assemble_video(
             f.write(f"file '{p}'\n")
 
     concat_video = os.path.join(tmp_dir, "concat_video.mp4")
-    _run([ff, "-y", "-f", "concat", "-safe", "0",
-          "-i", concat_v_txt, "-c:v", "libx264",
-          "-pix_fmt", "yuv420p", concat_video], timeout=120)
+    # Try fast stream-copy first (all clips are already H.264 — no re-encode needed)
+    ok = _run([ff, "-y", "-f", "concat", "-safe", "0",
+               "-i", concat_v_txt, "-c", "copy", concat_video], timeout=120)
+    if not ok or not os.path.exists(concat_video) or os.path.getsize(concat_video) < 1000:
+        print("  [Assemble] copy failed, re-encoding with ultrafast preset...")
+        _run([ff, "-y", "-f", "concat", "-safe", "0",
+              "-i", concat_v_txt, "-c:v", "libx264", "-preset", "ultrafast",
+              "-pix_fmt", "yuv420p", concat_video], timeout=600)
 
     # Step 2: Concat all voice clips
     print("  [Assemble] Concatenating audio...")
@@ -71,8 +76,8 @@ def assemble_video(
 
     concat_audio = os.path.join(tmp_dir, "concat_audio.mp3")
     _run([ff, "-y", "-f", "concat", "-safe", "0",
-          "-i", concat_a_txt, "-c:a", "libmp3lame",
-          concat_audio], timeout=60)
+          "-i", concat_a_txt, "-c", "copy",
+          concat_audio], timeout=120)
 
     # Step 3: Mix background music if available
     music_path = _get_random_music()
@@ -104,7 +109,7 @@ def assemble_video(
         "-map", "0:v:0",
         "-map", "1:a:0",
         output_path
-    ], timeout=120)
+    ], timeout=300)
 
     # If merge failed, try video-only
     if not os.path.exists(output_path) or os.path.getsize(output_path) < 1000:
