@@ -80,6 +80,7 @@ def run_pipeline(video_type: str = "regular"):
                 video_type=video_type,
                 scene_idx=i,
                 narration=scene.get("narration", ""),
+                slot=slot,
             )
         else:
             keyword = scene.get("keyword", scene.get("text_overlay", "motivation success"))

@@ -14,6 +14,13 @@ _REACTIONS = [
     ["It actually works!", "Life changed!", "I'm doing this!", "Starting today!", "Thank you!!"],
 ]
 
+# Label pools per scene type — slot+day combo picks which label so different pipelines differ visually
+_HOOK_LABELS    = ["WAKE UP CALL", "REALITY CHECK", "MIND THIS", "DID YOU KNOW?", "2 AM TRUTH", "FACT BOMB"]
+_PROBLEM_LABELS = ["THE BLOCK", "WHY WE FAIL", "OLD PATTERN", "STUCK IN LOOP", "THE TRAP", "ROOT CAUSE"]
+_SOLUTION_LABELS= ["THE FIX", "GAME CHANGER", "KEY INSIGHT", "BREAKTHROUGH", "THE SECRET", "UNLOCK IT"]
+_RESULT_LABELS  = ["LEVEL UP", "NEW YOU", "SUCCESS MODE", "TRANSFORMATION", "YOU GOT THIS", "THE PAYOFF"]
+_LABEL_POOLS    = [_HOOK_LABELS, _PROBLEM_LABELS, _SOLUTION_LABELS, _RESULT_LABELS]
+
 BG     = (245, 248, 252)
 LINE   = (15,  15,  15)
 YELLOW = (255, 214,   0)
@@ -57,12 +64,13 @@ def _font_r(size):
 # pose: idle | talking | shocked | pointing_r | pointing_l | excited | thinking
 # emotion: happy | shocked | sad | excited | thinking
 
-def _figure(draw, cx, cy, s, pose="idle", emotion="happy", flip=False):
-    """Draw one stick figure. flip=True mirrors for right-side character."""
+def _figure(draw, cx, cy, s, pose="idle", emotion="happy", flip=False, phase=0):
+    """Draw one stick figure. phase=0/1 animates the active arm for talking motion."""
     lw = max(3, int(5 * s))
     hr = int(28 * s)
     ht = cy - int(115 * s)
     hb = cy - int(59  * s)
+    asway = int(14 * s * phase)  # active arm lifts by this on phase 1
 
     # Head
     draw.ellipse([cx-hr, ht, cx+hr, hb], fill=(255, 235, 210), outline=LINE, width=lw)
@@ -102,30 +110,30 @@ def _figure(draw, cx, cy, s, pose="idle", emotion="happy", flip=False):
     # Direction sign: +1 = facing right, -1 = facing left
     d = -1 if flip else 1
 
-    # Arms
+    # Arms — phase animates the active/gesturing arm
     if pose == "idle":
         draw.line([cx, sy, cx - int(52*s), cy + int(10*s)], fill=LINE, width=lw)
         draw.line([cx, sy, cx + int(52*s), cy + int(10*s)], fill=LINE, width=lw)
     elif pose == "talking":
         draw.line([cx, sy, cx - int(52*s)*d, cy + int(10*s)], fill=LINE, width=lw)
-        draw.line([cx, sy, cx + int(38*s)*d, cy - int(20*s)], fill=LINE, width=lw)
+        draw.line([cx, sy, cx + int(38*s)*d, cy - int(20*s) - asway], fill=LINE, width=lw)
     elif pose == "shocked":
-        draw.line([cx, sy, cx - int(60*s), cy - int(50*s)], fill=LINE, width=lw)
-        draw.line([cx, sy, cx + int(60*s), cy - int(50*s)], fill=LINE, width=lw)
+        draw.line([cx, sy, cx - int(60*s), cy - int(50*s) - asway], fill=LINE, width=lw)
+        draw.line([cx, sy, cx + int(60*s), cy - int(50*s) - asway], fill=LINE, width=lw)
     elif pose == "pointing_r":
         draw.line([cx, sy, cx - int(50*s), cy + int(15*s)], fill=LINE, width=lw)
-        draw.line([cx, sy, cx + int(80*s), cy - int(30*s)], fill=LINE, width=lw + 1)
+        draw.line([cx, sy, cx + int(80*s), cy - int(30*s) - asway], fill=LINE, width=lw + 1)
     elif pose == "pointing_l":
-        draw.line([cx, sy, cx - int(80*s), cy - int(30*s)], fill=LINE, width=lw + 1)
+        draw.line([cx, sy, cx - int(80*s), cy - int(30*s) - asway], fill=LINE, width=lw + 1)
         draw.line([cx, sy, cx + int(50*s), cy + int(15*s)], fill=LINE, width=lw)
     elif pose == "excited":
-        draw.line([cx, sy, cx - int(62*s), cy - int(62*s)], fill=LINE, width=lw)
-        draw.line([cx, sy, cx + int(62*s), cy - int(62*s)], fill=LINE, width=lw)
+        draw.line([cx, sy, cx - int(62*s), cy - int(62*s) - asway], fill=LINE, width=lw)
+        draw.line([cx, sy, cx + int(62*s), cy - int(62*s) + asway], fill=LINE, width=lw)
     elif pose == "thinking":
         draw.line([cx, sy, cx - int(52*s), cy + int(10*s)], fill=LINE, width=lw)
-        draw.line([cx, sy, cx + int(44*s)*d, cy - int(32*s)], fill=LINE, width=lw)
-        draw.line([cx + int(44*s)*d, cy - int(32*s),
-                   cx + int(22*s)*d, cy - int(60*s)], fill=LINE, width=lw)
+        draw.line([cx, sy, cx + int(44*s)*d, cy - int(32*s) - asway], fill=LINE, width=lw)
+        draw.line([cx + int(44*s)*d, cy - int(32*s) - asway,
+                   cx + int(22*s)*d, cy - int(60*s) - asway], fill=LINE, width=lw)
 
     # Legs
     draw.line([cx, bb, cx - int(32*s), cy + int(96*s)], fill=LINE, width=lw)
@@ -311,15 +319,16 @@ def _half_w(w):
     return int(w * 0.44)
 
 
-def _scene_hook(draw, w, h, s, bubble_fs, bubble_a, bubble_b):
+def _scene_hook(draw, w, h, s, bubble_fs, bubble_a, bubble_b, phase=0, label_text="WAKE UP CALL"):
     ax, ay, bx, by_, prop_y, label_y = _scene_positions(w, h, s)
     hw = _half_w(w)
 
-    _clock(draw, w//2, prop_y, s*0.95, hour=2)
-    _label(draw, w//2, label_y, "2 AM SCROLLING", int(bubble_fs*0.9), RED)
+    ps = s * (1.0 + 0.06 * phase)  # prop pulses slightly on phase 1
+    _clock(draw, w//2, prop_y, ps * 0.95, hour=2)
+    _label(draw, w//2, label_y, label_text, int(bubble_fs*0.9), RED)
 
-    _figure(draw, ax, ay,  s, pose="pointing_r", emotion="excited")
-    _figure(draw, bx, by_, s, pose="shocked",    emotion="shocked", flip=True)
+    _figure(draw, ax, ay,  s, pose="pointing_r", emotion="excited", phase=phase)
+    _figure(draw, bx, by_, s, pose="shocked",    emotion="shocked", flip=True, phase=phase)
 
     _bubble(draw, ax, ay - int(100*s), bubble_a,
             hw, bubble_fs, tail="left", anchor="right")
@@ -330,15 +339,16 @@ def _scene_hook(draw, w, h, s, bubble_fs, bubble_a, bubble_b):
            int(w*0.40), int(h*0.52), BLUE, max(2, int(3*s)))
 
 
-def _scene_problem(draw, w, h, s, bubble_fs, bubble_a, bubble_b):
+def _scene_problem(draw, w, h, s, bubble_fs, bubble_a, bubble_b, phase=0, label_text="THE BLOCK"):
     ax, ay, bx, by_, prop_y, label_y = _scene_positions(w, h, s)
     hw = _half_w(w)
 
-    _brain(draw, w//2, prop_y, s*0.9)
-    _label(draw, w//2, label_y, "OLD PATTERN", int(bubble_fs*0.9), PURPLE)
+    ps = s * (1.0 + 0.06 * phase)
+    _brain(draw, w//2, prop_y, ps * 0.9)
+    _label(draw, w//2, label_y, label_text, int(bubble_fs*0.9), PURPLE)
 
-    _figure(draw, ax, ay,  s, pose="talking",  emotion="thinking")
-    _figure(draw, bx, by_, s, pose="thinking", emotion="sad", flip=True)
+    _figure(draw, ax, ay,  s, pose="talking",  emotion="thinking", phase=phase)
+    _figure(draw, bx, by_, s, pose="thinking", emotion="sad", flip=True, phase=phase)
 
     _bubble(draw, ax, ay - int(100*s), bubble_a,
             hw, bubble_fs, tail="left", anchor="right")
@@ -348,15 +358,16 @@ def _scene_problem(draw, w, h, s, bubble_fs, bubble_a, bubble_b):
            int(w*0.60), int(h*0.52), PURPLE, max(2, int(3*s)))
 
 
-def _scene_solution(draw, w, h, s, bubble_fs, bubble_a, bubble_b):
+def _scene_solution(draw, w, h, s, bubble_fs, bubble_a, bubble_b, phase=0, label_text="THE FIX"):
     ax, ay, bx, by_, prop_y, label_y = _scene_positions(w, h, s)
     hw = _half_w(w)
 
-    _lightbulb(draw, w//2, prop_y, s*1.0)
-    _label(draw, w//2, label_y, "THE KEY INSIGHT", int(bubble_fs*0.9), GREEN)
+    ps = s * (1.0 + 0.06 * phase)
+    _lightbulb(draw, w//2, prop_y, ps * 1.0)
+    _label(draw, w//2, label_y, label_text, int(bubble_fs*0.9), GREEN)
 
-    _figure(draw, ax, ay,  s, pose="excited",    emotion="excited")
-    _figure(draw, bx, by_, s, pose="pointing_l", emotion="happy", flip=True)
+    _figure(draw, ax, ay,  s, pose="excited",    emotion="excited", phase=phase)
+    _figure(draw, bx, by_, s, pose="pointing_l", emotion="happy",   flip=True, phase=phase)
 
     _bubble(draw, ax, ay - int(100*s), bubble_a,
             hw, bubble_fs, tail="left", anchor="right")
@@ -367,15 +378,16 @@ def _scene_solution(draw, w, h, s, bubble_fs, bubble_a, bubble_b):
            int(w*0.40), int(h*0.52), GREEN, max(2, int(3*s)))
 
 
-def _scene_result(draw, w, h, s, bubble_fs, bubble_a, bubble_b):
+def _scene_result(draw, w, h, s, bubble_fs, bubble_a, bubble_b, phase=0, label_text="LEVEL UP"):
     ax, ay, bx, by_, prop_y, label_y = _scene_positions(w, h, s)
     hw = _half_w(w)
 
-    _trophy(draw, w//2, prop_y, s*0.95)
-    _label(draw, w//2, label_y, "NEW YOU", int(bubble_fs*0.9), GREEN)
+    ps = s * (1.0 + 0.06 * phase)
+    _trophy(draw, w//2, prop_y, ps * 0.95)
+    _label(draw, w//2, label_y, label_text, int(bubble_fs*0.9), GREEN)
 
-    _figure(draw, ax, ay,  s, pose="excited", emotion="excited")
-    _figure(draw, bx, by_, s, pose="excited", emotion="excited", flip=True)
+    _figure(draw, ax, ay,  s, pose="excited", emotion="excited", phase=phase)
+    _figure(draw, bx, by_, s, pose="excited", emotion="excited", flip=True, phase=phase)
 
     _bubble(draw, ax, ay - int(100*s), bubble_a,
             hw, bubble_fs, tail="left", anchor="right")
@@ -393,7 +405,7 @@ SCENE_FNS = [_scene_hook, _scene_problem, _scene_solution, _scene_result]
 
 # ── Full frame ────────────────────────────────────────────────────────────────
 
-def _create_frame(text, narration, w, h, scene_idx):
+def _create_frame(text, narration, w, h, scene_idx, phase=0, slot=0):
     img = Image.new("RGB", (w, h), BG)
     draw = ImageDraw.Draw(img)
 
@@ -402,7 +414,6 @@ def _create_frame(text, narration, w, h, scene_idx):
     for i in range(0, w, max(1, w//16)): draw.line([i,0,i,h], fill=gc, width=1)
     for i in range(0, h, max(1, h//22)): draw.line([0,i,w,i], fill=gc, width=1)
 
-    # Scale — portrait needs bigger figures; landscape uses height-based sizes
     s = 2.5 if h > w else 1.9
     bubble_fs = max(28, w // 28) if h > w else max(22, h // 26)
 
@@ -410,9 +421,12 @@ def _create_frame(text, narration, w, h, scene_idx):
     words = narration.split() if narration else text.split()
     bubble_a = " ".join(words[:9]) if words else text[:40]
     scene_type = scene_idx % 4
-    bubble_b = random.choice(_REACTIONS[scene_type])
+    # Seed reactions/labels consistently per scene so they don't flicker between frames
+    rng = random.Random(scene_idx * 100 + slot)
+    bubble_b = rng.choice(_REACTIONS[scene_type])
+    label_text = _LABEL_POOLS[scene_type][(slot + scene_idx) % len(_LABEL_POOLS[scene_type])]
 
-    SCENE_FNS[scene_type](draw, w, h, s, bubble_fs, bubble_a, bubble_b)
+    SCENE_FNS[scene_type](draw, w, h, s, bubble_fs, bubble_a, bubble_b, phase, label_text)
 
     # Yellow banner
     bfs = max(36, w // 17)
@@ -437,28 +451,43 @@ def _create_frame(text, narration, w, h, scene_idx):
 # ── Video generation ──────────────────────────────────────────────────────────
 
 def create_scene_video(text, bg_color, duration, output_path,
-                       video_type="regular", scene_idx=0, bullets=None, narration=""):
+                       video_type="regular", scene_idx=0, bullets=None, narration="", slot=0):
     from config import REGULAR_VIDEO, SHORTS_VIDEO
     spec = REGULAR_VIDEO if video_type == "regular" else SHORTS_VIDEO
     w, h = spec["width"], spec["height"]
     os.makedirs(os.path.dirname(output_path) if os.path.dirname(output_path) else ".", exist_ok=True)
 
-    frame = _create_frame(text[:40].upper(), narration, w, h, scene_idx)
-    tmp = output_path.replace(".mp4", "_f.png")
-    frame.save(tmp)
+    label = text[:40].upper()
+    frames_dir = output_path.replace(".mp4", "_frames")
+    os.makedirs(frames_dir, exist_ok=True)
 
+    # 4 animation frames: arm down, arm up, arm down, arm up (2 fps cycle → 2s loop)
+    phases = [0, 1, 0, 1]
+    for fi, phase in enumerate(phases):
+        frame = _create_frame(label, narration, w, h, scene_idx, phase, slot)
+        frame.save(os.path.join(frames_dir, f"f{fi:03d}.png"))
+
+    # Loop the 4-frame animation for the full scene duration at 24fps output
     result = subprocess.run([
-        _ffmpeg(), "-y", "-loop", "1", "-i", tmp,
-        "-t", str(duration), "-c:v", "libx264",
-        "-pix_fmt", "yuv420p", "-r", "24", "-crf", "18", output_path
-    ], capture_output=True, text=True, timeout=60)
+        _ffmpeg(), "-y", "-framerate", "2",
+        "-i", os.path.join(frames_dir, "f%03d.png"),
+        "-vf", f"loop=-1:size=4:start=0",
+        "-t", str(duration),
+        "-c:v", "libx264", "-pix_fmt", "yuv420p", "-r", "24", "-crf", "18", output_path
+    ], capture_output=True, text=True, timeout=90)
 
-    if os.path.exists(tmp): os.remove(tmp)
+    # Cleanup temp frames
+    for fi in range(len(phases)):
+        fp = os.path.join(frames_dir, f"f{fi:03d}.png")
+        if os.path.exists(fp): os.remove(fp)
+    try: os.rmdir(frames_dir)
+    except: pass
+
     if result.returncode != 0: print(f"  [FFmpeg]: {result.stderr[-300:]}")
     return output_path
 
 
-def create_all_scenes(scenes, output_dir, video_type="regular"):
+def create_all_scenes(scenes, output_dir, video_type="regular", slot=0):
     os.makedirs(output_dir, exist_ok=True)
     paths = []
     for i, scene in enumerate(scenes):
@@ -468,7 +497,7 @@ def create_all_scenes(scenes, output_dir, video_type="regular"):
             text=scene["text_overlay"], bg_color="#F5F8FC",
             duration=scene["duration_seconds"], output_path=out,
             video_type=video_type, scene_idx=i,
-            narration=scene.get("narration", ""),
+            narration=scene.get("narration", ""), slot=slot,
         )
         paths.append(out)
     return paths

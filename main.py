@@ -47,7 +47,7 @@ def run_pipeline(video_type: str = "regular"):
 
     # 3. Animate scenes locally (free — no API)
     print(f"[3/6] Animating {len(script['scenes'])} scenes locally (Pillow + FFmpeg)...")
-    clip_paths = create_all_scenes(script["scenes"], clips_dir, video_type)
+    clip_paths = create_all_scenes(script["scenes"], clips_dir, video_type, slot=slot)
     print()
 
     # 4. Generate voiceovers (edge-tts, free)
