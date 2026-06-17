@@ -1,0 +1,36 @@
+name: Agent 4 — Weekly Revenue Report
+
+on:
+  schedule:
+    - cron: '30 4 * * 0'  # Every Sunday 10:00 AM IST (4:30 AM UTC)
+  workflow_dispatch:
+
+jobs:
+  revenue-tracker:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install google-auth google-auth-oauthlib google-api-python-client requests python-dotenv
+
+      - name: Restore YouTube token
+        run: echo "${{ secrets.YOUTUBE_TOKEN }}" | base64 -d > youtube_token.pickle
+
+      - name: Write YouTube client secrets
+        run: echo '${{ secrets.YOUTUBE_CLIENT_SECRETS }}' > client_secrets.json
+
+      - name: Run Revenue Tracker Agent
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          YOUTUBE_CLIENT_SECRETS_PATH: client_secrets.json
+        run: python -m agents.revenue_tracker

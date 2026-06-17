@@ -1,0 +1,37 @@
+name: Agent 7 — SEO Optimizer (Daily)
+
+on:
+  schedule:
+    - cron: '0 10 * * *'  # Every day 3:30 PM IST (10:00 AM UTC) — after all uploads
+  workflow_dispatch:
+
+jobs:
+  seo-optimizer:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install groq requests google-auth google-auth-oauthlib google-api-python-client python-dotenv
+
+      - name: Restore YouTube token
+        run: echo "${{ secrets.YOUTUBE_TOKEN }}" | base64 -d > youtube_token.pickle
+
+      - name: Write YouTube client secrets
+        run: echo '${{ secrets.YOUTUBE_CLIENT_SECRETS }}' > client_secrets.json
+
+      - name: Run SEO Optimizer Agent
+        env:
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          YOUTUBE_CLIENT_SECRETS_PATH: client_secrets.json
+        run: python -m agents.seo_optimizer

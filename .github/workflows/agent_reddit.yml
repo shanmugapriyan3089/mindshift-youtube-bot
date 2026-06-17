@@ -1,0 +1,30 @@
+name: Agent 5 — Reddit Outreach (Daily)
+
+on:
+  schedule:
+    - cron: '0 8 * * *'  # Every day 1:30 PM IST (8:00 AM UTC) — after morning uploads
+  workflow_dispatch:
+
+jobs:
+  reddit-agent:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install groq requests python-dotenv
+
+      - name: Run Reddit Outreach Agent
+        env:
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python -m agents.reddit_agent
