@@ -442,7 +442,7 @@ def _create_frame(text, narration, w, h, scene_idx, phase=0, slot=0):
     draw.text((tx,   ty),   safe, fill=(15,15,15),    font=bfont)
 
     # Watermark
-    draw.text((int(w*0.73), int(h*0.010)), "@MindShift",
+    draw.text((int(w*0.73), int(h*0.010)), "@MindShiftProductivity",
               fill=(160, 180, 210), font=_font_r(max(20, w//46)))
 
     return img
