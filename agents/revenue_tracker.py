@@ -70,7 +70,8 @@ def main():
         monthly_est = f"${(total_views/video_count/1000*RPM_MID*30):.0f}–${(total_views/video_count/1000*RPM_HIGH*30):.0f}/month"
     else:
         ypp_msg = f"⏳ ~<b>{weeks_to_ypp:.0f} weeks</b> at current posting rate (10 videos/week)"
-        monthly_est = f"${(views_per_vid * 30 * RPM_MID / 1000):.0f}–${(views_per_vid * 30 * RPM_HIGH / 1000):.0f}/month (after YPP)"
+        # Show realistic projection assuming 1000 views/video once channel grows
+        monthly_est = f"${int(1000 * 30 * RPM_MID / 1000)}–${int(1000 * 30 * RPM_HIGH / 1000)}/month (at 1K views/video after YPP)"
 
     send(f"""💰 <b>Agent 4: Weekly Revenue Report</b>
 {datetime.now().strftime('%B %d, %Y')}
