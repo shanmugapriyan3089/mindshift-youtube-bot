@@ -28,30 +28,27 @@ _HEADERS = {"User-Agent": "Mozilla/5.0 (compatible; research-bot/1.0)"}
 
 
 def _fetch_hot_posts(subreddit: str, limit: int = 25) -> list:
-    """Fetch hot posts directly — more reliable than search API."""
+    """Fetch hot posts directly — no keyword filter, Groq decides relevance."""
     url = f"https://www.reddit.com/r/{subreddit}/hot.json?limit={limit}"
     try:
-        r = requests.get(url, headers=_HEADERS, timeout=15)
+        r = requests.get(url, headers=_HEADERS, timeout=20)
+        print(f"  [Reddit] r/{subreddit} status: {r.status_code}")
         if r.status_code != 200:
-            print(f"  [Reddit] r/{subreddit} returned {r.status_code}")
             return []
         items = r.json()["data"]["children"]
         posts = []
         for item in items:
             d = item["data"]
-            if d.get("stickied") or d.get("score", 0) < 5:
+            if d.get("stickied"):
                 continue
-            title_lower = d["title"].lower()
-            # Keep posts relevant to our niche
-            if any(kw in title_lower for kw in KEYWORDS):
-                posts.append({
-                    "title": d["title"],
-                    "url": f"https://reddit.com{d['permalink']}",
-                    "score": d["score"],
-                    "subreddit": f"r/{subreddit}",
-                    "num_comments": d.get("num_comments", 0),
-                    "selftext": d.get("selftext", "")[:300],
-                })
+            posts.append({
+                "title": d["title"],
+                "url": f"https://reddit.com{d['permalink']}",
+                "score": d.get("score", 0),
+                "subreddit": f"r/{subreddit}",
+                "num_comments": d.get("num_comments", 0),
+                "selftext": d.get("selftext", "")[:300],
+            })
         return posts
     except Exception as e:
         print(f"  [Reddit] r/{subreddit} error: {e}")
@@ -86,6 +83,34 @@ Write ONLY the comment. Nothing else."""
     return response.choices[0].message.content.strip()
 
 
+def _send_groq_fallback(client: Groq):
+    """When Reddit blocks us, generate search targets + comment templates with Groq."""
+    from agents.notifier import send
+    prompt = f"""Generate 5 Reddit outreach opportunities for a YouTube psychology/motivation channel "MindShift Productivity".
+
+For each opportunity provide:
+1. Which subreddit to search (from: r/GetMotivated, r/selfimprovement, r/psychology, r/productivity, r/LifeAdvice)
+2. What search term to use on reddit.com to find relevant posts
+3. A ready-to-post comment template (3-4 sentences, helpful, ends with "I made a video on this: {CHANNEL_URL}")
+
+Topics we cover: {', '.join(DAILY_TOPICS[:8])}
+
+Format as plain text, 5 entries numbered 1-5."""
+
+    response = client.chat.completions.create(
+        model="llama-3.3-70b-versatile",
+        messages=[{"role": "user", "content": prompt}],
+        temperature=0.8, max_tokens=1000,
+    )
+    content = response.choices[0].message.content.strip()
+    send(f"""💬 <b>Agent 5: Reddit Outreach Guide</b>
+(Reddit API unavailable today — use these manual targets)
+
+{content}
+
+🔍 <b>How to use:</b> Go to reddit.com → search each term → find a post with 50+ upvotes → post the comment template""")
+
+
 def main():
     from agents.notifier import send
 
@@ -107,7 +132,9 @@ def main():
             unique.append(p)
 
     if not unique:
-        send("📭 <b>Reddit Agent</b>: No relevant posts found today (Reddit may be slow)")
+        # Reddit blocked us — generate synthetic outreach targets using Groq instead
+        print("  Reddit blocked. Generating manual outreach targets with Groq...")
+        _send_groq_fallback(client)
         return
 
     print(f"  {len(unique)} posts found. Drafting comments for top 5...")
