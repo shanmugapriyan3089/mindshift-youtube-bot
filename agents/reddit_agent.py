@@ -21,33 +21,40 @@ SUBREDDITS = [
     "decidingtobebetter",
 ]
 
-KEYWORDS = ["motivation", "habits", "procrastination", "confidence", "success mindset", "anxiety"]
+KEYWORDS = ["motivation", "habits", "procrastination", "confidence", "success", "anxiety",
+            "psychology", "mindset", "productivity", "self improvement"]
 
-_HEADERS = {"User-Agent": "MindShiftProductivity-Bot/1.0 (youtube research)"}
+_HEADERS = {"User-Agent": "Mozilla/5.0 (compatible; research-bot/1.0)"}
 
 
-def _search_posts(subreddit: str, keyword: str) -> list:
-    url = f"https://www.reddit.com/r/{subreddit}/search.json"
+def _fetch_hot_posts(subreddit: str, limit: int = 25) -> list:
+    """Fetch hot posts directly — more reliable than search API."""
+    url = f"https://www.reddit.com/r/{subreddit}/hot.json?limit={limit}"
     try:
-        r = requests.get(url, params={"q": keyword, "sort": "hot", "limit": 8, "t": "week"},
-                         headers=_HEADERS, timeout=15)
+        r = requests.get(url, headers=_HEADERS, timeout=15)
         if r.status_code != 200:
+            print(f"  [Reddit] r/{subreddit} returned {r.status_code}")
             return []
         items = r.json()["data"]["children"]
-        return [
-            {
-                "title": item["data"]["title"],
-                "url": f"https://reddit.com{item['data']['permalink']}",
-                "score": item["data"]["score"],
-                "subreddit": f"r/{subreddit}",
-                "num_comments": item["data"]["num_comments"],
-                "selftext": item["data"].get("selftext", "")[:300],
-            }
-            for item in items
-            if item["data"]["score"] >= 30 and not item["data"].get("stickied")
-        ]
+        posts = []
+        for item in items:
+            d = item["data"]
+            if d.get("stickied") or d.get("score", 0) < 5:
+                continue
+            title_lower = d["title"].lower()
+            # Keep posts relevant to our niche
+            if any(kw in title_lower for kw in KEYWORDS):
+                posts.append({
+                    "title": d["title"],
+                    "url": f"https://reddit.com{d['permalink']}",
+                    "score": d["score"],
+                    "subreddit": f"r/{subreddit}",
+                    "num_comments": d.get("num_comments", 0),
+                    "selftext": d.get("selftext", "")[:300],
+                })
+        return posts
     except Exception as e:
-        print(f"  [Reddit] r/{subreddit} '{keyword}': {e}")
+        print(f"  [Reddit] r/{subreddit} error: {e}")
         return []
 
 
@@ -87,9 +94,9 @@ def main():
 
     all_posts = []
     for sub in SUBREDDITS:
-        for kw in KEYWORDS[:2]:
-            posts = _search_posts(sub, kw)
-            all_posts.extend(posts)
+        posts = _fetch_hot_posts(sub, limit=25)
+        print(f"  r/{sub}: {len(posts)} relevant posts")
+        all_posts.extend(posts)
 
     # Deduplicate + sort by score
     seen = set()
