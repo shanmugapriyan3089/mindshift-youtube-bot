@@ -105,7 +105,7 @@ def main():
 🏆 <b>Top 3 Videos:</b>
 {top3}
 
-{'🎉 YPP THRESHOLD REACHED! Apply in YouTube Studio!' if subs >= 1000 and est_watch_hours >= 4000 else f'📈 Keep posting! ~{max(0, int((1000-subs)/max(subs/max(video_count,1),0.01)))} more videos to hit 1K subs'}""")
+{'🎉 YPP THRESHOLD REACHED! Apply in YouTube Studio!' if subs >= 1000 and est_watch_hours >= 4000 else '💡 Share today\'s video on WhatsApp groups + Reddit to grow faster!' if subs < 50 else f'📈 {1000 - subs} more subscribers needed — keep sharing!'}""")
 
 
 if __name__ == "__main__":
