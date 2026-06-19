@@ -50,22 +50,25 @@ def _get_recent_videos(youtube, max_results: int = 5) -> list:
 
 
 def _optimize(client: Groq, title: str, views: int) -> dict:
-    prompt = f"""YouTube SEO expert for psychology/motivation channel.
+    prompt = f"""You are a YouTube SEO expert for a psychology/motivation channel.
 
 Current video title: "{title}"
 Current views: {views:,}
 
 Generate SEO improvements:
-1. Three alternative titles (more clickable, better SEO, keep under 70 chars)
+1. Three alternative titles — each must be 45-70 characters, punchy, clickbait-style like:
+   "7 Psychology Tricks That Make People Like You Instantly"
+   "Why 99% of People Stay Broke (The Uncomfortable Truth)"
+   "Stop Doing This If You Want to Be Confident"
 2. 12 optimized tags (mix broad + specific, all lowercase)
 3. First 160 characters of improved description (open with strongest keyword)
 4. One thumbnail text idea (4-6 words, ALL CAPS)
 
-Respond ONLY with JSON:
+Respond ONLY with JSON, no markdown:
 {{
-  "alt_titles": ["title1", "title2", "title3"],
-  "tags": ["tag1", "tag2", ...],
-  "description_start": "Optimized first 160 chars...",
+  "alt_titles": ["Full title 1 between 45-70 chars", "Full title 2", "Full title 3"],
+  "tags": ["tag1", "tag2", "tag3", "tag4", "tag5", "tag6", "tag7", "tag8", "tag9", "tag10", "tag11", "tag12"],
+  "description_start": "Optimized first 160 chars of description...",
   "thumbnail_text": "THUMBNAIL TEXT"
 }}"""
 
