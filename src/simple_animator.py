@@ -306,17 +306,27 @@ def _money(draw, cx, cy, s):
 # Both at same cy ~58% height so they're big and centred
 
 def _scene_positions(w, h, s):
-    """Return (ax, ay, bx, by, prop_y, label_y) that work for both orientations."""
-    cy    = int(h * 0.63)
-    # Prop sits at top; for landscape push it higher so label clears the bubbles
-    prop_y  = int(h * 0.13)
-    label_y = int(h * 0.24) if h > w else int(h * 0.21)
-    return int(w*0.25), cy, int(w*0.75), cy, prop_y, label_y
+    """Return (ax, ay, bx, by, prop_y, label_y) that work for both orientations.
+
+    Shorts (h>w) safe zones:
+      Top 18%  — YouTube header + auto-captions area (avoid)
+      Bottom 22% — YouTube title/description/audio bar (avoid)
+      Right 18% — YouTube action buttons (like/share/remix) (avoid)
+    """
+    is_short = h > w
+    cy      = int(h * 0.62)
+    # Prop: below caption zone for shorts, near top for landscape
+    prop_y  = int(h * 0.20) if is_short else int(h * 0.13)
+    # Label: well below caption zone for shorts
+    label_y = int(h * 0.32) if is_short else int(h * 0.22)
+    # Right figure pulled left for shorts to avoid action buttons
+    bx      = int(w * 0.70) if is_short else int(w * 0.75)
+    return int(w * 0.25), cy, bx, cy, prop_y, label_y
 
 
 def _half_w(w):
-    """Max bubble width = 44% of canvas so two bubbles never collide."""
-    return int(w * 0.44)
+    """Max bubble width = 42% of canvas so two bubbles never collide."""
+    return int(w * 0.42)
 
 
 def _scene_hook(draw, w, h, s, bubble_fs, bubble_a, bubble_b, phase=0, label_text="WAKE UP CALL"):
@@ -441,8 +451,8 @@ def _create_frame(text, narration, w, h, scene_idx, phase=0, slot=0):
     draw.text((tx+2, ty+2), safe, fill=(100,100,100), font=bfont)
     draw.text((tx,   ty),   safe, fill=(15,15,15),    font=bfont)
 
-    # Watermark
-    draw.text((int(w*0.73), int(h*0.010)), "@MindShiftProductivity",
+    # Watermark — kept in safe zone (top-left, away from Shorts action buttons)
+    draw.text((int(w*0.04), int(h*0.012)), "@MindShiftProductivity",
               fill=(160, 180, 210), font=_font_r(max(20, w//46)))
 
     return img
