@@ -333,20 +333,17 @@ def _scene_hook(draw, w, h, s, bubble_fs, bubble_a, bubble_b, phase=0, label_tex
     ax, ay, bx, by_, prop_y, label_y = _scene_positions(w, h, s)
     hw = _half_w(w)
 
-    ps = s * (1.0 + 0.06 * phase)  # prop pulses slightly on phase 1
+    ps = s * (1.0 + 0.06 * phase)
     _clock(draw, w//2, prop_y, ps * 0.95, hour=2)
-    _label(draw, w//2, label_y, label_text, int(bubble_fs*0.9), RED)
-
     _figure(draw, ax, ay,  s, pose="pointing_r", emotion="excited", phase=phase)
     _figure(draw, bx, by_, s, pose="shocked",    emotion="shocked", flip=True, phase=phase)
-
     _bubble(draw, ax, ay - int(100*s), bubble_a,
             hw, bubble_fs, tail="left", anchor="right")
     _bubble(draw, bx, by_ - int(100*s), bubble_b,
             hw, bubble_fs, tail="right", fill=(255,240,240), anchor="left")
-
     _arrow(draw, w//2, label_y + int(bubble_fs*0.8),
            int(w*0.40), int(h*0.52), BLUE, max(2, int(3*s)))
+    _label(draw, w//2, label_y, label_text, int(bubble_fs*0.9), RED)  # draw last — always on top
 
 
 def _scene_problem(draw, w, h, s, bubble_fs, bubble_a, bubble_b, phase=0, label_text="THE BLOCK"):
@@ -355,17 +352,14 @@ def _scene_problem(draw, w, h, s, bubble_fs, bubble_a, bubble_b, phase=0, label_
 
     ps = s * (1.0 + 0.06 * phase)
     _brain(draw, w//2, prop_y, ps * 0.9)
-    _label(draw, w//2, label_y, label_text, int(bubble_fs*0.9), PURPLE)
-
     _figure(draw, ax, ay,  s, pose="talking",  emotion="thinking", phase=phase)
     _figure(draw, bx, by_, s, pose="thinking", emotion="sad", flip=True, phase=phase)
-
     _bubble(draw, ax, ay - int(100*s), bubble_a,
             hw, bubble_fs, tail="left", anchor="right")
     _thought_bubble(draw, bx, by_ - int(100*s), bubble_b, w, bubble_fs)
-
     _arrow(draw, w//2, label_y + int(bubble_fs*0.8),
            int(w*0.60), int(h*0.52), PURPLE, max(2, int(3*s)))
+    _label(draw, w//2, label_y, label_text, int(bubble_fs*0.9), PURPLE)  # draw last — always on top
 
 
 def _scene_solution(draw, w, h, s, bubble_fs, bubble_a, bubble_b, phase=0, label_text="THE FIX"):
@@ -374,18 +368,15 @@ def _scene_solution(draw, w, h, s, bubble_fs, bubble_a, bubble_b, phase=0, label
 
     ps = s * (1.0 + 0.06 * phase)
     _lightbulb(draw, w//2, prop_y, ps * 1.0)
-    _label(draw, w//2, label_y, label_text, int(bubble_fs*0.9), GREEN)
-
     _figure(draw, ax, ay,  s, pose="excited",    emotion="excited", phase=phase)
     _figure(draw, bx, by_, s, pose="pointing_l", emotion="happy",   flip=True, phase=phase)
-
     _bubble(draw, ax, ay - int(100*s), bubble_a,
             hw, bubble_fs, tail="left", anchor="right")
     _bubble(draw, bx, by_ - int(100*s), bubble_b,
             hw, bubble_fs, tail="right", fill=(240,255,240), anchor="left")
-
     _arrow(draw, w//2, label_y + int(bubble_fs*0.8),
            int(w*0.40), int(h*0.52), GREEN, max(2, int(3*s)))
+    _label(draw, w//2, label_y, label_text, int(bubble_fs*0.9), GREEN)  # draw last — always on top
 
 
 def _scene_result(draw, w, h, s, bubble_fs, bubble_a, bubble_b, phase=0, label_text="LEVEL UP"):
@@ -394,20 +385,17 @@ def _scene_result(draw, w, h, s, bubble_fs, bubble_a, bubble_b, phase=0, label_t
 
     ps = s * (1.0 + 0.06 * phase)
     _trophy(draw, w//2, prop_y, ps * 0.95)
-    _label(draw, w//2, label_y, label_text, int(bubble_fs*0.9), GREEN)
-
     _figure(draw, ax, ay,  s, pose="excited", emotion="excited", phase=phase)
     _figure(draw, bx, by_, s, pose="excited", emotion="excited", flip=True, phase=phase)
-
     _bubble(draw, ax, ay - int(100*s), bubble_a,
             hw, bubble_fs, tail="left", anchor="right")
     _bubble(draw, bx, by_ - int(100*s), bubble_b,
             hw, bubble_fs, tail="right", fill=(255,255,220), anchor="left")
-
     _arrow(draw, w//2, label_y + int(bubble_fs*0.8),
            int(w*0.38), int(h*0.52), ORANGE, max(2, int(3*s)))
     _arrow(draw, w//2, label_y + int(bubble_fs*0.8),
            int(w*0.62), int(h*0.52), ORANGE, max(2, int(3*s)))
+    _label(draw, w//2, label_y, label_text, int(bubble_fs*0.9), GREEN)  # draw last — always on top
 
 
 SCENE_FNS = [_scene_hook, _scene_problem, _scene_solution, _scene_result]
