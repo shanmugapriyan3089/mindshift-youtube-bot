@@ -9,10 +9,14 @@ jobs:
   competitor-spy:
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -37,3 +41,11 @@ jobs:
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           YOUTUBE_CLIENT_SECRETS_PATH: client_secrets.json
         run: python -m agents.competitor_spy
+
+      - name: Commit updated patterns to repo
+        run: |
+          git config user.name "MindShift Competitor Bot"
+          git config user.email "bot@mindshiftproductivity.com"
+          git add config.py
+          git diff --staged --quiet || git commit -m "Auto: update winning tags + title formulas from competitor intel [skip ci]"
+          git push

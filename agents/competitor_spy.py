@@ -1,9 +1,9 @@
 """
 Agent 2: Competitor Spy (runs every Monday)
 Searches YouTube for top-performing videos in our niche → analyzes title/tag patterns with Groq
-→ sends weekly intelligence report to Telegram
+→ auto-updates WINNING_TAGS + TITLE_FORMULAS in config.py → sends summary email
 """
-import os, sys, pickle
+import os, sys, re, json, pickle
 from googleapiclient.discovery import build
 from google.auth.transport.requests import Request
 from groq import Groq
@@ -66,31 +66,67 @@ def _search_top_videos(youtube, query: str) -> list:
         return []
 
 
-def _analyze_patterns(videos: list, client: Groq) -> str:
+def _analyze_patterns(videos: list, client: Groq) -> dict:
     video_data = "\n".join([
         f"Title: {v['title']} | Views: {v.get('views', 0):,} | Tags: {', '.join(v.get('tags', []))}"
         for v in videos[:12]
     ])
-    prompt = f"""Analyze these top-performing YouTube videos in psychology/motivation:
+    prompt = f"""Analyze these top-performing YouTube videos in psychology/motivation niche:
 
 {video_data}
 
-Provide a concise analysis (max 400 words):
-1. Top 5 TITLE FORMULAS that work (e.g., "X [Noun] That Will [Benefit]")
-2. Power words that appear repeatedly in titles
-3. Top 8 tags/keywords to always include
-4. 3 content angles we should copy (what psychological trigger each uses)
-5. One clear gap in the market we can fill
+Extract the patterns and respond ONLY with JSON, no markdown:
+{{
+  "title_formulas": [
+    "5 exact reusable title templates (use X as placeholder for numbers, [Topic]/[Result]/[Benefit] as placeholders)"
+  ],
+  "power_words": ["8 words that appear repeatedly in high-view titles"],
+  "tags": ["12 optimized tags, all lowercase, most important first"],
+  "content_angles": ["3 psychological triggers used (e.g. fear, curiosity, social proof)"],
+  "market_gap": "One specific underserved topic in this niche right now"
+}}
 
-Format as plain text, be specific and actionable."""
+Analyze the actual video data above — be specific and data-driven."""
 
     response = client.chat.completions.create(
         model="llama-3.3-70b-versatile",
         messages=[{"role": "user", "content": prompt}],
         temperature=0.7,
-        max_tokens=800,
+        max_tokens=900,
     )
-    return response.choices[0].message.content.strip()
+    text = response.choices[0].message.content
+    match = re.search(r'\{.*\}', text, re.DOTALL)
+    if match:
+        try:
+            return json.loads(match.group())
+        except Exception:
+            pass
+    return {}
+
+
+def _update_config_patterns(tags: list, title_formulas: list):
+    """Auto-update WINNING_TAGS and TITLE_FORMULAS in config.py."""
+    config_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "config.py")
+    with open(config_path, "r") as f:
+        content = f.read()
+
+    tags_repr = "[\n" + "".join(f'    "{t}",\n' for t in tags[:12]) + "]"
+    content = re.sub(
+        r'WINNING_TAGS\s*=\s*\[.*?\]',
+        f'WINNING_TAGS = {tags_repr}',
+        content, flags=re.DOTALL
+    )
+
+    formulas_repr = "[\n" + "".join(f'    "{f}",\n' for f in title_formulas[:5]) + "]"
+    content = re.sub(
+        r'TITLE_FORMULAS\s*=\s*\[.*?\]',
+        f'TITLE_FORMULAS = {formulas_repr}',
+        content, flags=re.DOTALL
+    )
+
+    with open(config_path, "w") as f:
+        f.write(content)
+    print(f"  config.py updated: {len(tags[:12])} tags, {len(title_formulas[:5])} formulas")
 
 
 def main():
@@ -106,7 +142,6 @@ def main():
         all_videos.extend(vids)
         print(f"  '{q}': {len(vids)} videos")
 
-    # Deduplicate + sort by views
     seen = set()
     unique = []
     for v in sorted(all_videos, key=lambda x: x.get("views", 0), reverse=True):
@@ -114,24 +149,51 @@ def main():
             seen.add(v["video_id"])
             unique.append(v)
 
-    print(f"  {len(unique)} unique competitor videos found")
-    print("[Competitor Spy] Analyzing patterns with Groq...")
+    print(f"  {len(unique)} unique competitor videos found. Analyzing patterns...")
     analysis = _analyze_patterns(unique, client)
+
+    # Auto-update config.py with winning patterns
+    tags = analysis.get("tags", [])
+    formulas = analysis.get("title_formulas", [])
+    if tags and formulas:
+        _update_config_patterns(tags, formulas)
+        config_status = f"✅ Auto-updated config.py with {len(tags)} tags + {len(formulas)} title formulas"
+    else:
+        config_status = "⚠️ Could not parse patterns — config.py unchanged"
 
     top3 = "\n".join([
         f"  {i+1}. <b>{v['title'][:58]}</b>\n     └ {v.get('views', 0):,} views — {v['channel']}"
         for i, v in enumerate(unique[:3])
     ])
 
+    power_words = ", ".join(analysis.get("power_words", []))
+    angles = "\n".join(f"  • {a}" for a in analysis.get("content_angles", []))
+    gap = analysis.get("market_gap", "N/A")
+    formula_list = "\n".join(f"  {i+1}. {f}" for i, f in enumerate(formulas))
+    tag_list = ", ".join(tags)
+
     send(f"""🕵️ <b>Agent 2: Competitor Spy — Weekly Report</b>
 
 <b>Top 3 Videos in Your Niche This Week:</b>
 {top3}
 
-<b>AI Pattern Analysis:</b>
-{analysis[:900]}
+━━━ 📝 TITLE FORMULAS (auto-saved) ━━━
+{formula_list}
 
-🎯 Use these patterns in your next scripts!""")
+━━━ ⚡ POWER WORDS ━━━
+{power_words}
+
+━━━ 🏷 WINNING TAGS (auto-saved) ━━━
+{tag_list}
+
+━━━ 🧠 CONTENT ANGLES ━━━
+{angles}
+
+━━━ 🎯 MARKET GAP ━━━
+{gap}
+
+{config_status}
+🤖 These patterns are now live in your pipeline — next videos will use them automatically!""")
 
 
 if __name__ == "__main__":

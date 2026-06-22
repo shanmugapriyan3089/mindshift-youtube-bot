@@ -56,6 +56,21 @@ DAILY_TOPICS = [
     "The Truth About Why Hard Work Alone Never Makes You Rich",
 ]
 
+# Auto-updated by Agent 2 every Monday — winning tags + title formulas from competitor intel
+WINNING_TAGS = [
+    "motivation", "psychology", "self improvement", "success", "confidence",
+    "productivity", "personal development", "mindset", "habits", "self help",
+    "inspiration", "mental health",
+]
+
+TITLE_FORMULAS = [
+    "Give Me X Minutes and I'll Make You [Result]",
+    "[Number] Psychology Tricks That [Benefit]",
+    "Why 99% of People [Problem] (The Uncomfortable Truth)",
+    "Stop Doing This If You Want to [Benefit]",
+    "The [Adjective] Truth About [Topic] Nobody Tells You",
+]
+
 # Output paths
 OUTPUT_DIR = os.path.join(os.path.dirname(__file__), "output")
 REGULAR_OUTPUT_DIR = os.path.join(OUTPUT_DIR, "regular")
