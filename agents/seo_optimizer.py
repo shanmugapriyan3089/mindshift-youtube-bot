@@ -1,8 +1,8 @@
 """
 Agent 7: SEO Optimizer (runs daily after uploads)
-Fetches recent channel videos → Groq generates better titles, tags, descriptions
-→ AUTO-APPLIES tags to YouTube videos via API
-→ emails only the title options for you to pick (the only part needing your decision)
+Fetches recent channel videos → Groq generates + picks best title, tags
+→ AUTO-APPLIES title + tags to YouTube videos via API
+→ sends a brief "applied" summary email (no action needed from you)
 """
 import os, sys, pickle, json, re
 from groq import Groq
@@ -52,27 +52,28 @@ def _get_recent_videos(youtube, max_results: int = 5) -> list:
     return sorted(videos, key=lambda x: x["views"])  # lowest views first
 
 
-def _optimize(client: Groq, title: str, views: int) -> dict:
+def _generate_seo(client: Groq, title: str, views: int) -> dict:
     prompt = f"""You are a YouTube SEO expert for a psychology/motivation channel.
 
 Current video title: "{title}"
 Current views: {views:,}
 
-Generate SEO improvements:
-1. Three alternative titles — each must be 45-70 characters, punchy, clickbait-style like:
-   "7 Psychology Tricks That Make People Like You Instantly"
-   "Why 99% of People Stay Broke (The Uncomfortable Truth)"
-   "Stop Doing This If You Want to Be Confident"
-2. 12 optimized tags (mix broad + specific, all lowercase)
-3. One thumbnail text idea (4-6 words, ALL CAPS)
-
-Respond ONLY with JSON, no markdown:
+Generate SEO improvements. Respond ONLY with JSON, no markdown:
 {{
-  "alt_titles": ["Full title 1 between 45-70 chars", "Full title 2", "Full title 3"],
-  "tags": ["tag1", "tag2", "tag3", "tag4", "tag5", "tag6", "tag7", "tag8", "tag9", "tag10", "tag11", "tag12"],
-  "thumbnail_text": "THUMBNAIL TEXT"
-}}"""
+  "alt_titles": [
+    "Title option 1 — 45-70 chars, punchy, clickbait-style",
+    "Title option 2 — 45-70 chars, different angle",
+    "Title option 3 — 45-70 chars, different angle"
+  ],
+  "tags": ["tag1","tag2","tag3","tag4","tag5","tag6","tag7","tag8","tag9","tag10","tag11","tag12"],
+  "thumbnail_text": "4-6 WORDS ALL CAPS"
+}}
 
+Examples of great titles:
+"7 Psychology Tricks That Make People Like You Instantly"
+"Why 99% of People Stay Broke (The Uncomfortable Truth)"
+"Stop Doing This If You Want to Be Confident"
+"""
     response = client.chat.completions.create(
         model="llama-3.3-70b-versatile",
         messages=[{"role": "user", "content": prompt}],
@@ -89,22 +90,48 @@ Respond ONLY with JSON, no markdown:
     return {}
 
 
-def _apply_tags(youtube, video: dict, new_tags: list) -> bool:
-    """Auto-apply optimized tags to a YouTube video — fetches current snippet to avoid overwriting."""
+def _pick_best_title(client: Groq, titles: list, current_title: str) -> str:
+    """Ask Groq to score the 3 titles and return the best one."""
+    numbered = "\n".join(f"{i+1}. {t}" for i, t in enumerate(titles))
+    prompt = f"""You are a YouTube CTR expert. A psychology/motivation channel needs to pick the best title.
+
+Current title: "{current_title}"
+
+Three options:
+{numbered}
+
+Which title will get the MOST clicks? Consider: curiosity gap, power words, specificity, emotional trigger, length.
+Respond with ONLY the number: 1, 2, or 3."""
+
+    response = client.chat.completions.create(
+        model="llama-3.3-70b-versatile",
+        messages=[{"role": "user", "content": prompt}],
+        temperature=0.3,
+        max_tokens=10,
+    )
+    text = response.choices[0].message.content.strip()
+    match = re.search(r'[123]', text)
+    idx = int(match.group()) - 1 if match else 0
+    return titles[idx]
+
+
+def _apply_seo(youtube, video_id: str, new_title: str, new_tags: list) -> bool:
+    """Auto-apply title + tags to a YouTube video."""
     try:
-        result = youtube.videos().list(part="snippet", id=video["video_id"]).execute()
+        result = youtube.videos().list(part="snippet", id=video_id).execute()
         if not result["items"]:
             return False
         snippet = result["items"][0]["snippet"]
+        snippet["title"] = new_title
         snippet["tags"] = new_tags
         youtube.videos().update(
             part="snippet",
-            body={"id": video["video_id"], "snippet": snippet}
+            body={"id": video_id, "snippet": snippet}
         ).execute()
-        print(f"  ✓ Tags applied: {video['title'][:50]}")
+        print(f"  ✓ Applied: {new_title[:60]}")
         return True
     except Exception as e:
-        print(f"  ✗ Tag update failed ({video['video_id']}): {e}")
+        print(f"  ✗ Failed ({video_id}): {e}")
         return False
 
 
@@ -120,40 +147,40 @@ def main():
         send("📭 <b>SEO Optimizer</b>: No videos found to optimize")
         return
 
-    print(f"  {len(videos)} videos found. Generating SEO improvements...")
+    print(f"  {len(videos)} videos found. Generating + applying SEO improvements...")
 
-    applied = 0
-    message = "🔍 <b>Agent 7: SEO — Title Options</b>\n(Tags + SEO applied automatically. Just pick a title for each video if you want to update it)\n"
+    applied_lines = []
+    skipped = []
 
     for video in videos[:3]:
-        seo = _optimize(client, video["title"], video["views"])
+        seo = _generate_seo(client, video["title"], video["views"])
         if not seo:
+            skipped.append(video["title"][:50])
             continue
 
-        # Auto-apply tags silently
+        alt_titles = seo.get("alt_titles", [])
         new_tags = seo.get("tags", [])
-        if new_tags:
-            ok = _apply_tags(youtube, video, new_tags)
-            if ok:
-                applied += 1
 
-        # Email only the title choices
-        alts = "\n".join(f"  {i+1}. {t}" for i, t in enumerate(seo.get("alt_titles", [])))
-        message += f"""
-━━━━━━━━━━━━━━━━━━
-🎬 <b>{video['title'][:55]}</b>
-👁 {video['views']:,} views · youtube.com/watch?v={video['video_id']}
+        # Pick best title automatically
+        best_title = _pick_best_title(client, alt_titles, video["title"]) if alt_titles else video["title"]
 
-📝 <b>Pick a title (update in YouTube Studio):</b>
-{alts}
+        ok = _apply_seo(youtube, video["video_id"], best_title, new_tags)
 
-🖼 <b>Thumbnail text:</b> {seo.get('thumbnail_text', '')}
-🏷 Tags: ✅ Auto-applied ({len(new_tags)} tags)
-"""
+        status = "✅ Applied" if ok else "⚠️ Failed (no write scope — update manually)"
+        applied_lines.append(
+            f"{status}\n"
+            f"  Was: <i>{video['title'][:60]}</i>\n"
+            f"  Now: <b>{best_title[:60]}</b>\n"
+            f"  Tags: {len(new_tags)} applied · {video['views']:,} views\n"
+            f"  🖼 Thumbnail: {seo.get('thumbnail_text', '')}"
+        )
 
-    message += f"\n\n✅ <b>{applied}/3 videos had tags auto-applied.</b>"
-    message += "\n⚙️ To update title: YouTube Studio → Content → click video → Details"
-    send(message, subject="Agent 7: Pick a Title (Tags Already Applied)")
+    updates = "\n\n━━━━━━━━━━━━━━━━━━\n".join(applied_lines)
+    send(
+        f"🔍 <b>Agent 7: SEO Auto-Applied</b>\n\n{updates}\n\n"
+        f"🤖 No action needed — everything was applied automatically.",
+        subject="Agent 7: SEO Applied Automatically"
+    )
 
 
 if __name__ == "__main__":
