@@ -11,7 +11,7 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 from config import YOUTUBE_CLIENT_SECRETS_PATH, MADE_FOR_KIDS
 
-SCOPES = ["https://www.googleapis.com/auth/youtube.upload"]
+SCOPES = ["https://www.googleapis.com/auth/youtube"]
 TOKEN_FILE = "youtube_token.pickle"
 
 
