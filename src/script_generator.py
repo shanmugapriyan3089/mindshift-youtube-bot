@@ -40,12 +40,14 @@ CRITICAL: Each scene narration must be 55-65 words. This is how you hit 8-10 min
 Speak like a smart, direct friend — not a robot or professor. Use "you" throughout.
 duration_seconds for each scene: 27"""
     else:
-        duration_label = "55-58 seconds"
-        scene_guide = f"""Exactly {num_scenes} scenes. Ultra fast-paced. Hook in first 3 seconds.
-Each scene narration: 34-40 words. One punchy idea per scene, spoken fast.
-This fills exactly 13 seconds of speech at natural Kokoro TTS pace.
-Do NOT go below 34 words — shorter narrations leave dead silence in the scene.
-duration_seconds for each scene: 13"""
+        duration_label = "20-25 seconds"
+        scene_guide = f"""Exactly {num_scenes} scenes. ULTRA fast-paced. Scene 1 = hook that stops the scroll in 2 seconds.
+Each scene narration: 28-34 words. One single punchy idea, spoken fast.
+This fills exactly 12 seconds at natural Kokoro TTS pace (155 wpm).
+Do NOT go below 28 words — shorter narrations leave dead silence.
+Scene 1: shocking hook. Scene 2: the payoff / what to do.
+End scene 2 with: "Follow for more psychology secrets."
+duration_seconds for each scene: 12"""
 
     prompt = f"""You are a top YouTube scriptwriter for a viral psychology/motivation channel like Jamie Social, Trust Me Bro, or Productive Peter. You have helped channels go from 0 to 500k subscribers.
 

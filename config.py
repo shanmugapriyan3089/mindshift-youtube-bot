@@ -91,4 +91,4 @@ MUSIC_DIR = os.path.join(ASSETS_DIR, "music")
 
 # Video specs
 REGULAR_VIDEO = {"width": 1920, "height": 1080, "duration": 540, "scenes": 20, "fps": 12}
-SHORTS_VIDEO = {"width": 1080, "height": 1920, "duration": 58, "scenes": 4, "fps": 12}
+SHORTS_VIDEO = {"width": 1080, "height": 1920, "duration": 24, "scenes": 2, "fps": 12}

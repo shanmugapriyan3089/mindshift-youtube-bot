@@ -252,29 +252,30 @@ def generate_thumbnail(title: str, output_path: str, video_type: str = "regular"
         darker = tuple(max(0, v - 60) for v in c["bg"])
         lighter = tuple(min(255, v + 40) for v in c["bg"])
 
+        # Split thumbnail_text into max-2-words-per-line, 2 lines
+        words = title.upper().split()
+        mid = max(1, len(words) // 2)
+        lines = [" ".join(words[:mid]), " ".join(words[mid:])]
+        lines = [l for l in lines if l][:2]
+
         if video_type == "regular":
-            # REGULAR (1280×720): big text left (60% width), giant figure right
+            # REGULAR (1280×720): text left 62%, shocked figure right
             draw.rectangle([0, h - int(h*0.12), w, h], fill=darker)
 
-            # Max 4 words, 2 lines — big and readable like Trust Me Bro thumbnails
-            words = title.upper().split()[:4]
-            mid = max(1, len(words) // 2)
-            lines = [" ".join(words[:mid]), " ".join(words[mid:])]
-            lines = [l for l in lines if l]
-
-            # Giant figure — right side, fills height
-            fig_cx, fig_cy, fig_s = int(w * 0.80), int(h * 0.58), 3.2
+            # Giant figure right side
+            fig_cx, fig_cy, fig_s = int(w * 0.80), int(h * 0.60), 3.2
             _draw_shocked_figure(draw, fig_cx, fig_cy, fig_s)
 
-            # Huge "!" accent behind text area
+            # Faded "!" accent behind text
             exc_font = _thumb_font(int(h * 0.55))
             draw.text((int(w * 0.03), int(h * -0.05)), "!", fill=c["accent"], font=exc_font)
 
-            # Big bold text — left side
-            fs  = int(h * 0.185)
-            tx  = int(w * 0.06)
-            ty  = int(h * 0.12)
-            gap = int(fs * 1.18)
+            # Auto-fit font: cap to 62% canvas width so text never overlaps figure
+            max_line = max(len(l) for l in lines)
+            fs = min(int(h * 0.200), int(w * 0.62 / max(1, max_line) * 1.55))
+            tx  = int(w * 0.05)
+            ty  = int(h * 0.10)
+            gap = int(fs * 1.22)
             tfont = _thumb_font(fs)
             for i, line in enumerate(lines):
                 y = ty + i * gap
@@ -282,41 +283,25 @@ def generate_thumbnail(title: str, output_path: str, video_type: str = "regular"
                     draw.text((tx+dx, y+dy), line, fill=(0, 0, 0), font=tfont)
                 draw.text((tx, y), line, fill=c["text"], font=tfont)
 
-            sf = _thumb_font(int(h * 0.038))
             draw.text((int(w*0.04), h - int(h*0.085)),
-                      "@MindShiftProductivity", fill=(255, 255, 255), font=sf)
+                      "@MindShiftProductivity", fill=(255,255,255), font=_thumb_font(int(h*0.038)))
 
         else:
-            # SHORTS (1080×1920): text top, figure center-bottom
-            draw.ellipse([-int(w*0.1), -int(h*0.05), int(w*0.9), int(h*0.45)], fill=lighter)
-            draw.ellipse([int(w*0.2), int(h*0.7), int(w*1.1), int(h*1.1)], fill=lighter)
+            # SHORTS (1080×1920): figure bottom-right, bold text top-left
+            # Subtle circle accent — no clutter
+            draw.ellipse([int(w*0.45), int(h*0.30), int(w*1.15), int(h*0.95)], fill=lighter)
             draw.rectangle([0, h - int(h*0.07), w, h], fill=darker)
 
-            # For shorts use max 2 words per line, max 3 lines
-            words = title.upper().split()[:4]
-            lines = [[words[0]] if len(words) >= 1 else []]
-            for word in words[1:]:
-                lines.append([word])
-            lines = [" ".join(l) for l in lines if l]
-
-            # Giant centered figure — bottom half
-            fig_cx, fig_cy, fig_s = int(w * 0.50), int(h * 0.72), 2.9
+            # Large figure — bottom right, not centred so text has room
+            fig_cx, fig_cy, fig_s = int(w * 0.72), int(h * 0.72), 3.4
             _draw_shocked_figure(draw, fig_cx, fig_cy, fig_s)
 
-            # Big "!" — top right
-            exc_font = _thumb_font(int(w * 0.22))
-            draw.text((int(w * 0.76), int(h * 0.05)), "!", fill=c["accent"], font=exc_font)
-
-            # Max 2 words per line, 2 lines — huge font
-            words = title.upper().split()[:4]
-            mid = max(1, len(words) // 2)
-            lines = [" ".join(words[:mid]), " ".join(words[mid:])]
-            lines = [l for l in lines if l]
-
-            fs  = int(w * 0.195)
+            # Auto-fit font: cap to 78% canvas width, max 3 lines
+            max_line = max(len(l) for l in lines)
+            fs = min(int(w * 0.175), int(w * 0.78 / max(1, max_line) * 1.55))
             tx  = int(w * 0.04)
-            ty  = int(h * 0.05)
-            gap = int(fs * 1.18)
+            ty  = int(h * 0.06)
+            gap = int(fs * 1.22)
             tfont = _thumb_font(fs)
             for i, line in enumerate(lines):
                 y = ty + i * gap
@@ -324,9 +309,8 @@ def generate_thumbnail(title: str, output_path: str, video_type: str = "regular"
                     draw.text((tx+dx, y+dy), line, fill=(0, 0, 0), font=tfont)
                 draw.text((tx, y), line, fill=c["text"], font=tfont)
 
-            sf = _thumb_font(int(w * 0.042))
             draw.text((int(w*0.05), h - int(h*0.055)),
-                      "@MindShiftProductivity", fill=(255, 255, 255), font=sf)
+                      "@MindShiftProductivity", fill=(255,255,255), font=_thumb_font(int(w*0.042)))
 
         img.save(output_path, quality=95)
         print(f"  [Thumbnail] Saved: {output_path}")
