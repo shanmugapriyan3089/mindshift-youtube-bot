@@ -478,7 +478,6 @@ def _create_frame_wide(text, narration, w, h, scene_idx, phase, slot, word_start
     label_text = _LABEL_POOLS[scene_type][(slot + scene_idx) % len(_LABEL_POOLS[scene_type])]
 
     SCENE_FNS[scene_type](draw, w, h, s, bubble_fs, bubble_a, bubble_b, phase, label_text)
-    _narration_strip(draw, narration, w, h, word_start, wpf, bubble_fs)
     _draw_banner_and_watermark(draw, text, w, h)
     return img
 
@@ -508,7 +507,6 @@ def _create_frame_focus_a(text, narration, w, h, scene_idx, phase, slot, word_st
             tail="left", anchor="right")
     label_colors = [RED, PURPLE, GREEN, GREEN]
     _label(draw, int(w*0.72), int(h*0.22), label_text, int(bubble_fs*0.85), label_colors[scene_type])
-    _narration_strip(draw, narration, w, h, word_start, wpf, bubble_fs)
     _draw_banner_and_watermark(draw, text, w, h)
     return img
 
@@ -570,7 +568,6 @@ def _create_frame_focus_b(text, narration, w, h, scene_idx, phase, slot, word_st
             tail="right", fill=bubble_fill[scene_type], anchor="left")
     label_colors = [RED, PURPLE, GREEN, ORANGE]
     _label(draw, int(w*0.28), int(h*0.22), label_text, int(bubble_fs*0.85), label_colors[scene_type])
-    _narration_strip(draw, narration, w, h, word_start, wpf, bubble_fs)
     _draw_banner_and_watermark(draw, text, w, h)
     return img
 
