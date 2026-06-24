@@ -501,8 +501,7 @@ def _create_frame_wide(text, narration, w, h, scene_idx, phase, slot, word_start
 
     s = 2.5 if h > w else 1.9
     bubble_fs = max(28, w // 28) if h > w else max(22, h // 26)
-    words = narration.split() if narration else text.split()
-    bubble_a = " ".join(words[:9]) if words else text[:40]
+    bubble_a = text[:50]  # text_overlay = main concept shown on screen
     scene_type = scene_idx % 4
     rng = random.Random(scene_idx * 100 + slot)
     bubble_b = rng.choice(_REACTIONS[scene_type])
@@ -528,9 +527,7 @@ def _create_frame_focus_a(text, narration, w, h, scene_idx, phase, slot, word_st
     rng = random.Random(scene_idx * 100 + slot)
     label_text = _LABEL_POOLS[scene_type][(slot + scene_idx) % len(_LABEL_POOLS[scene_type])]
 
-    words = narration.split() if narration else text.split()
-    # Show words from the first third of the narration
-    bubble_text = " ".join(words[word_start:word_start + 9]) if words else text[:40]
+    bubble_text = text[:50]  # text_overlay = main concept being explained
 
     pose_map = ["pointing_r", "talking", "excited", "excited"]
     emotion_map = ["excited", "thinking", "excited", "excited"]
@@ -556,10 +553,7 @@ def _create_frame_focus_prop(text, narration, w, h, scene_idx, phase, slot, word
     prop_fns = [_clock, _brain, _lightbulb, _trophy]
     prop_fns[scene_type](draw, w // 2, prop_y, prop_s * (1.0 + 0.04 * phase))
 
-    # Key phrase — pick middle words from narration
-    words = narration.split() if narration else text.split()
-    mid = len(words) // 2
-    key_words = " ".join(words[max(0, mid - 4):mid + 4])
+    key_words = text  # text_overlay as the concept card headline
     kfs = max(44, w // 18) if h > w else max(34, h // 16)
     kfont = _font(kfs)
     max_chars = max(8, int(w * 0.70 / (kfs * 0.60)))
@@ -625,8 +619,6 @@ def create_scene_video(text, bg_color, duration, output_path,
 
     label = text[:40].upper()
     ff = _ffmpeg()
-    narration_words = narration.split() if narration else []
-    total_words = len(narration_words)
     d = duration
 
     # Shot sequence — genuine different compositions, not zoom tricks
@@ -657,37 +649,13 @@ def create_scene_video(text, bg_color, duration, output_path,
     sub_clips = []
     phases = [0, 1, 0, 1]  # 4-frame arm cycle per shot
 
-    # Pre-calculate cumulative start times for each shot
-    shot_starts = []
-    t = 0
-    for _, shot_dur in shots:
-        shot_starts.append(t)
-        t += shot_dur
-
     for shot_idx, (shot_type, shot_dur) in enumerate(shots):
         shot_frames_dir = output_path.replace(".mp4", f"_s{shot_idx}_frames")
         os.makedirs(shot_frames_dir, exist_ok=True)
 
-        # Slice the narration to the words spoken during this shot's time window.
-        # At ~2.8 words/sec (Kokoro speed=1.05 ≈ 170 wpm), the fraction of words
-        # spoken during [shot_start, shot_start+shot_dur] out of total duration
-        # gives us the right word range to show on screen.
-        if total_words > 0 and d > 0:
-            w_from = round(total_words * shot_starts[shot_idx] / d)
-            w_to   = min(total_words, round(total_words * (shot_starts[shot_idx] + shot_dur) / d))
-            shot_words = narration_words[w_from:w_to]
-            shot_narration = " ".join(shot_words) if shot_words else narration
-        else:
-            shot_narration = narration
-
-        # word_start=0 and wpf advance within the shot-specific narration
-        shot_word_count = len(shot_narration.split())
-        wpf = max(3, shot_word_count // 4)
-
         renderer = _SHOT_RENDERERS[shot_type]
         for fi, phase in enumerate(phases):
-            ws = fi * wpf
-            frame = renderer(label, shot_narration, w, h, scene_idx, phase, slot, ws, wpf, bg=scene_bg)
+            frame = renderer(label, narration, w, h, scene_idx, phase, slot, 0, 6, bg=scene_bg)
             frame.save(os.path.join(shot_frames_dir, f"f{fi:03d}.png"))
 
         sub_path = output_path.replace(".mp4", f"_shot{shot_idx}.mp4")
