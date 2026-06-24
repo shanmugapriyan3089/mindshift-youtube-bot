@@ -621,19 +621,37 @@ def create_scene_video(text, bg_color, duration, output_path,
     sub_clips = []
     phases = [0, 1, 0, 1]  # 4-frame arm cycle per shot
 
+    # Pre-calculate cumulative start times for each shot
+    shot_starts = []
+    t = 0
+    for _, shot_dur in shots:
+        shot_starts.append(t)
+        t += shot_dur
+
     for shot_idx, (shot_type, shot_dur) in enumerate(shots):
         shot_frames_dir = output_path.replace(".mp4", f"_s{shot_idx}_frames")
         os.makedirs(shot_frames_dir, exist_ok=True)
 
-        # Advance through narration words across shots
-        words_per_shot = max(4, total_words // max(1, len(shots)))
-        word_start = shot_idx * words_per_shot
-        wpf = max(3, words_per_shot // 4)
+        # Slice the narration to the words spoken during this shot's time window.
+        # At ~2.8 words/sec (Kokoro speed=1.05 ≈ 170 wpm), the fraction of words
+        # spoken during [shot_start, shot_start+shot_dur] out of total duration
+        # gives us the right word range to show on screen.
+        if total_words > 0 and d > 0:
+            w_from = round(total_words * shot_starts[shot_idx] / d)
+            w_to   = min(total_words, round(total_words * (shot_starts[shot_idx] + shot_dur) / d))
+            shot_words = narration_words[w_from:w_to]
+            shot_narration = " ".join(shot_words) if shot_words else narration
+        else:
+            shot_narration = narration
+
+        # word_start=0 and wpf advance within the shot-specific narration
+        shot_word_count = len(shot_narration.split())
+        wpf = max(3, shot_word_count // 4)
 
         renderer = _SHOT_RENDERERS[shot_type]
         for fi, phase in enumerate(phases):
-            ws = word_start + fi * wpf
-            frame = renderer(label, narration, w, h, scene_idx, phase, slot, ws, wpf)
+            ws = fi * wpf
+            frame = renderer(label, shot_narration, w, h, scene_idx, phase, slot, ws, wpf)
             frame.save(os.path.join(shot_frames_dir, f"f{fi:03d}.png"))
 
         sub_path = output_path.replace(".mp4", f"_shot{shot_idx}.mp4")
@@ -662,8 +680,9 @@ def create_scene_video(text, bg_color, duration, output_path,
         # Full fallback — simple single loop
         frames_dir = output_path.replace(".mp4", "_fallback_frames")
         os.makedirs(frames_dir, exist_ok=True)
+        wpf_fb = max(3, total_words // 4) if total_words else 6
         for fi, phase in enumerate(phases):
-            frame = _create_frame_wide(label, narration, w, h, scene_idx, phase, slot, 0, 6)
+            frame = _create_frame_wide(label, narration, w, h, scene_idx, phase, slot, fi * wpf_fb, wpf_fb)
             frame.save(os.path.join(frames_dir, f"f{fi:03d}.png"))
         subprocess.run([
             ff, "-y", "-framerate", "4",
