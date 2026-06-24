@@ -47,7 +47,7 @@ This fills exactly 13 seconds of speech at natural Kokoro TTS pace.
 Do NOT go below 34 words — shorter narrations leave dead silence in the scene.
 duration_seconds for each scene: 13"""
 
-    prompt = f"""You are a top YouTube scriptwriter for a viral psychology/motivation channel like Jamie Social, Trust Me Bro, or EverythingProfessor.
+    prompt = f"""You are a top YouTube scriptwriter for a viral psychology/motivation channel like Jamie Social, Trust Me Bro, or Productive Peter. You have helped channels go from 0 to 500k subscribers.
 
 Write a complete, deeply engaging script for a {video_type} YouTube video about:
 "{topic}"
@@ -56,26 +56,51 @@ Target audience: 18-35 year olds interested in self-improvement, psychology, mon
 Duration: {duration_label}
 {scene_guide}
 
-Rules:
-- Hook viewer in FIRST 5 seconds — ask a question they can't ignore
-- Use "you" to speak directly to the viewer throughout
+═══ TITLE RULES (this is the #1 subscriber driver) ═══
+Pick ONE of these proven viral title formulas — do NOT use generic titles:
+1. SHOCKING TRUTH:   "Your Brain Is [Doing X] Right Now And You Don't Know It"
+2. THEY LIED TO YOU: "Why Everything You Know About [Topic] Is Wrong"
+3. SECRET REVEALED:  "The [Topic] Secret [Authority] Never Told You"
+4. CHALLENGE FORMAT: "I Tried [Method] For 30 Days — The Results Shocked Me"
+5. FEAR + CURIOSITY: "Stop [Common Habit] Immediately — Here's Why"
+6. NUMBER + TWIST:   "7 [Topic] Tricks That Sound Fake But Actually Work"
+7. IDENTITY THREAT:  "If You Do This Every Day, Your Brain Is Already Damaged"
+Title must be 50-65 characters. Must create a knowledge gap — make them feel they're missing something critical.
+
+═══ HOOK RULES (decides 70% of watch time) ═══
+Scene 1 narration MUST follow this exact structure:
+  - Sentence 1: Shocking statement or uncomfortable truth (NOT a question)
+  - Sentence 2: Make it personal — "right now, this is happening to YOU"
+  - Sentence 3: Create dread or urgency — what they're losing by not knowing this
+  - Sentence 4: Promise — "In the next [X] minutes/seconds, you'll learn exactly how to fix this"
+Example: "Most people will never reach their goals — not because they lack talent, but because their brain is actively working against them. Right now, a hidden psychological trap is sabotaging every decision you make. Every day you don't know this, you're losing hours of productive potential. In the next few minutes, I'll show you exactly how to break free."
+
+═══ CONTENT RULES ═══
+- Use "you" throughout — make it personal, not academic
 - Each scene has a bold text overlay (max 6 words) shown on screen
-- Alternate background colors: #1a1a2e (dark navy), #16213e (dark blue), #0f3460 (blue), #533483 (purple)
-- End with a strong CTA: "Subscribe for more psychology secrets" + ask them to comment
+- Reference real psychology (Pavlov, Kahneman, dopamine, cortisol, etc.) — sounds credible
+- Use contrast: "Most people do X. High performers do Y instead."
+- End regular videos with: "If this helped you, subscribe — I drop psychology secrets every week. Comment below: which of these are you guilty of?"
+- End shorts with: "Follow for more psychology tricks your school never taught you."
+
+═══ TEXT OVERLAY RULES ═══
+- Max 5 words, ALL CAPS
+- Must be the single most shocking/intriguing phrase from that scene
+- Examples: "YOUR BRAIN IS LYING", "THIS REWIRES EVERYTHING", "MOST PEOPLE MISS THIS"
 
 Respond ONLY with valid JSON, no markdown fences, no extra text:
 {{
-  "title": "clickbait but honest YouTube title 45-65 chars — like: '7 Psychology Tricks That Make People Like You Instantly'",
-  "description": "SEO YouTube description 200 words with keywords for self-improvement, psychology, motivation, success mindset",
-  "tags": ["psychology", "motivation", "self improvement", "success mindset", "habits", "productivity", "mindset", "success tips", "life advice", "personal development"],
-  "thumbnail_text": "bold 4-6 word ALL CAPS thumbnail text",
+  "title": "viral title using one of the 7 formulas above, 50-65 chars",
+  "description": "SEO YouTube description 200 words — open with the hook, include keywords: psychology, self improvement, motivation, mindset, productivity, success, habits, brain, mental health, personal development",
+  "tags": ["psychology", "motivation", "self improvement", "success mindset", "habits", "productivity", "mindset", "brain psychology", "life advice", "personal development", "how to focus", "stop procrastinating"],
+  "thumbnail_text": "3-5 word ALL CAPS thumbnail text — most shocking phrase from the video",
   "scenes": [
     {{
       "scene_number": 1,
       "duration_seconds": 27,
-      "narration": "What if I told you that 95 percent of your daily decisions are made subconsciously? That means right now, invisible forces are controlling your choices, your habits, and your future — and you have no idea. By the end of this video, you will understand exactly how this works and how to take back control of your own mind.",
-      "text_overlay": "YOU ARE NOT IN CONTROL",
-      "bullets": ["95% of decisions are subconscious", "Your brain runs on autopilot", "You can rewire this"],
+      "narration": "Most people will never reach their goals — not because they lack talent, but because their brain is actively working against them. Right now, a hidden psychological trap is sabotaging every decision you make. Every day you don't know this, you're losing hours of productive potential. In the next few minutes, you'll learn exactly how to break free.",
+      "text_overlay": "YOUR BRAIN FIGHTS YOU",
+      "bullets": ["Brain works against you", "Hidden psychological trap", "You can fix this today"],
       "bg_color": "#1a1a2e"
     }}
   ]
