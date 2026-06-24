@@ -246,12 +246,7 @@ def generate_thumbnail(title: str, output_path: str, video_type: str = "regular"
         ]
         c = schemes[int(hashlib.md5(title.encode()).hexdigest(), 16) % len(schemes)]
 
-        # Try AI background first; fall back to flat colour
-        ai_bg = _fetch_thumb_bg(title, w, h, c["bg"])
-        if ai_bg:
-            img = ai_bg
-        else:
-            img = Image.new("RGB", (w, h), c["bg"])
+        img = Image.new("RGB", (w, h), c["bg"])
         draw = ImageDraw.Draw(img)
 
         darker = tuple(max(0, v - 60) for v in c["bg"])

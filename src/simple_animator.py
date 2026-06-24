@@ -7,34 +7,29 @@ import os, math, subprocess, shutil, textwrap, random
 from PIL import Image, ImageDraw, ImageFont
 
 
-# ── Pollinations.ai background ────────────────────────────────────────────────
+# ── Scene gradient backgrounds (clean, no API) ────────────────────────────────
+# Soft pastel top → white bottom, one per scene type (hook/problem/solution/result)
+_SCENE_GRADIENTS = [
+    ((255, 243, 228), (255, 255, 255)),  # hook     — warm cream
+    ((228, 240, 255), (255, 255, 255)),  # problem  — cool sky blue
+    ((228, 255, 242), (255, 255, 255)),  # solution — fresh mint
+    ((255, 252, 228), (255, 255, 255)),  # result   — soft gold
+]
 
-def _fetch_bg(topic: str, w: int, h: int, seed: int) -> "Image.Image | None":
-    """Fetch a free AI-generated background from Pollinations.ai (no API key).
-    Returns a PIL Image blended 55% with white so stick figures stay readable.
-    Falls back to None on any network error — caller uses plain white grid.
-    """
-    import urllib.request, urllib.parse
-    from io import BytesIO
 
-    # Build a clean scene-relevant prompt from the text overlay
-    keywords = " ".join(topic.lower().replace("'", "").split()[:7])
-    prompt = (f"minimalist abstract poster background, soft pastel gradient, "
-              f"{keywords}, psychology motivation, no text, no people, "
-              f"clean professional, dreamy light")
-    url = (f"https://image.pollinations.ai/prompt/{urllib.parse.quote(prompt)}"
-           f"?width={w}&height={h}&nologo=true&seed={seed}&model=flux")
-    try:
-        req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
-        with urllib.request.urlopen(req, timeout=25) as r:
-            data = r.read()
-        img = Image.open(BytesIO(data)).convert("RGB").resize((w, h))
-        # Blend heavily with white so figures stand out clearly (Productive Peter style)
-        white = Image.new("RGB", (w, h), (255, 255, 255))
-        return Image.blend(img, white, 0.72)
-    except Exception as e:
-        print(f"  [BG] Pollinations failed ({e}), using plain background")
-        return None
+def _make_gradient_bg(w: int, h: int, scene_type: int) -> "Image.Image":
+    """Instant clean gradient — no network call, consistent, professional."""
+    c1, c2 = _SCENE_GRADIENTS[scene_type % 4]
+    col = Image.new("RGB", (1, h))
+    pix = col.load()
+    for y in range(h):
+        t = y / max(1, h - 1)
+        pix[0, y] = (
+            int(c1[0] + (c2[0] - c1[0]) * t),
+            int(c1[1] + (c2[1] - c1[1]) * t),
+            int(c1[2] + (c2[2] - c1[2]) * t),
+        )
+    return col.resize((w, h), Image.NEAREST)
 
 # Varied B-figure reactions per scene type (hook/problem/solution/result)
 _REACTIONS = [
@@ -345,10 +340,15 @@ def _scene_positions(w, h, s):
     """
     is_short = h > w
     cy      = int(h * 0.62)
-    # Prop: below caption zone for shorts, near top for landscape
-    prop_y  = int(h * 0.20) if is_short else int(h * 0.13)
-    # Label: well below caption zone for shorts
-    label_y = int(h * 0.32) if is_short else int(h * 0.22)
+    # Shorts layout zones (safe from YouTube UI overlays):
+    #   0-14%  = YouTube header — avoid
+    #   14-22% = kinetic text lives here
+    #   27-35% = prop zone — pushed down to not clash with text
+    #   35-42% = label badge
+    #   42-88% = figures
+    #   88-100%= yellow banner + watermark
+    prop_y  = int(h * 0.32) if is_short else int(h * 0.13)
+    label_y = int(h * 0.42) if is_short else int(h * 0.22)
     # Right figure pulled left for shorts to avoid action buttons
     bx      = int(w * 0.70) if is_short else int(w * 0.75)
     return int(w * 0.25), cy, bx, cy, prop_y, label_y
@@ -493,28 +493,30 @@ def _draw_grid(draw, w, h):
 
 
 def _draw_kinetic_text(draw, text: str, w: int, h: int):
-    """Large bold synced words — Trust Me Bro / Productive Peter kinetic style.
-    White text with thick black outline. Positioned above figures in safe zone.
+    """Synced narration words shown above figures — clean dark text on light gradient.
+    Shorts: 1 line max, ~50px. Regular: 2 lines max, ~72px.
     """
     if not text or not text.strip():
         return
     is_short = h > w
-    fs = max(52, w // 12) if is_short else max(44, w // 20)
+    fs = max(36, w // 22) if is_short else max(40, w // 26)
     font = _font(fs)
-    max_chars = max(8, int(w * 0.78 / (fs * 0.58)))
-    lines = textwrap.wrap(text.upper(), width=max_chars)[:2]
+    max_chars = max(8, int(w * 0.82 / (fs * 0.58)))
+    max_lines = 1 if is_short else 2
+    lines = textwrap.wrap(text.upper(), width=max_chars)[:max_lines]
     if not lines:
         return
-    lh = int(fs * 1.28)
-    base_y = int(h * 0.20) if is_short else int(h * 0.05)
+    lh = int(fs * 1.30)
+    # Safe zone top: shorts 21%, regular 5%
+    base_y = int(h * 0.14) if is_short else int(h * 0.04)
     for i, line in enumerate(lines):
         bb = draw.textbbox((0, 0), line, font=font)
         lw2 = bb[2] - bb[0]
-        tx = max(int(w * 0.03), (w - lw2) // 2)
+        tx = max(int(w * 0.04), (w - lw2) // 2)
         ty = base_y + i * lh
-        for dx, dy in [(-4,4),(4,4),(-4,-4),(4,-4),(0,5),(5,0),(-5,0),(0,-5)]:
-            draw.text((tx+dx, ty+dy), line, fill=(0, 0, 0), font=font)
-        draw.text((tx, ty), line, fill=(255, 255, 255), font=font)
+        # Subtle shadow — dark navy text on light background
+        draw.text((tx + 2, ty + 2), line, fill=(180, 190, 210), font=font)
+        draw.text((tx, ty), line, fill=(18, 20, 50), font=font)
 
 
 def _create_frame_wide(text, narration, w, h, scene_idx, phase, slot, word_start, wpf, bg=None):
@@ -566,7 +568,7 @@ def _create_frame_focus_a(text, narration, w, h, scene_idx, phase, slot, word_st
 
 
 def _create_frame_focus_prop(text, narration, w, h, scene_idx, phase, slot, word_start, wpf, bg=None):
-    """Concept card — large prop centred + key words from narration as bold text."""
+    """Concept card — large prop centred, kinetic text at top handles the narration."""
     img = bg.copy() if bg else Image.new("RGB", (w, h), BG)
     draw = ImageDraw.Draw(img)
     if not bg:
@@ -574,23 +576,14 @@ def _create_frame_focus_prop(text, narration, w, h, scene_idx, phase, slot, word
 
     scene_type = scene_idx % 4
     prop_s = 2.2 if h > w else 1.6
-    prop_y = int(h * 0.30)
+    prop_y = int(h * 0.38) if h > w else int(h * 0.30)
     prop_fns = [_clock, _brain, _lightbulb, _trophy]
     prop_fns[scene_type](draw, w // 2, prop_y, prop_s * (1.0 + 0.04 * phase))
 
-    key_words = text  # text_overlay as the concept card headline
-    kfs = max(44, w // 18) if h > w else max(34, h // 16)
-    kfont = _font(kfs)
-    max_chars = max(8, int(w * 0.70 / (kfs * 0.60)))
-    lines = textwrap.wrap(key_words, width=max_chars)[:2]
-    ty = int(h * 0.52)
-    for line in lines:
-        bb = draw.textbbox((0, 0), line, font=kfont)
-        tx = max(int(w*0.04), (w - (bb[2]-bb[0])) // 2)
-        for dx, dy in [(-3, 3), (3, 3), (-3, -3), (3, -3)]:
-            draw.text((tx+dx, ty+dy), line, fill=(0, 0, 0), font=kfont)
-        draw.text((tx, ty), line, fill=BLUE, font=kfont)
-        ty += int(kfs * 1.35)
+    label_text = _LABEL_POOLS[scene_type][(slot + scene_idx) % len(_LABEL_POOLS[scene_type])]
+    label_colors = [RED, PURPLE, GREEN, ORANGE]
+    lfs = max(28, w // 26) if h > w else max(24, w // 30)
+    _label(draw, w // 2, int(h * 0.56) if h > w else int(h * 0.50), label_text, lfs, label_colors[scene_type])
 
     _draw_banner_and_watermark(draw, text, w, h)
     return img
@@ -668,10 +661,9 @@ def create_scene_video(text, bg_color, duration, output_path,
             ("wide",       max(3, d - 20)),
         ]
 
-    # Fetch one AI background per scene from Pollinations.ai (free, no key)
-    # All 5 shots share the same background — visual consistency within a scene
-    print(f"  [BG] Fetching AI background for scene {scene_idx + 1}...")
-    scene_bg = _fetch_bg(text, w, h, seed=scene_idx * 7 + slot)
+    # Clean gradient background — instant, no API, consistent professional look
+    scene_type = scene_idx % 4
+    scene_bg = _make_gradient_bg(w, h, scene_type)
 
     sub_clips = []
     # 8-frame smooth cycle: arm rises and falls fluidly (0 → peak → 0)
