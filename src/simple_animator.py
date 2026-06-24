@@ -29,9 +29,9 @@ def _fetch_bg(topic: str, w: int, h: int, seed: int) -> "Image.Image | None":
         with urllib.request.urlopen(req, timeout=25) as r:
             data = r.read()
         img = Image.open(BytesIO(data)).convert("RGB").resize((w, h))
-        # Blend with white so dark-bg images don't swamp the figures
+        # Blend heavily with white so figures stand out clearly (Productive Peter style)
         white = Image.new("RGB", (w, h), (255, 255, 255))
-        return Image.blend(img, white, 0.55)
+        return Image.blend(img, white, 0.72)
     except Exception as e:
         print(f"  [BG] Pollinations failed ({e}), using plain background")
         return None
@@ -499,7 +499,7 @@ def _create_frame_wide(text, narration, w, h, scene_idx, phase, slot, word_start
     if not bg:
         _draw_grid(draw, w, h)
 
-    s = 2.5 if h > w else 1.9
+    s = 2.8 if h > w else 2.1
     bubble_fs = max(28, w // 28) if h > w else max(22, h // 26)
     bubble_a = ""  # voice narrates — no text bubble for speaker
     scene_type = scene_idx % 4
@@ -519,7 +519,7 @@ def _create_frame_focus_a(text, narration, w, h, scene_idx, phase, slot, word_st
     if not bg:
         _draw_grid(draw, w, h)
 
-    s = 3.0 if h > w else 2.4
+    s = 3.4 if h > w else 2.7
     bubble_fs = max(30, w // 24) if h > w else max(26, h // 22)
     cx = int(w * 0.38)
     cy = int(h * 0.62)
@@ -578,7 +578,7 @@ def _create_frame_focus_b(text, narration, w, h, scene_idx, phase, slot, word_st
     if not bg:
         _draw_grid(draw, w, h)
 
-    s = 3.0 if h > w else 2.4
+    s = 3.4 if h > w else 2.7
     bubble_fs = max(30, w // 24) if h > w else max(26, h // 22)
     cx = int(w * 0.62)
     cy = int(h * 0.62)
@@ -647,7 +647,9 @@ def create_scene_video(text, bg_color, duration, output_path,
     scene_bg = _fetch_bg(text, w, h, seed=scene_idx * 7 + slot)
 
     sub_clips = []
-    phases = [0, 1, 0, 1]  # 4-frame arm cycle per shot
+    # 8-frame smooth cycle: arm rises and falls fluidly (0 → peak → 0)
+    phases = [0, 0.25, 0.5, 0.75, 1, 0.75, 0.5, 0.25]
+    n_frames = len(phases)
 
     for shot_idx, (shot_type, shot_dur) in enumerate(shots):
         shot_frames_dir = output_path.replace(".mp4", f"_s{shot_idx}_frames")
@@ -660,16 +662,16 @@ def create_scene_video(text, bg_color, duration, output_path,
 
         sub_path = output_path.replace(".mp4", f"_shot{shot_idx}.mp4")
         result = subprocess.run([
-            ff, "-y", "-framerate", "4",
+            ff, "-y", "-framerate", "8",
             "-i", os.path.join(shot_frames_dir, "f%03d.png"),
-            "-vf", "loop=-1:size=4:start=0",
+            "-vf", f"loop=-1:size={n_frames}:start=0,fade=t=in:st=0:d=0.2",
             "-t", str(shot_dur),
             "-c:v", "libx264", "-preset", "ultrafast",
             "-pix_fmt", "yuv420p", "-r", "24", "-crf", "18", sub_path
         ], capture_output=True, text=True, timeout=60)
 
         # Cleanup shot frames immediately
-        for fi in range(4):
+        for fi in range(n_frames):
             fp = os.path.join(shot_frames_dir, f"f{fi:03d}.png")
             if os.path.exists(fp): os.remove(fp)
         try: os.rmdir(shot_frames_dir)
@@ -684,18 +686,17 @@ def create_scene_video(text, bg_color, duration, output_path,
         # Full fallback — simple single loop
         frames_dir = output_path.replace(".mp4", "_fallback_frames")
         os.makedirs(frames_dir, exist_ok=True)
-        wpf_fb = max(3, total_words // 4) if total_words else 6
         for fi, phase in enumerate(phases):
-            frame = _create_frame_wide(label, narration, w, h, scene_idx, phase, slot, fi * wpf_fb, wpf_fb, bg=scene_bg)
+            frame = _create_frame_wide(label, narration, w, h, scene_idx, phase, slot, 0, 6, bg=scene_bg)
             frame.save(os.path.join(frames_dir, f"f{fi:03d}.png"))
         subprocess.run([
-            ff, "-y", "-framerate", "4",
+            ff, "-y", "-framerate", "8",
             "-i", os.path.join(frames_dir, "f%03d.png"),
-            "-vf", "loop=-1:size=4:start=0", "-t", str(d),
+            "-vf", f"loop=-1:size={n_frames}:start=0", "-t", str(d),
             "-c:v", "libx264", "-preset", "ultrafast",
             "-pix_fmt", "yuv420p", "-r", "24", "-crf", "18", output_path
         ], capture_output=True, text=True, timeout=120)
-        for fi in range(4):
+        for fi in range(n_frames):
             fp = os.path.join(frames_dir, f"f{fi:03d}.png")
             if os.path.exists(fp): os.remove(fp)
         try: os.rmdir(frames_dir)
