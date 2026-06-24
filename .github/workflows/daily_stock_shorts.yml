@@ -1,8 +1,9 @@
 name: Stock Footage — Shorts
 
 on:
-  schedule:
-    - cron: '0 10 * * 0'   # Sunday 3:30 PM IST (10:00 AM UTC)
+  # PAUSED — keeping stick figures only for brand consistency
+  # schedule:
+  #   - cron: '0 10 * * 0'   # Sunday 3:30 PM IST (10:00 AM UTC)
   workflow_dispatch:
 
 jobs:

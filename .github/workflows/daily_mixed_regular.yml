@@ -1,8 +1,9 @@
 name: Mixed — Regular Video (Cartoon + Stock)
 
 on:
-  schedule:
-    - cron: '30 11 * * 6'  # Saturday 5:00 PM IST (11:30 AM UTC)
+  # PAUSED — keeping stick figures only for brand consistency
+  # schedule:
+  #   - cron: '30 11 * * 6'  # Saturday 5:00 PM IST (11:30 AM UTC)
   workflow_dispatch:
 
 jobs:

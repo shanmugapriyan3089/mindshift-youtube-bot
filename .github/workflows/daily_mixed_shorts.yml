@@ -1,8 +1,9 @@
 name: Mixed — Shorts (Cartoon + Stock)
 
 on:
-  schedule:
-    - cron: '0 13 * * 6'   # Saturday 6:30 PM IST (1:00 PM UTC)
+  # PAUSED — keeping stick figures only for brand consistency
+  # schedule:
+  #   - cron: '0 13 * * 6'   # Saturday 6:30 PM IST (1:00 PM UTC)
   workflow_dispatch:
 
 jobs:

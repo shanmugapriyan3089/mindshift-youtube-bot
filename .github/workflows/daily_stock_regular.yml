@@ -1,8 +1,9 @@
 name: Stock Footage — Regular Video
 
 on:
-  schedule:
-    - cron: '30 6 * * 0'   # Sunday 12:00 PM IST (6:30 AM UTC)
+  # PAUSED — keeping stick figures only for brand consistency
+  # schedule:
+  #   - cron: '30 6 * * 0'   # Sunday 12:00 PM IST (6:30 AM UTC)
   workflow_dispatch:
 
 jobs:
