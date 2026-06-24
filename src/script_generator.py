@@ -42,8 +42,9 @@ duration_seconds for each scene: 27"""
     else:
         duration_label = "55-58 seconds"
         scene_guide = f"""Exactly {num_scenes} scenes. Ultra fast-paced. Hook in first 3 seconds.
-Each scene narration: 25-35 words. Punchy, one idea per scene, spoken fast.
-This fills ~10-11 seconds of speech which matches the scene duration perfectly.
+Each scene narration: 34-40 words. One punchy idea per scene, spoken fast.
+This fills exactly 13 seconds of speech at natural Kokoro TTS pace.
+Do NOT go below 34 words — shorter narrations leave dead silence in the scene.
 duration_seconds for each scene: 13"""
 
     prompt = f"""You are a top YouTube scriptwriter for a viral psychology/motivation channel like Jamie Social, Trust Me Bro, or EverythingProfessor.
