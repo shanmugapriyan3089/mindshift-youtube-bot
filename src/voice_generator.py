@@ -1,17 +1,18 @@
 """
-Voiceover pipeline (best free quality):
-1. Kokoro-82M   — near-ElevenLabs quality, open source, offline after first download
-2. edge-tts     — Microsoft Jenny Neural, natural, free
-3. gTTS         — Google HTTP TTS, decent fallback
-4. espeak       — offline last resort
-5. silence      — absolute fallback
+Voiceover pipeline:
+  On GitHub Actions (CI=true): espeak → edge-tts → gTTS → silence
+  Locally:                     Kokoro → edge-tts → gTTS → espeak → silence
 
-All TTS runs in isolated subprocess with hard timeout — pipeline never hangs.
+Kokoro is skipped on CI — it requires a 300MB model download and the
+60s timeout per scene wastes minutes before falling through.
+espeak is promoted to first on CI because it's local (no network needed).
 """
 import os
 import sys
 import subprocess
 import shutil
+
+_IS_CI = os.environ.get("GITHUB_ACTIONS") == "true" or os.environ.get("CI") == "true"
 
 
 def _ffmpeg():
@@ -129,16 +130,24 @@ def _generate_gtts(text: str, output_path: str) -> bool:
 # ── 4. espeak ─────────────────────────────────────────────────────────────────
 
 def _generate_espeak(text: str, output_path: str) -> bool:
-    if not shutil.which("espeak"):
+    # Try espeak-ng first (newer, ships by default on Ubuntu), then espeak
+    cmd = None
+    for binary in ["espeak-ng", "espeak"]:
+        if shutil.which(binary):
+            cmd = binary
+            break
+    if cmd is None:
+        print("  [espeak] not found")
         return False
     try:
         wav = output_path.replace(".mp3", "_esp.wav")
+        # Use plain "en" voice — always available, no variant suffix needed
         r = subprocess.run(
-            ["espeak", "-v", "en-us+f3", "-s", "155", "-a", "180",
-             "-w", wav, text[:600]],
-            capture_output=True, timeout=20
+            [cmd, "-v", "en", "-s", "150", "-a", "200", "-w", wav, text[:600]],
+            capture_output=True, timeout=30
         )
-        if r.returncode != 0 or not os.path.exists(wav):
+        if r.returncode != 0 or not os.path.exists(wav) or os.path.getsize(wav) < 100:
+            print(f"  [espeak] failed: {r.stderr[-100:]}")
             return False
         subprocess.run(
             [_ffmpeg(), "-y", "-i", wav, "-c:a", "libmp3lame", "-q:a", "3", output_path],
@@ -175,25 +184,43 @@ def generate_voiceover(text: str, output_path: str, duration_hint: int = 15) -> 
         exist_ok=True
     )
 
-    print("  [Voice] Kokoro-82M (best quality)...")
-    if _generate_kokoro(text, output_path):
-        print("  [Voice] Kokoro OK ✓")
-        return output_path
+    if _IS_CI:
+        # On GitHub Actions: espeak first (local, no network), then network TTS
+        print("  [Voice] espeak-ng (local, CI mode)...")
+        if _generate_espeak(text, output_path):
+            print("  [Voice] espeak OK ✓")
+            return output_path
 
-    print("  [Voice] edge-tts (Jenny Neural)...")
-    if _generate_edge_tts(text, output_path):
-        print("  [Voice] edge-tts OK ✓")
-        return output_path
+        print("  [Voice] edge-tts fallback...")
+        if _generate_edge_tts(text, output_path):
+            print("  [Voice] edge-tts OK ✓")
+            return output_path
 
-    print("  [Voice] gTTS fallback...")
-    if _generate_gtts(text, output_path):
-        print("  [Voice] gTTS OK ✓")
-        return output_path
+        print("  [Voice] gTTS fallback...")
+        if _generate_gtts(text, output_path):
+            print("  [Voice] gTTS OK ✓")
+            return output_path
+    else:
+        # Local: best quality first
+        print("  [Voice] Kokoro-82M (best quality)...")
+        if _generate_kokoro(text, output_path):
+            print("  [Voice] Kokoro OK ✓")
+            return output_path
 
-    print("  [Voice] espeak fallback...")
-    if _generate_espeak(text, output_path):
-        print("  [Voice] espeak OK ✓")
-        return output_path
+        print("  [Voice] edge-tts (Jenny Neural)...")
+        if _generate_edge_tts(text, output_path):
+            print("  [Voice] edge-tts OK ✓")
+            return output_path
+
+        print("  [Voice] gTTS fallback...")
+        if _generate_gtts(text, output_path):
+            print("  [Voice] gTTS OK ✓")
+            return output_path
+
+        print("  [Voice] espeak fallback...")
+        if _generate_espeak(text, output_path):
+            print("  [Voice] espeak OK ✓")
+            return output_path
 
     print("  [Voice] silence fallback")
     _generate_silence(duration_hint, output_path)
