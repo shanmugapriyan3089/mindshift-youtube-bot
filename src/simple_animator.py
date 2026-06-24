@@ -501,7 +501,7 @@ def _create_frame_wide(text, narration, w, h, scene_idx, phase, slot, word_start
 
     s = 2.5 if h > w else 1.9
     bubble_fs = max(28, w // 28) if h > w else max(22, h // 26)
-    bubble_a = text[:50]  # text_overlay = main concept shown on screen
+    bubble_a = ""  # voice narrates — no text bubble for speaker
     scene_type = scene_idx % 4
     rng = random.Random(scene_idx * 100 + slot)
     bubble_b = rng.choice(_REACTIONS[scene_type])
@@ -527,7 +527,7 @@ def _create_frame_focus_a(text, narration, w, h, scene_idx, phase, slot, word_st
     rng = random.Random(scene_idx * 100 + slot)
     label_text = _LABEL_POOLS[scene_type][(slot + scene_idx) % len(_LABEL_POOLS[scene_type])]
 
-    bubble_text = text[:50]  # text_overlay = main concept being explained
+    bubble_text = ""  # voice narrates — figure A animates, no text bubble
 
     pose_map = ["pointing_r", "talking", "excited", "excited"]
     emotion_map = ["excited", "thinking", "excited", "excited"]

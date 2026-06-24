@@ -52,7 +52,7 @@ def run_pipeline(video_type: str = "regular"):
 
     # 4. Generate voiceovers (edge-tts, free)
     print("[4/6] Generating voiceovers (edge-tts)...")
-    voice_paths = generate_scene_voiceovers(script["scenes"], voices_dir)
+    voice_paths = generate_scene_voiceovers(script["scenes"], voices_dir, video_type=video_type)
     print()
 
     # 5. Assemble final video

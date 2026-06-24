@@ -235,20 +235,28 @@ def _pad_audio_to_duration(audio_path: str, target_sec: int):
                 pass
 
 
-def generate_scene_voiceovers(scenes: list, output_dir: str) -> list:
-    import time
+def generate_scene_voiceovers(scenes: list, output_dir: str, video_type: str = "regular") -> list:
     os.makedirs(output_dir, exist_ok=True)
+
+    if video_type == "shorts":
+        # One combined TTS for all scenes — no inter-scene gaps, natural flow, clean ending
+        combined_text = " ".join(s["narration"] for s in scenes)
+        total_duration = sum(s.get("duration_seconds", 13) for s in scenes)
+        combined_path = os.path.join(output_dir, "voice_combined.mp3")
+        print(f"  [Voice] Shorts combined TTS ({len(scenes)} scenes, {total_duration}s)...")
+        generate_voiceover(combined_text, combined_path, duration_hint=total_duration)
+        _pad_audio_to_duration(combined_path, total_duration)
+        return [combined_path]
+
+    import time
     paths = []
     for i, scene in enumerate(scenes):
         path = os.path.join(output_dir, f"voice_{scene['scene_number']:02d}.mp3")
         duration = scene.get("duration_seconds", 15)
         print(f"  [Voice] Scene {scene['scene_number']}/{len(scenes)}...")
         generate_voiceover(scene["narration"], path, duration_hint=duration)
-        # Pad voice to scene duration — ensures concat_audio matches concat_video
-        # so -shortest in assembler doesn't cut the video short (critical for shorts)
         _pad_audio_to_duration(path, duration)
         paths.append(path)
-        # Pause between scenes — prevents edge-tts rate limiting
         if i < len(scenes) - 1:
             time.sleep(1.5)
     return paths
