@@ -2,9 +2,12 @@
 client_secrets.json
 client_secret*.json
 youtube_token.pickle
-youtube_token.pickle
+token_for_github.txt
+*.pickle
 output/
 assets/music/
 __pycache__/
 *.pyc
 .DS_Store
+used_topics.json
+upload_log.json
