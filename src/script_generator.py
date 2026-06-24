@@ -42,7 +42,8 @@ duration_seconds for each scene: 27"""
     else:
         duration_label = "55-58 seconds"
         scene_guide = f"""Exactly {num_scenes} scenes. Ultra fast-paced. Hook in first 3 seconds.
-Each scene narration: 10-15 words max. Punchy. One idea per scene.
+Each scene narration: 25-35 words. Punchy, one idea per scene, spoken fast.
+This fills ~10-11 seconds of speech which matches the scene duration perfectly.
 duration_seconds for each scene: 13"""
 
     prompt = f"""You are a top YouTube scriptwriter for a viral psychology/motivation channel like Jamie Social, Trust Me Bro, or EverythingProfessor.

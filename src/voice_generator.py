@@ -200,6 +200,35 @@ def generate_voiceover(text: str, output_path: str, duration_hint: int = 15) -> 
     return output_path
 
 
+def _pad_audio_to_duration(audio_path: str, target_sec: int):
+    """Pad audio with silence so it fills the full scene duration.
+
+    This is critical for shorts: TTS for 10-15 words is only ~5s but the
+    scene video is 13s. Without padding, FFmpeg's -shortest cuts the merged
+    video to ~20s (4 scenes × 5s) leaving most of the short silent.
+
+    Uses apad without -t so we never truncate audio that's already longer.
+    """
+    ff = _ffmpeg()
+    tmp = audio_path + "_pad.mp3"
+    try:
+        r = subprocess.run([
+            ff, "-y", "-i", audio_path,
+            "-af", f"apad=whole_dur={target_sec}",
+            "-c:a", "libmp3lame", "-q:a", "4", tmp
+        ], capture_output=True, timeout=30)
+        if r.returncode == 0 and os.path.exists(tmp) and os.path.getsize(tmp) > 100:
+            os.replace(tmp, audio_path)
+    except Exception as e:
+        print(f"  [Voice] Pad failed: {e}")
+    finally:
+        if os.path.exists(tmp):
+            try:
+                os.remove(tmp)
+            except Exception:
+                pass
+
+
 def generate_scene_voiceovers(scenes: list, output_dir: str) -> list:
     import time
     os.makedirs(output_dir, exist_ok=True)
@@ -209,8 +238,11 @@ def generate_scene_voiceovers(scenes: list, output_dir: str) -> list:
         duration = scene.get("duration_seconds", 15)
         print(f"  [Voice] Scene {scene['scene_number']}/{len(scenes)}...")
         generate_voiceover(scene["narration"], path, duration_hint=duration)
+        # Pad voice to scene duration — ensures concat_audio matches concat_video
+        # so -shortest in assembler doesn't cut the video short (critical for shorts)
+        _pad_audio_to_duration(path, duration)
         paths.append(path)
-        # Small pause between scenes — prevents edge-tts rate limiting after many requests
+        # Pause between scenes — prevents edge-tts rate limiting
         if i < len(scenes) - 1:
             time.sleep(1.5)
     return paths
