@@ -492,6 +492,31 @@ def _draw_grid(draw, w, h):
     for i in range(0, h, max(1, h//22)): draw.line([0, i, w, i], fill=gc, width=1)
 
 
+def _draw_kinetic_text(draw, text: str, w: int, h: int):
+    """Large bold synced words — Trust Me Bro / Productive Peter kinetic style.
+    White text with thick black outline. Positioned above figures in safe zone.
+    """
+    if not text or not text.strip():
+        return
+    is_short = h > w
+    fs = max(52, w // 12) if is_short else max(44, w // 20)
+    font = _font(fs)
+    max_chars = max(8, int(w * 0.78 / (fs * 0.58)))
+    lines = textwrap.wrap(text.upper(), width=max_chars)[:2]
+    if not lines:
+        return
+    lh = int(fs * 1.28)
+    base_y = int(h * 0.20) if is_short else int(h * 0.05)
+    for i, line in enumerate(lines):
+        bb = draw.textbbox((0, 0), line, font=font)
+        lw2 = bb[2] - bb[0]
+        tx = max(int(w * 0.03), (w - lw2) // 2)
+        ty = base_y + i * lh
+        for dx, dy in [(-4,4),(4,4),(-4,-4),(4,-4),(0,5),(5,0),(-5,0),(0,-5)]:
+            draw.text((tx+dx, ty+dy), line, fill=(0, 0, 0), font=font)
+        draw.text((tx, ty), line, fill=(255, 255, 255), font=font)
+
+
 def _create_frame_wide(text, narration, w, h, scene_idx, phase, slot, word_start, wpf, bg=None):
     """Both figures — standard two-character scene."""
     img = bg.copy() if bg else Image.new("RGB", (w, h), BG)
@@ -620,6 +645,8 @@ def create_scene_video(text, bg_color, duration, output_path,
     label = text[:40].upper()
     ff = _ffmpeg()
     d = duration
+    narration_words = narration.split() if narration else []
+    total_words = len(narration_words)
 
     # Shot sequence — genuine different compositions, not zoom tricks
     # Regular: wide → speaker solo → concept card → reactor solo → wide (27s total)
@@ -651,20 +678,37 @@ def create_scene_video(text, bg_color, duration, output_path,
     phases = [0, 0.25, 0.5, 0.75, 1, 0.75, 0.5, 0.25]
     n_frames = len(phases)
 
+    # Shot start times for kinetic text word-time sync
+    shot_starts = []
+    t = 0
+    for _, sd in shots:
+        shot_starts.append(t)
+        t += sd
+
     for shot_idx, (shot_type, shot_dur) in enumerate(shots):
+        # Slice narration words for this shot's time window → kinetic text
+        if total_words > 0 and d > 0:
+            wf = round(total_words * shot_starts[shot_idx] / d)
+            wt = min(total_words, round(total_words * (shot_starts[shot_idx] + shot_dur) / d))
+            kinetic_text = " ".join(narration_words[wf:wt])
+        else:
+            kinetic_text = label
+
         shot_frames_dir = output_path.replace(".mp4", f"_s{shot_idx}_frames")
         os.makedirs(shot_frames_dir, exist_ok=True)
 
         renderer = _SHOT_RENDERERS[shot_type]
         for fi, phase in enumerate(phases):
             frame = renderer(label, narration, w, h, scene_idx, phase, slot, 0, 6, bg=scene_bg)
+            # Kinetic text overlaid on top of rendered frame
+            _draw_kinetic_text(ImageDraw.Draw(frame), kinetic_text, w, h)
             frame.save(os.path.join(shot_frames_dir, f"f{fi:03d}.png"))
 
         sub_path = output_path.replace(".mp4", f"_shot{shot_idx}.mp4")
         result = subprocess.run([
             ff, "-y", "-framerate", "8",
             "-i", os.path.join(shot_frames_dir, "f%03d.png"),
-            "-vf", f"loop=-1:size={n_frames}:start=0,fade=t=in:st=0:d=0.2",
+            "-vf", f"loop=-1:size={n_frames}:start=0",  # no fade — no blank screens
             "-t", str(shot_dur),
             "-c:v", "libx264", "-preset", "ultrafast",
             "-pix_fmt", "yuv420p", "-r", "24", "-crf", "18", sub_path
@@ -688,6 +732,7 @@ def create_scene_video(text, bg_color, duration, output_path,
         os.makedirs(frames_dir, exist_ok=True)
         for fi, phase in enumerate(phases):
             frame = _create_frame_wide(label, narration, w, h, scene_idx, phase, slot, 0, 6, bg=scene_bg)
+            _draw_kinetic_text(ImageDraw.Draw(frame), label, w, h)
             frame.save(os.path.join(frames_dir, f"f{fi:03d}.png"))
         subprocess.run([
             ff, "-y", "-framerate", "8",

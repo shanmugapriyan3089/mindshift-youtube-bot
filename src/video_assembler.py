@@ -258,40 +258,38 @@ def generate_thumbnail(title: str, output_path: str, video_type: str = "regular"
         lighter = tuple(min(255, v + 40) for v in c["bg"])
 
         if video_type == "regular":
-            # REGULAR (1920×1080): text left, figure right
-            draw.ellipse([int(w*0.50), -int(h*0.2), int(w*1.1), int(h*0.9)], fill=lighter)
-            draw.ellipse([-int(w*0.05), int(h*0.7), int(w*0.28), int(h*1.1)], fill=lighter)
-            draw.rectangle([0, h - int(h*0.10), w, h], fill=darker)
+            # REGULAR (1280×720): big text left (60% width), giant figure right
+            draw.rectangle([0, h - int(h*0.12), w, h], fill=darker)
 
-            words = title.upper().split()[:6]
-            if len(words) <= 2:
-                lines = [" ".join(words)]
-            elif len(words) <= 4:
-                mid = len(words) // 2
-                lines = [" ".join(words[:mid]), " ".join(words[mid:])]
-            else:
-                lines = [" ".join(words[:2]), " ".join(words[2:4]), " ".join(words[4:])]
+            # Max 4 words, 2 lines — big and readable like Trust Me Bro thumbnails
+            words = title.upper().split()[:4]
+            mid = max(1, len(words) // 2)
+            lines = [" ".join(words[:mid]), " ".join(words[mid:])]
+            lines = [l for l in lines if l]
 
-            fig_cx, fig_cy, fig_s = int(w*0.79), int(h*0.60), 2.7
+            # Giant figure — right side, fills height
+            fig_cx, fig_cy, fig_s = int(w * 0.80), int(h * 0.58), 3.2
             _draw_shocked_figure(draw, fig_cx, fig_cy, fig_s)
 
-            exc_font = _thumb_font(int(h * 0.22))
-            draw.text((int(w*0.64), int(h*0.02)), "!", fill=c["accent"], font=exc_font)
+            # Huge "!" accent behind text area
+            exc_font = _thumb_font(int(h * 0.55))
+            draw.text((int(w * 0.03), int(h * -0.05)), "!", fill=c["accent"], font=exc_font)
 
-            fs  = int(h * 0.13) if len(lines) <= 2 else int(h * 0.10)
-            tx  = int(w * 0.05)
-            ty  = int(h * 0.15) if len(lines) == 3 else int(h * 0.24)
-            gap = int(fs * 1.25)
+            # Big bold text — left side
+            fs  = int(h * 0.185)
+            tx  = int(w * 0.06)
+            ty  = int(h * 0.12)
+            gap = int(fs * 1.18)
             tfont = _thumb_font(fs)
             for i, line in enumerate(lines):
                 y = ty + i * gap
-                for dx, dy in [(-4,4),(4,4),(-4,-4),(4,-4),(0,5),(5,0),(-5,0)]:
-                    draw.text((tx+dx, y+dy), line, fill=(0,0,0), font=tfont)
+                for dx, dy in [(-5,5),(5,5),(-5,-5),(5,-5),(0,6),(6,0),(-6,0)]:
+                    draw.text((tx+dx, y+dy), line, fill=(0, 0, 0), font=tfont)
                 draw.text((tx, y), line, fill=c["text"], font=tfont)
 
-            sf = _thumb_font(int(h * 0.032))
-            draw.text((int(w*0.04), h - int(h*0.075)),
-                      "@MindShiftProductivity", fill=(255,255,255), font=sf)
+            sf = _thumb_font(int(h * 0.038))
+            draw.text((int(w*0.04), h - int(h*0.085)),
+                      "@MindShiftProductivity", fill=(255, 255, 255), font=sf)
 
         else:
             # SHORTS (1080×1920): text top, figure center-bottom
@@ -306,26 +304,34 @@ def generate_thumbnail(title: str, output_path: str, video_type: str = "regular"
                 lines.append([word])
             lines = [" ".join(l) for l in lines if l]
 
-            fig_cx, fig_cy, fig_s = int(w*0.50), int(h*0.72), 2.4
+            # Giant centered figure — bottom half
+            fig_cx, fig_cy, fig_s = int(w * 0.50), int(h * 0.72), 2.9
             _draw_shocked_figure(draw, fig_cx, fig_cy, fig_s)
 
-            exc_font = _thumb_font(int(w * 0.18))
-            draw.text((int(w*0.72), int(h*0.08)), "!", fill=c["accent"], font=exc_font)
+            # Big "!" — top right
+            exc_font = _thumb_font(int(w * 0.22))
+            draw.text((int(w * 0.76), int(h * 0.05)), "!", fill=c["accent"], font=exc_font)
 
-            fs  = int(w * 0.175)
-            tx  = int(w * 0.05)
-            ty  = int(h * 0.06)
-            gap = int(fs * 1.2)
+            # Max 2 words per line, 2 lines — huge font
+            words = title.upper().split()[:4]
+            mid = max(1, len(words) // 2)
+            lines = [" ".join(words[:mid]), " ".join(words[mid:])]
+            lines = [l for l in lines if l]
+
+            fs  = int(w * 0.195)
+            tx  = int(w * 0.04)
+            ty  = int(h * 0.05)
+            gap = int(fs * 1.18)
             tfont = _thumb_font(fs)
             for i, line in enumerate(lines):
                 y = ty + i * gap
-                for dx, dy in [(-4,4),(4,4),(-4,-4),(4,-4),(0,5)]:
-                    draw.text((tx+dx, y+dy), line, fill=(0,0,0), font=tfont)
+                for dx, dy in [(-5,5),(5,5),(-5,-5),(5,-5),(0,6),(6,0),(-6,0)]:
+                    draw.text((tx+dx, y+dy), line, fill=(0, 0, 0), font=tfont)
                 draw.text((tx, y), line, fill=c["text"], font=tfont)
 
             sf = _thumb_font(int(w * 0.042))
             draw.text((int(w*0.05), h - int(h*0.055)),
-                      "@MindShiftProductivity", fill=(255,255,255), font=sf)
+                      "@MindShiftProductivity", fill=(255, 255, 255), font=sf)
 
         img.save(output_path, quality=95)
         print(f"  [Thumbnail] Saved: {output_path}")
