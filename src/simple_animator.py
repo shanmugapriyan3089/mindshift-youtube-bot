@@ -493,12 +493,15 @@ def _draw_grid(draw, w, h):
 
 
 def _draw_kinetic_text(draw, text: str, w: int, h: int):
-    """Synced narration words shown above figures — clean dark text on light gradient.
-    Shorts: 1 line max, ~50px. Regular: 2 lines max, ~72px.
+    """Synced narration words shown above figures — regular videos only.
+    Shorts rely on voice + label badge; text at top crowds the frame.
+    Regular: 2 lines max, ~72px.
     """
     if not text or not text.strip():
         return
     is_short = h > w
+    if is_short:
+        return  # shorts: no top text — voice + label badge carry the content
     fs = max(36, w // 22) if is_short else max(40, w // 26)
     font = _font(fs)
     max_chars = max(8, int(w * 0.82 / (fs * 0.58)))
@@ -531,7 +534,8 @@ def _create_frame_wide(text, narration, w, h, scene_idx, phase, slot, word_start
     bubble_a = ""  # voice narrates — no text bubble for speaker
     scene_type = scene_idx % 4
     rng = random.Random(scene_idx * 100 + slot)
-    bubble_b = rng.choice(_REACTIONS[scene_type])
+    # Shorts: no B bubble in wide shot — it overlaps the label badge; close-ups keep bubbles
+    bubble_b = "" if h > w else rng.choice(_REACTIONS[scene_type])
     label_text = _LABEL_POOLS[scene_type][(slot + scene_idx) % len(_LABEL_POOLS[scene_type])]
 
     SCENE_FNS[scene_type](draw, w, h, s, bubble_fs, bubble_a, bubble_b, phase, label_text)
