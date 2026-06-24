@@ -484,6 +484,56 @@ def _create_frame(text, narration, w, h, scene_idx, phase=0, slot=0,
 
 # ── Video generation ──────────────────────────────────────────────────────────
 
+def _even(n):
+    """Round down to nearest even number — required by yuv420p codec."""
+    return (int(n) // 2) * 2
+
+
+def _camera_cuts_filter(w, h, num_frames, duration):
+    """
+    Build an FFmpeg filter_complex string that creates camera cuts within a scene.
+    Each cut zooms into a different area — makes the video feel dynamic like
+    Trust Me Bro / Productive Peter without needing real animation.
+
+    Regular (landscape): 5 cuts — wide, left zoom, centre/prop, right zoom, wide
+    Shorts (portrait):   4 cuts — wide, top zoom, bottom zoom, wide
+    """
+    d = duration
+    if h > w:  # Shorts — 4 cuts
+        q = max(3, d // 4)
+        cuts = [
+            (0,       q,       f"scale={w}:{h}"),
+            (q,       q * 2,   f"crop={w}:{_even(h*0.60)}:0:0,scale={w}:{h}"),
+            (q * 2,   q * 3,   f"crop={w}:{_even(h*0.60)}:0:{_even(h*0.40)},scale={w}:{h}"),
+            (q * 3,   d,       f"scale={w}:{h}"),
+        ]
+    else:  # Regular — 5 cuts at 5-second intervals
+        t = [0, 5, 10, 15, 20, d]
+        cuts = [
+            (t[0], min(t[1], d), f"scale={w}:{h}"),
+            (t[1], min(t[2], d), f"crop={_even(w*0.55)}:{h}:0:0,scale={w}:{h}"),
+            (t[2], min(t[3], d), f"crop={_even(w*0.50)}:{_even(h*0.65)}:{_even(w*0.25)}:0,scale={w}:{h}"),
+            (t[3], min(t[4], d), f"crop={_even(w*0.55)}:{h}:{_even(w*0.45)}:0,scale={w}:{h}"),
+            (t[4], d,            f"scale={w}:{h}"),
+        ]
+
+    # Drop any zero-duration cuts (when duration < 20s)
+    cuts = [(s, e, vf) for s, e, vf in cuts if e > s]
+    n = len(cuts)
+
+    # Build filter_complex:
+    # 1. Loop the image frames infinitely
+    # 2. Split into n copies (one per cut)
+    # 3. Each copy: trim to its time window, reset PTS, apply crop/scale
+    # 4. Concat all cuts into final output stream
+    split_outs = "".join(f"[b{i}]" for i in range(n))
+    fc = f"[0:v]loop=-1:size={num_frames}:start=0,split={n}{split_outs}"
+    for i, (start, end, vf) in enumerate(cuts):
+        fc += f";[b{i}]trim={start}:{end},setpts=PTS-STARTPTS,{vf}[s{i}]"
+    fc += ";" + "".join(f"[s{i}]" for i in range(n)) + f"concat=n={n}:v=1:a=0[out]"
+    return fc
+
+
 def create_scene_video(text, bg_color, duration, output_path,
                        video_type="regular", scene_idx=0, bullets=None, narration="", slot=0):
     from config import REGULAR_VIDEO, SHORTS_VIDEO
@@ -495,14 +545,13 @@ def create_scene_video(text, bg_color, duration, output_path,
     frames_dir = output_path.replace(".mp4", "_frames")
     os.makedirs(frames_dir, exist_ok=True)
 
-    # 8 animation frames at 4fps = 2-second cycle that loops smoothly
-    # Arm phases alternate 0→1 for talking motion; word_start advances through narration
+    # 8 animation frames at 4fps = smooth 2-second arm-movement cycle
     narration_words = narration.split() if narration else []
     total_words = len(narration_words)
     num_frames = 8
     words_per_frame = max(4, total_words // num_frames) if total_words else 6
+    phases = [0, 0, 1, 1, 0, 0, 1, 1]
 
-    phases = [0, 0, 1, 1, 0, 0, 1, 1]  # smooth arm movement over 8 frames
     for fi in range(num_frames):
         word_start = (fi * words_per_frame) % max(1, total_words) if total_words else 0
         frame = _create_frame(label, narration, w, h, scene_idx,
@@ -510,23 +559,40 @@ def create_scene_video(text, bg_color, duration, output_path,
                               word_start=word_start, words_per_frame=words_per_frame)
         frame.save(os.path.join(frames_dir, f"f{fi:03d}.png"))
 
-    # Loop the 8-frame animation at 4fps — produces smooth motion for full duration
+    ff = _ffmpeg()
+    fc = _camera_cuts_filter(w, h, num_frames, duration)
+
+    # Primary: camera-cut filter_complex (dynamic zooms, professional pacing)
     result = subprocess.run([
-        _ffmpeg(), "-y", "-framerate", "4",
+        ff, "-y", "-framerate", "4",
         "-i", os.path.join(frames_dir, "f%03d.png"),
-        "-vf", f"loop=-1:size={num_frames}:start=0",
-        "-t", str(duration),
-        "-c:v", "libx264", "-pix_fmt", "yuv420p", "-r", "24", "-crf", "18", output_path
-    ], capture_output=True, text=True, timeout=120)
+        "-filter_complex", fc,
+        "-map", "[out]",
+        "-c:v", "libx264", "-preset", "ultrafast",
+        "-pix_fmt", "yuv420p", "-r", "24", "-crf", "18", output_path
+    ], capture_output=True, text=True, timeout=150)
+
+    # Fallback: simple loop if filter_complex fails (older FFmpeg, unusual runners)
+    if result.returncode != 0 or not os.path.exists(output_path) or os.path.getsize(output_path) < 1000:
+        print(f"  [FFmpeg] camera cuts failed, using simple loop: {result.stderr[-200:]}")
+        subprocess.run([
+            ff, "-y", "-framerate", "4",
+            "-i", os.path.join(frames_dir, "f%03d.png"),
+            "-vf", f"loop=-1:size={num_frames}:start=0",
+            "-t", str(duration),
+            "-c:v", "libx264", "-preset", "ultrafast",
+            "-pix_fmt", "yuv420p", "-r", "24", "-crf", "18", output_path
+        ], capture_output=True, text=True, timeout=120)
 
     # Cleanup temp frames
     for fi in range(num_frames):
         fp = os.path.join(frames_dir, f"f{fi:03d}.png")
         if os.path.exists(fp): os.remove(fp)
-    try: os.rmdir(frames_dir)
-    except: pass
+    try:
+        os.rmdir(frames_dir)
+    except Exception:
+        pass
 
-    if result.returncode != 0: print(f"  [FFmpeg]: {result.stderr[-300:]}")
     return output_path
 
 
