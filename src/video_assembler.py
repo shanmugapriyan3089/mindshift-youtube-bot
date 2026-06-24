@@ -163,8 +163,32 @@ def _draw_shocked_figure(draw, cx, cy, s=2.8):
     draw.line([cx, cy-int(15*s), cx+int(35*s), cy+int(55*s)], fill=(20, 20, 20), width=lw)
 
 
+def _fetch_thumb_bg(title: str, w: int, h: int, tint: tuple) -> "Image.Image | None":
+    """AI background for thumbnail from Pollinations.ai, tinted with scheme colour."""
+    try:
+        import urllib.request, urllib.parse
+        from io import BytesIO
+        from PIL import Image as PILImage
+
+        keywords = " ".join(title.lower().replace("'", "").split()[:6])
+        prompt = (f"dramatic cinematic background, psychology motivation, "
+                  f"{keywords}, vivid colors, no text, no faces, abstract light rays")
+        url = (f"https://image.pollinations.ai/prompt/{urllib.parse.quote(prompt)}"
+               f"?width={w}&height={h}&nologo=true&seed={abs(hash(title)) % 9999}&model=flux")
+        req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+        with urllib.request.urlopen(req, timeout=25) as r:
+            data = r.read()
+        ai_img = PILImage.open(BytesIO(data)).convert("RGB").resize((w, h))
+        # Tint with scheme colour at 45% — keeps colour identity, adds depth
+        tint_layer = PILImage.new("RGB", (w, h), tint)
+        return PILImage.blend(ai_img, tint_layer, 0.45)
+    except Exception as e:
+        print(f"  [Thumbnail] AI bg failed ({e}), using flat colour")
+        return None
+
+
 def generate_thumbnail(title: str, output_path: str, video_type: str = "regular") -> str:
-    """Generate eye-catching thumbnail: shocked stick figure + bold text + bright background."""
+    """Generate eye-catching thumbnail: shocked stick figure + bold text + AI background."""
     try:
         from PIL import Image, ImageDraw
         import hashlib
@@ -172,22 +196,25 @@ def generate_thumbnail(title: str, output_path: str, video_type: str = "regular"
         spec = REGULAR_VIDEO if video_type == "regular" else SHORTS_VIDEO
         w, h = spec["width"], spec["height"]
 
-        # Bright high-contrast color schemes (NOT dark navy)
         schemes = [
-            {"bg": (220, 50,  50),  "text": (255, 255, 255), "accent": (255, 214,   0)},  # Red
-            {"bg": (41,  128, 185), "text": (255, 255, 255), "accent": (255, 214,   0)},  # Blue
-            {"bg": (142, 68,  173), "text": (255, 255, 255), "accent": (255, 214,   0)},  # Purple
-            {"bg": (230, 126,  34), "text": (255, 255, 255), "accent": (255, 214,   0)},  # Orange
-            {"bg": ( 39, 174,  96), "text": (255, 255, 255), "accent": (255, 214,   0)},  # Green
+            {"bg": (220, 50,  50),  "text": (255, 255, 255), "accent": (255, 214,   0)},
+            {"bg": (41,  128, 185), "text": (255, 255, 255), "accent": (255, 214,   0)},
+            {"bg": (142, 68,  173), "text": (255, 255, 255), "accent": (255, 214,   0)},
+            {"bg": (230, 126,  34), "text": (255, 255, 255), "accent": (255, 214,   0)},
+            {"bg": ( 39, 174,  96), "text": (255, 255, 255), "accent": (255, 214,   0)},
         ]
         c = schemes[int(hashlib.md5(title.encode()).hexdigest(), 16) % len(schemes)]
 
-        img = Image.new("RGB", (w, h), c["bg"])
+        # Try AI background first; fall back to flat colour
+        ai_bg = _fetch_thumb_bg(title, w, h, c["bg"])
+        if ai_bg:
+            img = ai_bg
+        else:
+            img = Image.new("RGB", (w, h), c["bg"])
         draw = ImageDraw.Draw(img)
 
-        # Subtle lighter circles in background for depth
-        lighter = tuple(min(255, v + 35) for v in c["bg"])
-        darker  = tuple(max(0,   v - 50) for v in c["bg"])
+        darker = tuple(max(0, v - 60) for v in c["bg"])
+        lighter = tuple(min(255, v + 40) for v in c["bg"])
 
         if video_type == "regular":
             # REGULAR (1920×1080): text left, figure right
