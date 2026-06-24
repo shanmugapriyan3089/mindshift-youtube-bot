@@ -435,21 +435,41 @@ def _narration_strip(draw, narration, w, h, word_start, words_per_frame, fs_base
     draw.text((tx, ty), line, fill=(255, 255, 255), font=font)
 
 
-# ── Full frame ────────────────────────────────────────────────────────────────
+# ── Shot-type frame renderers ─────────────────────────────────────────────────
+# Each shot type produces a genuinely different visual composition.
+# This is what Trust Me Bro / Productive Peter actually do — they don't zoom
+# the same image; they switch to a different scene entirely.
 
-def _create_frame(text, narration, w, h, scene_idx, phase=0, slot=0,
-                  word_start=0, words_per_frame=6):
+def _draw_banner_and_watermark(draw, text, w, h):
+    bfs = max(36, w // 17)
+    bfont = _font(bfs)
+    bh = int(bfs * 2.1)
+    by = h - bh - int(h * 0.018)
+    draw.rectangle([int(w*0.03), by, int(w*0.97), by+bh], fill=YELLOW, outline=LINE, width=3)
+    safe = text[:32]
+    bb = draw.textbbox((0, 0), safe, font=bfont)
+    tx = max(int(w*0.05), (w - (bb[2]-bb[0])) // 2)
+    ty = by + (bh - (bb[3]-bb[1])) // 2
+    draw.text((tx+2, ty+2), safe, fill=(100,100,100), font=bfont)
+    draw.text((tx,   ty),   safe, fill=(15, 15, 15),  font=bfont)
+    draw.text((int(w*0.04), int(h*0.012)), "@MindShiftProductivity",
+              fill=(160, 180, 210), font=_font_r(max(20, w//46)))
+
+
+def _draw_grid(draw, w, h):
+    gc = (228, 236, 248)
+    for i in range(0, w, max(1, w//16)): draw.line([i, 0, i, h], fill=gc, width=1)
+    for i in range(0, h, max(1, h//22)): draw.line([0, i, w, i], fill=gc, width=1)
+
+
+def _create_frame_wide(text, narration, w, h, scene_idx, phase, slot, word_start, wpf):
+    """Both figures — standard two-character scene."""
     img = Image.new("RGB", (w, h), BG)
     draw = ImageDraw.Draw(img)
-
-    # Notebook grid lines
-    gc = (228, 236, 248)
-    for i in range(0, w, max(1, w//16)): draw.line([i,0,i,h], fill=gc, width=1)
-    for i in range(0, h, max(1, h//22)): draw.line([0,i,w,i], fill=gc, width=1)
+    _draw_grid(draw, w, h)
 
     s = 2.5 if h > w else 1.9
     bubble_fs = max(28, w // 28) if h > w else max(22, h // 26)
-
     words = narration.split() if narration else text.split()
     bubble_a = " ".join(words[:9]) if words else text[:40]
     scene_type = scene_idx % 4
@@ -458,81 +478,112 @@ def _create_frame(text, narration, w, h, scene_idx, phase=0, slot=0,
     label_text = _LABEL_POOLS[scene_type][(slot + scene_idx) % len(_LABEL_POOLS[scene_type])]
 
     SCENE_FNS[scene_type](draw, w, h, s, bubble_fs, bubble_a, bubble_b, phase, label_text)
-
-    # Narration subtitle strip — shows current spoken words
-    _narration_strip(draw, narration, w, h, word_start, words_per_frame, bubble_fs)
-
-    # Yellow banner
-    bfs = max(36, w // 17)
-    bfont = _font(bfs)
-    bh = int(bfs * 2.1)
-    by = h - bh - int(h * 0.018)
-    draw.rectangle([int(w*0.03), by, int(w*0.97), by+bh], fill=YELLOW, outline=LINE, width=3)
-    safe = text[:32]
-    bb = draw.textbbox((0,0), safe, font=bfont)
-    tx = max(int(w*0.05), (w - (bb[2]-bb[0])) // 2)
-    ty = by + (bh - (bb[3]-bb[1])) // 2
-    draw.text((tx+2, ty+2), safe, fill=(100,100,100), font=bfont)
-    draw.text((tx,   ty),   safe, fill=(15,15,15),    font=bfont)
-
-    # Watermark
-    draw.text((int(w*0.04), int(h*0.012)), "@MindShiftProductivity",
-              fill=(160, 180, 210), font=_font_r(max(20, w//46)))
-
+    _narration_strip(draw, narration, w, h, word_start, wpf, bubble_fs)
+    _draw_banner_and_watermark(draw, text, w, h)
     return img
 
 
+def _create_frame_focus_a(text, narration, w, h, scene_idx, phase, slot, word_start, wpf):
+    """Figure A (speaker) solo — larger, left-centred. Figure B off screen."""
+    img = Image.new("RGB", (w, h), BG)
+    draw = ImageDraw.Draw(img)
+    _draw_grid(draw, w, h)
+
+    s = 3.0 if h > w else 2.4
+    bubble_fs = max(30, w // 24) if h > w else max(26, h // 22)
+    cx = int(w * 0.38)
+    cy = int(h * 0.62)
+    scene_type = scene_idx % 4
+    rng = random.Random(scene_idx * 100 + slot)
+    label_text = _LABEL_POOLS[scene_type][(slot + scene_idx) % len(_LABEL_POOLS[scene_type])]
+
+    words = narration.split() if narration else text.split()
+    # Show words from the first third of the narration
+    bubble_text = " ".join(words[word_start:word_start + 9]) if words else text[:40]
+
+    pose_map = ["pointing_r", "talking", "excited", "excited"]
+    emotion_map = ["excited", "thinking", "excited", "excited"]
+    _figure(draw, cx, cy, s, pose=pose_map[scene_type], emotion=emotion_map[scene_type], phase=phase)
+    _bubble(draw, cx, cy - int(100*s), bubble_text, int(w*0.55), bubble_fs,
+            tail="left", anchor="right")
+    label_colors = [RED, PURPLE, GREEN, GREEN]
+    _label(draw, int(w*0.72), int(h*0.22), label_text, int(bubble_fs*0.85), label_colors[scene_type])
+    _narration_strip(draw, narration, w, h, word_start, wpf, bubble_fs)
+    _draw_banner_and_watermark(draw, text, w, h)
+    return img
+
+
+def _create_frame_focus_prop(text, narration, w, h, scene_idx, phase, slot, word_start, wpf):
+    """Concept card — large prop centred + key words from narration as bold text."""
+    img = Image.new("RGB", (w, h), BG)
+    draw = ImageDraw.Draw(img)
+    _draw_grid(draw, w, h)
+
+    scene_type = scene_idx % 4
+    prop_s = 2.2 if h > w else 1.6
+    prop_y = int(h * 0.30)
+    prop_fns = [_clock, _brain, _lightbulb, _trophy]
+    prop_fns[scene_type](draw, w // 2, prop_y, prop_s * (1.0 + 0.04 * phase))
+
+    # Key phrase — pick middle words from narration
+    words = narration.split() if narration else text.split()
+    mid = len(words) // 2
+    key_words = " ".join(words[max(0, mid - 4):mid + 4])
+    kfs = max(44, w // 18) if h > w else max(34, h // 16)
+    kfont = _font(kfs)
+    max_chars = max(8, int(w * 0.70 / (kfs * 0.60)))
+    lines = textwrap.wrap(key_words, width=max_chars)[:2]
+    ty = int(h * 0.52)
+    for line in lines:
+        bb = draw.textbbox((0, 0), line, font=kfont)
+        tx = max(int(w*0.04), (w - (bb[2]-bb[0])) // 2)
+        for dx, dy in [(-3, 3), (3, 3), (-3, -3), (3, -3)]:
+            draw.text((tx+dx, ty+dy), line, fill=(0, 0, 0), font=kfont)
+        draw.text((tx, ty), line, fill=BLUE, font=kfont)
+        ty += int(kfs * 1.35)
+
+    _draw_banner_and_watermark(draw, text, w, h)
+    return img
+
+
+def _create_frame_focus_b(text, narration, w, h, scene_idx, phase, slot, word_start, wpf):
+    """Figure B (reactor) solo — larger, right-centred. Shows audience reaction."""
+    img = Image.new("RGB", (w, h), BG)
+    draw = ImageDraw.Draw(img)
+    _draw_grid(draw, w, h)
+
+    s = 3.0 if h > w else 2.4
+    bubble_fs = max(30, w // 24) if h > w else max(26, h // 22)
+    cx = int(w * 0.62)
+    cy = int(h * 0.62)
+    scene_type = scene_idx % 4
+    rng = random.Random(scene_idx * 100 + slot)
+    bubble_b = rng.choice(_REACTIONS[scene_type])
+    label_text = _LABEL_POOLS[scene_type][(slot + scene_idx) % len(_LABEL_POOLS[scene_type])]
+
+    pose_map = ["shocked", "thinking", "pointing_l", "excited"]
+    emotion_map = ["shocked", "sad", "happy", "excited"]
+    _figure(draw, cx, cy, s, pose=pose_map[scene_type], emotion=emotion_map[scene_type],
+            flip=True, phase=phase)
+    bubble_fill = [(255,240,240), (240,240,255), (240,255,240), (255,255,220)]
+    _bubble(draw, cx, cy - int(100*s), bubble_b, int(w*0.55), bubble_fs,
+            tail="right", fill=bubble_fill[scene_type], anchor="left")
+    label_colors = [RED, PURPLE, GREEN, ORANGE]
+    _label(draw, int(w*0.28), int(h*0.22), label_text, int(bubble_fs*0.85), label_colors[scene_type])
+    _narration_strip(draw, narration, w, h, word_start, wpf, bubble_fs)
+    _draw_banner_and_watermark(draw, text, w, h)
+    return img
+
+
+_SHOT_RENDERERS = {
+    "wide":       _create_frame_wide,
+    "focus_a":    _create_frame_focus_a,
+    "focus_prop": _create_frame_focus_prop,
+    "focus_b":    _create_frame_focus_b,
+}
+
+
 # ── Video generation ──────────────────────────────────────────────────────────
-
-def _even(n):
-    """Round down to nearest even number — required by yuv420p codec."""
-    return (int(n) // 2) * 2
-
-
-def _camera_cuts_filter(w, h, num_frames, duration):
-    """
-    Build an FFmpeg filter_complex string that creates camera cuts within a scene.
-    Each cut zooms into a different area — makes the video feel dynamic like
-    Trust Me Bro / Productive Peter without needing real animation.
-
-    Regular (landscape): 5 cuts — wide, left zoom, centre/prop, right zoom, wide
-    Shorts (portrait):   4 cuts — wide, top zoom, bottom zoom, wide
-    """
-    d = duration
-    if h > w:  # Shorts — 4 cuts
-        q = max(3, d // 4)
-        cuts = [
-            (0,       q,       f"scale={w}:{h}"),
-            (q,       q * 2,   f"crop={w}:{_even(h*0.60)}:0:0,scale={w}:{h}"),
-            (q * 2,   q * 3,   f"crop={w}:{_even(h*0.60)}:0:{_even(h*0.40)},scale={w}:{h}"),
-            (q * 3,   d,       f"scale={w}:{h}"),
-        ]
-    else:  # Regular — 5 cuts at 5-second intervals
-        t = [0, 5, 10, 15, 20, d]
-        cuts = [
-            (t[0], min(t[1], d), f"scale={w}:{h}"),
-            (t[1], min(t[2], d), f"crop={_even(w*0.55)}:{h}:0:0,scale={w}:{h}"),
-            (t[2], min(t[3], d), f"crop={_even(w*0.50)}:{_even(h*0.65)}:{_even(w*0.25)}:0,scale={w}:{h}"),
-            (t[3], min(t[4], d), f"crop={_even(w*0.55)}:{h}:{_even(w*0.45)}:0,scale={w}:{h}"),
-            (t[4], d,            f"scale={w}:{h}"),
-        ]
-
-    # Drop any zero-duration cuts (when duration < 20s)
-    cuts = [(s, e, vf) for s, e, vf in cuts if e > s]
-    n = len(cuts)
-
-    # Build filter_complex:
-    # 1. Loop the image frames infinitely
-    # 2. Split into n copies (one per cut)
-    # 3. Each copy: trim to its time window, reset PTS, apply crop/scale
-    # 4. Concat all cuts into final output stream
-    split_outs = "".join(f"[b{i}]" for i in range(n))
-    fc = f"[0:v]loop=-1:size={num_frames}:start=0,split={n}{split_outs}"
-    for i, (start, end, vf) in enumerate(cuts):
-        fc += f";[b{i}]trim={start}:{end},setpts=PTS-STARTPTS,{vf}[s{i}]"
-    fc += ";" + "".join(f"[s{i}]" for i in range(n)) + f"concat=n={n}:v=1:a=0[out]"
-    return fc
-
 
 def create_scene_video(text, bg_color, duration, output_path,
                        video_type="regular", scene_idx=0, bullets=None, narration="", slot=0):
@@ -542,56 +593,106 @@ def create_scene_video(text, bg_color, duration, output_path,
     os.makedirs(os.path.dirname(output_path) if os.path.dirname(output_path) else ".", exist_ok=True)
 
     label = text[:40].upper()
-    frames_dir = output_path.replace(".mp4", "_frames")
-    os.makedirs(frames_dir, exist_ok=True)
-
-    # 8 animation frames at 4fps = smooth 2-second arm-movement cycle
+    ff = _ffmpeg()
     narration_words = narration.split() if narration else []
     total_words = len(narration_words)
-    num_frames = 8
-    words_per_frame = max(4, total_words // num_frames) if total_words else 6
-    phases = [0, 0, 1, 1, 0, 0, 1, 1]
+    d = duration
 
-    for fi in range(num_frames):
-        word_start = (fi * words_per_frame) % max(1, total_words) if total_words else 0
-        frame = _create_frame(label, narration, w, h, scene_idx,
-                              phase=phases[fi], slot=slot,
-                              word_start=word_start, words_per_frame=words_per_frame)
-        frame.save(os.path.join(frames_dir, f"f{fi:03d}.png"))
+    # Shot sequence — genuine different compositions, not zoom tricks
+    # Regular: wide → speaker solo → concept card → reactor solo → wide (27s total)
+    # Shorts:  wide → speaker solo → reactor solo → wide       (14s total)
+    if h > w:  # Shorts — 4 shots
+        q = max(3, d // 4)
+        shots = [
+            ("wide",    q),
+            ("focus_a", q),
+            ("focus_b", q),
+            ("wide",    d - 3 * q),
+        ]
+    else:  # Regular — 5 shots at 5-7s each
+        shots = [
+            ("wide",       5),
+            ("focus_a",    5),
+            ("focus_prop", 5),
+            ("focus_b",    5),
+            ("wide",       max(3, d - 20)),
+        ]
 
-    ff = _ffmpeg()
-    fc = _camera_cuts_filter(w, h, num_frames, duration)
+    sub_clips = []
+    phases = [0, 1, 0, 1]  # 4-frame arm cycle per shot
 
-    # Primary: camera-cut filter_complex (dynamic zooms, professional pacing)
-    result = subprocess.run([
-        ff, "-y", "-framerate", "4",
-        "-i", os.path.join(frames_dir, "f%03d.png"),
-        "-filter_complex", fc,
-        "-map", "[out]",
-        "-c:v", "libx264", "-preset", "ultrafast",
-        "-pix_fmt", "yuv420p", "-r", "24", "-crf", "18", output_path
-    ], capture_output=True, text=True, timeout=150)
+    for shot_idx, (shot_type, shot_dur) in enumerate(shots):
+        shot_frames_dir = output_path.replace(".mp4", f"_s{shot_idx}_frames")
+        os.makedirs(shot_frames_dir, exist_ok=True)
 
-    # Fallback: simple loop if filter_complex fails (older FFmpeg, unusual runners)
-    if result.returncode != 0 or not os.path.exists(output_path) or os.path.getsize(output_path) < 1000:
-        print(f"  [FFmpeg] camera cuts failed, using simple loop: {result.stderr[-200:]}")
+        # Advance through narration words across shots
+        words_per_shot = max(4, total_words // max(1, len(shots)))
+        word_start = shot_idx * words_per_shot
+        wpf = max(3, words_per_shot // 4)
+
+        renderer = _SHOT_RENDERERS[shot_type]
+        for fi, phase in enumerate(phases):
+            ws = word_start + fi * wpf
+            frame = renderer(label, narration, w, h, scene_idx, phase, slot, ws, wpf)
+            frame.save(os.path.join(shot_frames_dir, f"f{fi:03d}.png"))
+
+        sub_path = output_path.replace(".mp4", f"_shot{shot_idx}.mp4")
+        result = subprocess.run([
+            ff, "-y", "-framerate", "4",
+            "-i", os.path.join(shot_frames_dir, "f%03d.png"),
+            "-vf", "loop=-1:size=4:start=0",
+            "-t", str(shot_dur),
+            "-c:v", "libx264", "-preset", "ultrafast",
+            "-pix_fmt", "yuv420p", "-r", "24", "-crf", "18", sub_path
+        ], capture_output=True, text=True, timeout=60)
+
+        # Cleanup shot frames immediately
+        for fi in range(4):
+            fp = os.path.join(shot_frames_dir, f"f{fi:03d}.png")
+            if os.path.exists(fp): os.remove(fp)
+        try: os.rmdir(shot_frames_dir)
+        except: pass
+
+        if result.returncode == 0 and os.path.exists(sub_path) and os.path.getsize(sub_path) > 500:
+            sub_clips.append(sub_path)
+        else:
+            print(f"  [Animate] shot {shot_idx} failed: {result.stderr[-150:]}")
+
+    if not sub_clips:
+        # Full fallback — simple single loop
+        frames_dir = output_path.replace(".mp4", "_fallback_frames")
+        os.makedirs(frames_dir, exist_ok=True)
+        for fi, phase in enumerate(phases):
+            frame = _create_frame_wide(label, narration, w, h, scene_idx, phase, slot, 0, 6)
+            frame.save(os.path.join(frames_dir, f"f{fi:03d}.png"))
         subprocess.run([
             ff, "-y", "-framerate", "4",
             "-i", os.path.join(frames_dir, "f%03d.png"),
-            "-vf", f"loop=-1:size={num_frames}:start=0",
-            "-t", str(duration),
+            "-vf", "loop=-1:size=4:start=0", "-t", str(d),
             "-c:v", "libx264", "-preset", "ultrafast",
             "-pix_fmt", "yuv420p", "-r", "24", "-crf", "18", output_path
         ], capture_output=True, text=True, timeout=120)
+        for fi in range(4):
+            fp = os.path.join(frames_dir, f"f{fi:03d}.png")
+            if os.path.exists(fp): os.remove(fp)
+        try: os.rmdir(frames_dir)
+        except: pass
+        return output_path
 
-    # Cleanup temp frames
-    for fi in range(num_frames):
-        fp = os.path.join(frames_dir, f"f{fi:03d}.png")
-        if os.path.exists(fp): os.remove(fp)
-    try:
-        os.rmdir(frames_dir)
-    except Exception:
-        pass
+    # Concatenate all shots into final scene video
+    concat_txt = output_path.replace(".mp4", "_concat.txt")
+    with open(concat_txt, "w") as f:
+        for p in sub_clips:
+            f.write(f"file '{p}'\n")
+    subprocess.run([
+        ff, "-y", "-f", "concat", "-safe", "0",
+        "-i", concat_txt, "-c", "copy", output_path
+    ], capture_output=True, text=True, timeout=60)
+
+    # Cleanup sub-clips and concat list
+    for p in sub_clips:
+        if os.path.exists(p): os.remove(p)
+    if os.path.exists(concat_txt): os.remove(concat_txt)
 
     return output_path
 
