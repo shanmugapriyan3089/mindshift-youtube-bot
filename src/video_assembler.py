@@ -120,35 +120,172 @@ def assemble_video(
     return output_path
 
 
+def _thumb_font(size):
+    from PIL import ImageFont
+    for p in [
+        "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+        "/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf",
+        "C:/Windows/Fonts/arialbd.ttf",
+        "C:/Windows/Fonts/Arial.ttf",
+    ]:
+        try:
+            return ImageFont.truetype(p, max(12, size))
+        except Exception:
+            pass
+    return ImageFont.load_default()
+
+
+def _draw_shocked_figure(draw, cx, cy, s=2.8):
+    """Large shocked stick figure for thumbnails — arms up, wide eyes, open mouth."""
+    lw = max(5, int(8 * s))
+    # Head
+    hr = int(32 * s)
+    ht = cy - int(145 * s)
+    hb = cy - int(81 * s)
+    draw.ellipse([cx-hr, ht, cx+hr, hb], fill=(255, 220, 175), outline=(20, 20, 20), width=lw)
+    # Wide shocked eyes
+    ey = cy - int(120 * s)
+    for ex in [cx - int(13*s), cx + int(13*s)]:
+        er = int(10 * s)
+        draw.ellipse([ex-er, ey-er, ex+er, ey+er], fill=(20, 20, 20))
+        draw.ellipse([ex+int(2*s), ey-int(4*s), ex+int(5*s), ey-int(1*s)], fill=(255, 255, 255))
+    # Open mouth (O shape — shock)
+    mx, my = cx, cy - int(95 * s)
+    mw, mh = int(12 * s), int(14 * s)
+    draw.ellipse([mx-mw, my-mh, mx+mw, my+mh], fill=(100, 20, 20))
+    # Body
+    draw.line([cx, hb, cx, cy - int(15*s)], fill=(20, 20, 20), width=lw)
+    # Arms raised up in shock
+    draw.line([cx, cy-int(60*s), cx-int(65*s), cy-int(115*s)], fill=(20, 20, 20), width=lw)
+    draw.line([cx, cy-int(60*s), cx+int(65*s), cy-int(115*s)], fill=(20, 20, 20), width=lw)
+    # Legs spread
+    draw.line([cx, cy-int(15*s), cx-int(35*s), cy+int(55*s)], fill=(20, 20, 20), width=lw)
+    draw.line([cx, cy-int(15*s), cx+int(35*s), cy+int(55*s)], fill=(20, 20, 20), width=lw)
+
+
 def generate_thumbnail(title: str, output_path: str, video_type: str = "regular") -> str:
+    """Generate eye-catching thumbnail: shocked stick figure + bold text + bright background."""
+    try:
+        from PIL import Image, ImageDraw
+        import hashlib
+
+        spec = REGULAR_VIDEO if video_type == "regular" else SHORTS_VIDEO
+        w, h = spec["width"], spec["height"]
+
+        # Bright high-contrast color schemes (NOT dark navy)
+        schemes = [
+            {"bg": (220, 50,  50),  "text": (255, 255, 255), "accent": (255, 214,   0)},  # Red
+            {"bg": (41,  128, 185), "text": (255, 255, 255), "accent": (255, 214,   0)},  # Blue
+            {"bg": (142, 68,  173), "text": (255, 255, 255), "accent": (255, 214,   0)},  # Purple
+            {"bg": (230, 126,  34), "text": (255, 255, 255), "accent": (255, 214,   0)},  # Orange
+            {"bg": ( 39, 174,  96), "text": (255, 255, 255), "accent": (255, 214,   0)},  # Green
+        ]
+        c = schemes[int(hashlib.md5(title.encode()).hexdigest(), 16) % len(schemes)]
+
+        img = Image.new("RGB", (w, h), c["bg"])
+        draw = ImageDraw.Draw(img)
+
+        # Subtle lighter circles in background for depth
+        lighter = tuple(min(255, v + 35) for v in c["bg"])
+        darker  = tuple(max(0,   v - 50) for v in c["bg"])
+
+        if video_type == "regular":
+            # REGULAR (1920×1080): text left, figure right
+            draw.ellipse([int(w*0.50), -int(h*0.2), int(w*1.1), int(h*0.9)], fill=lighter)
+            draw.ellipse([-int(w*0.05), int(h*0.7), int(w*0.28), int(h*1.1)], fill=lighter)
+            draw.rectangle([0, h - int(h*0.10), w, h], fill=darker)
+
+            words = title.upper().split()[:6]
+            if len(words) <= 2:
+                lines = [" ".join(words)]
+            elif len(words) <= 4:
+                mid = len(words) // 2
+                lines = [" ".join(words[:mid]), " ".join(words[mid:])]
+            else:
+                lines = [" ".join(words[:2]), " ".join(words[2:4]), " ".join(words[4:])]
+
+            fig_cx, fig_cy, fig_s = int(w*0.79), int(h*0.60), 2.7
+            _draw_shocked_figure(draw, fig_cx, fig_cy, fig_s)
+
+            exc_font = _thumb_font(int(h * 0.22))
+            draw.text((int(w*0.64), int(h*0.02)), "!", fill=c["accent"], font=exc_font)
+
+            fs  = int(h * 0.13) if len(lines) <= 2 else int(h * 0.10)
+            tx  = int(w * 0.05)
+            ty  = int(h * 0.15) if len(lines) == 3 else int(h * 0.24)
+            gap = int(fs * 1.25)
+            tfont = _thumb_font(fs)
+            for i, line in enumerate(lines):
+                y = ty + i * gap
+                for dx, dy in [(-4,4),(4,4),(-4,-4),(4,-4),(0,5),(5,0),(-5,0)]:
+                    draw.text((tx+dx, y+dy), line, fill=(0,0,0), font=tfont)
+                draw.text((tx, y), line, fill=c["text"], font=tfont)
+
+            sf = _thumb_font(int(h * 0.032))
+            draw.text((int(w*0.04), h - int(h*0.075)),
+                      "@MindShiftProductivity", fill=(255,255,255), font=sf)
+
+        else:
+            # SHORTS (1080×1920): text top, figure center-bottom
+            draw.ellipse([-int(w*0.1), -int(h*0.05), int(w*0.9), int(h*0.45)], fill=lighter)
+            draw.ellipse([int(w*0.2), int(h*0.7), int(w*1.1), int(h*1.1)], fill=lighter)
+            draw.rectangle([0, h - int(h*0.07), w, h], fill=darker)
+
+            # For shorts use max 2 words per line, max 3 lines
+            words = title.upper().split()[:4]
+            lines = [[words[0]] if len(words) >= 1 else []]
+            for word in words[1:]:
+                lines.append([word])
+            lines = [" ".join(l) for l in lines if l]
+
+            fig_cx, fig_cy, fig_s = int(w*0.50), int(h*0.72), 2.4
+            _draw_shocked_figure(draw, fig_cx, fig_cy, fig_s)
+
+            exc_font = _thumb_font(int(w * 0.18))
+            draw.text((int(w*0.72), int(h*0.08)), "!", fill=c["accent"], font=exc_font)
+
+            fs  = int(w * 0.175)
+            tx  = int(w * 0.05)
+            ty  = int(h * 0.06)
+            gap = int(fs * 1.2)
+            tfont = _thumb_font(fs)
+            for i, line in enumerate(lines):
+                y = ty + i * gap
+                for dx, dy in [(-4,4),(4,4),(-4,-4),(4,-4),(0,5)]:
+                    draw.text((tx+dx, y+dy), line, fill=(0,0,0), font=tfont)
+                draw.text((tx, y), line, fill=c["text"], font=tfont)
+
+            sf = _thumb_font(int(w * 0.042))
+            draw.text((int(w*0.05), h - int(h*0.055)),
+                      "@MindShiftProductivity", fill=(255,255,255), font=sf)
+
+        img.save(output_path, quality=95)
+        print(f"  [Thumbnail] Saved: {output_path}")
+
+    except Exception as e:
+        print(f"  [Thumbnail] Pillow failed ({e}), using FFmpeg fallback")
+        _thumbnail_ffmpeg_fallback(title, output_path, video_type)
+
+    return output_path
+
+
+def _thumbnail_ffmpeg_fallback(title: str, output_path: str, video_type: str):
     spec = REGULAR_VIDEO if video_type == "regular" else SHORTS_VIDEO
     w, h = spec["width"], spec["height"]
-    short_title = title[:35].replace("'", "").replace(":", " ")
-
+    short_title = title[:30].replace("'", "").replace(":", " ")
     font_file = ""
-    for path in ["/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
-                 "C:/Windows/Fonts/arialbd.ttf"]:
+    for path in ["/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", "C:/Windows/Fonts/arialbd.ttf"]:
         if os.path.exists(path):
             font_file = f":fontfile={path}"
             break
-
     try:
         _run([
-            _ffmpeg(), "-y",
-            "-f", "lavfi",
-            "-i", f"color=c=0x1a1a2e:size={w}x{h}:duration=1:rate=1",
-            "-vf", (
-                f"drawtext=text='{short_title}'"
-                f"{font_file}"
-                f":fontsize={w//18}"
-                f":fontcolor=white"
-                f":x=(w-text_w)/2:y=(h-text_h)/2"
-                f":shadowcolor=black:shadowx=3:shadowy=3"
-            ),
-            "-frames:v", "1",
-            output_path
+            _ffmpeg(), "-y", "-f", "lavfi",
+            "-i", f"color=c=0xdc3232:size={w}x{h}:duration=1:rate=1",
+            "-vf", (f"drawtext=text='{short_title}'{font_file}:fontsize={w//12}"
+                    f":fontcolor=white:x=(w-text_w)/2:y=(h-text_h)/2"
+                    f":shadowcolor=black:shadowx=4:shadowy=4"),
+            "-frames:v", "1", output_path
         ], timeout=30)
     except Exception:
         pass
-
-    return output_path
