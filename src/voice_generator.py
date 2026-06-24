@@ -1,18 +1,17 @@
 """
-Voiceover pipeline:
-  On GitHub Actions (CI=true): espeak → edge-tts → gTTS → silence
-  Locally:                     Kokoro → edge-tts → gTTS → espeak → silence
+Voiceover pipeline (best free quality):
+1. Kokoro-82M   — near-ElevenLabs quality, open source, loads from cache ~70-80s
+2. edge-tts     — Microsoft Jenny Neural, natural, free
+3. gTTS         — Google HTTP TTS, decent fallback
+4. espeak       — offline last resort
+5. silence      — absolute fallback
 
-Kokoro is skipped on CI — it requires a 300MB model download and the
-60s timeout per scene wastes minutes before falling through.
-espeak is promoted to first on CI because it's local (no network needed).
+All TTS runs in isolated subprocess with hard timeout — pipeline never hangs.
 """
 import os
 import sys
 import subprocess
 import shutil
-
-_IS_CI = os.environ.get("GITHUB_ACTIONS") == "true" or os.environ.get("CI") == "true"
 
 
 def _ffmpeg():
@@ -27,7 +26,7 @@ def _ffmpeg():
 
 # ── 1. Kokoro-82M ─────────────────────────────────────────────────────────────
 
-def _generate_kokoro(text: str, output_path: str, timeout: int = 60) -> bool:
+def _generate_kokoro(text: str, output_path: str, timeout: int = 120) -> bool:
     """
     Kokoro-82M — open source, near-ElevenLabs quality.
     Voice: af_nicole (American female, clear and natural).
@@ -184,43 +183,25 @@ def generate_voiceover(text: str, output_path: str, duration_hint: int = 15) -> 
         exist_ok=True
     )
 
-    if _IS_CI:
-        # On GitHub Actions: espeak first (local, no network), then network TTS
-        print("  [Voice] espeak-ng (local, CI mode)...")
-        if _generate_espeak(text, output_path):
-            print("  [Voice] espeak OK ✓")
-            return output_path
+    print("  [Voice] Kokoro-82M...")
+    if _generate_kokoro(text, output_path):
+        print("  [Voice] Kokoro OK ✓")
+        return output_path
 
-        print("  [Voice] edge-tts fallback...")
-        if _generate_edge_tts(text, output_path):
-            print("  [Voice] edge-tts OK ✓")
-            return output_path
+    print("  [Voice] edge-tts (Jenny Neural)...")
+    if _generate_edge_tts(text, output_path):
+        print("  [Voice] edge-tts OK ✓")
+        return output_path
 
-        print("  [Voice] gTTS fallback...")
-        if _generate_gtts(text, output_path):
-            print("  [Voice] gTTS OK ✓")
-            return output_path
-    else:
-        # Local: best quality first
-        print("  [Voice] Kokoro-82M (best quality)...")
-        if _generate_kokoro(text, output_path):
-            print("  [Voice] Kokoro OK ✓")
-            return output_path
+    print("  [Voice] gTTS fallback...")
+    if _generate_gtts(text, output_path):
+        print("  [Voice] gTTS OK ✓")
+        return output_path
 
-        print("  [Voice] edge-tts (Jenny Neural)...")
-        if _generate_edge_tts(text, output_path):
-            print("  [Voice] edge-tts OK ✓")
-            return output_path
-
-        print("  [Voice] gTTS fallback...")
-        if _generate_gtts(text, output_path):
-            print("  [Voice] gTTS OK ✓")
-            return output_path
-
-        print("  [Voice] espeak fallback...")
-        if _generate_espeak(text, output_path):
-            print("  [Voice] espeak OK ✓")
-            return output_path
+    print("  [Voice] espeak fallback...")
+    if _generate_espeak(text, output_path):
+        print("  [Voice] espeak OK ✓")
+        return output_path
 
     print("  [Voice] silence fallback")
     _generate_silence(duration_hint, output_path)
