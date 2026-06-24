@@ -36,7 +36,7 @@ Scenes 8-12  → REAL EXAMPLES: Relatable everyday stories that make the science
 Scenes 13-17 → THE FIX: 5 specific actionable steps the viewer can start TODAY. Not generic — precise and implementable.
 Scenes 18-20 → TRANSFORMATION + CTA: What life looks like after applying this. End with strong call to subscribe and comment.
 
-CRITICAL: Each scene narration must be 60-75 words. This is how you hit 8-10 minutes.
+CRITICAL: Each scene narration must be 55-65 words. This is how you hit 8-10 minutes.
 Speak like a smart, direct friend — not a robot or professor. Use "you" throughout.
 duration_seconds for each scene: 27"""
     else:

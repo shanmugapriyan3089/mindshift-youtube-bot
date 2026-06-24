@@ -209,20 +209,18 @@ def generate_voiceover(text: str, output_path: str, duration_hint: int = 15) -> 
 
 
 def _pad_audio_to_duration(audio_path: str, target_sec: int):
-    """Pad audio with silence so it fills the full scene duration.
+    """Force audio to exactly target_sec: trim if too long, pad if too short.
 
-    This is critical for shorts: TTS for 10-15 words is only ~5s but the
-    scene video is 13s. Without padding, FFmpeg's -shortest cuts the merged
-    video to ~20s (4 scenes × 5s) leaving most of the short silent.
-
-    Uses apad without -t so we never truncate audio that's already longer.
+    atrim cuts Kokoro audio that runs over (e.g. 29s narration in a 27s scene).
+    apad fills silence if TTS was shorter than the scene (common in shorts).
+    Both together ensure concat_audio == concat_video so -shortest never fires.
     """
     ff = _ffmpeg()
     tmp = audio_path + "_pad.mp3"
     try:
         r = subprocess.run([
             ff, "-y", "-i", audio_path,
-            "-af", f"apad=whole_dur={target_sec}",
+            "-af", f"atrim=duration={target_sec},apad=whole_dur={target_sec}",
             "-c:a", "libmp3lame", "-q:a", "4", tmp
         ], capture_output=True, timeout=30)
         if r.returncode == 0 and os.path.exists(tmp) and os.path.getsize(tmp) > 100:
