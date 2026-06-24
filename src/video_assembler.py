@@ -230,8 +230,12 @@ def generate_thumbnail(title: str, output_path: str, video_type: str = "regular"
         from PIL import Image, ImageDraw
         import hashlib
 
-        spec = REGULAR_VIDEO if video_type == "regular" else SHORTS_VIDEO
-        w, h = spec["width"], spec["height"]
+        # YouTube recommended thumbnail sizes (not video resolution)
+        # Regular: 1280×720 (16:9), Shorts: 1080×1920 (9:16)
+        if video_type == "regular":
+            w, h = 1280, 720
+        else:
+            w, h = 1080, 1920
 
         schemes = [
             {"bg": (220, 50,  50),  "text": (255, 255, 255), "accent": (255, 214,   0)},
