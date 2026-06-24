@@ -26,7 +26,7 @@ def _ffmpeg():
 
 # ── 1. Kokoro-82M ─────────────────────────────────────────────────────────────
 
-def _generate_kokoro(text: str, output_path: str, timeout: int = 90) -> bool:
+def _generate_kokoro(text: str, output_path: str, timeout: int = 60) -> bool:
     """
     Kokoro-82M — open source, near-ElevenLabs quality.
     Voice: af_nicole (American female, clear and natural).
@@ -38,7 +38,7 @@ def _generate_kokoro(text: str, output_path: str, timeout: int = 90) -> bool:
             "import sys, numpy as np, soundfile as sf\n"
             "from kokoro import KPipeline\n"
             "pipe = KPipeline(lang_code='a')\n"
-            f"chunks = [a for _,_,a in pipe({repr(text[:500])}, voice='af_nicole', speed=1.05)]\n"
+            f"chunks = [a for _,_,a in pipe({repr(text)}, voice='af_nicole', speed=1.05)]\n"
             "if not chunks: sys.exit(1)\n"
             f"sf.write({repr(wav_path)}, np.concatenate(chunks), 24000)\n"
         )
@@ -71,52 +71,59 @@ def _generate_kokoro(text: str, output_path: str, timeout: int = 90) -> bool:
 
 # ── 2. edge-tts (Microsoft Jenny Neural) ─────────────────────────────────────
 
-def _generate_edge_tts(text: str, output_path: str, timeout: int = 45) -> bool:
-    """Microsoft Azure neural TTS via edge-tts — free, no API key."""
-    try:
-        script = (
-            "import asyncio, edge_tts\n"
-            "async def run():\n"
-            f"    c = edge_tts.Communicate({repr(text[:500])}, "
-            "'en-US-JennyNeural', rate='+5%', pitch='+0Hz')\n"
-            f"    await c.save({repr(output_path)})\n"
-            "asyncio.run(run())\n"
-        )
-        r = subprocess.run(
-            [sys.executable, "-c", script],
-            timeout=timeout, capture_output=True, text=True
-        )
-        if r.returncode != 0:
-            print(f"  [edge-tts] stderr: {r.stderr[-200:]}")
-        return (r.returncode == 0
-                and os.path.exists(output_path)
-                and os.path.getsize(output_path) > 500)
-    except subprocess.TimeoutExpired:
-        print(f"  [edge-tts] Timed out after {timeout}s")
-        return False
-    except Exception as e:
-        print(f"  [edge-tts] Error: {e}")
-        return False
+def _generate_edge_tts(text: str, output_path: str, timeout: int = 60) -> bool:
+    """Microsoft Azure neural TTS via edge-tts — free, no API key. Retries 3×."""
+    import time
+    for attempt in range(3):
+        if attempt > 0:
+            wait = 4 + attempt * 3  # 7s, 10s between retries — avoid rate limit
+            print(f"  [edge-tts] Retry {attempt}/2 after {wait}s...")
+            time.sleep(wait)
+        try:
+            script = (
+                "import asyncio, edge_tts\n"
+                "async def run():\n"
+                f"    c = edge_tts.Communicate({repr(text)}, "
+                "'en-US-JennyNeural', rate='+5%', pitch='+0Hz')\n"
+                f"    await c.save({repr(output_path)})\n"
+                "asyncio.run(run())\n"
+            )
+            r = subprocess.run(
+                [sys.executable, "-c", script],
+                timeout=timeout, capture_output=True, text=True
+            )
+            if r.returncode == 0 and os.path.exists(output_path) and os.path.getsize(output_path) > 500:
+                return True
+            print(f"  [edge-tts] attempt {attempt+1} failed: {r.stderr[-150:]}")
+        except subprocess.TimeoutExpired:
+            print(f"  [edge-tts] Timed out after {timeout}s (attempt {attempt+1})")
+        except Exception as e:
+            print(f"  [edge-tts] Error: {e}")
+    return False
 
 
 # ── 3. gTTS ───────────────────────────────────────────────────────────────────
 
 def _generate_gtts(text: str, output_path: str) -> bool:
-    try:
-        script = (
-            f"from gtts import gTTS\n"
-            f"gTTS(text={repr(text[:400])}, lang='en', slow=False).save({repr(output_path)})\n"
-        )
-        r = subprocess.run(
-            [sys.executable, "-c", script],
-            timeout=45, capture_output=True, text=True
-        )
-        return (r.returncode == 0
-                and os.path.exists(output_path)
-                and os.path.getsize(output_path) > 500)
-    except Exception as e:
-        print(f"  [gTTS] Error: {e}")
-        return False
+    import time
+    for attempt in range(2):
+        if attempt > 0:
+            time.sleep(5)
+        try:
+            script = (
+                f"from gtts import gTTS\n"
+                f"gTTS(text={repr(text)}, lang='en', slow=False).save({repr(output_path)})\n"
+            )
+            r = subprocess.run(
+                [sys.executable, "-c", script],
+                timeout=60, capture_output=True, text=True
+            )
+            if r.returncode == 0 and os.path.exists(output_path) and os.path.getsize(output_path) > 500:
+                return True
+            print(f"  [gTTS] attempt {attempt+1} failed: {r.stderr[-100:]}")
+        except Exception as e:
+            print(f"  [gTTS] Error: {e}")
+    return False
 
 
 # ── 4. espeak ─────────────────────────────────────────────────────────────────
@@ -128,7 +135,7 @@ def _generate_espeak(text: str, output_path: str) -> bool:
         wav = output_path.replace(".mp3", "_esp.wav")
         r = subprocess.run(
             ["espeak", "-v", "en-us+f3", "-s", "155", "-a", "180",
-             "-w", wav, text[:400]],
+             "-w", wav, text[:600]],
             capture_output=True, timeout=20
         )
         if r.returncode != 0 or not os.path.exists(wav):
@@ -194,12 +201,16 @@ def generate_voiceover(text: str, output_path: str, duration_hint: int = 15) -> 
 
 
 def generate_scene_voiceovers(scenes: list, output_dir: str) -> list:
+    import time
     os.makedirs(output_dir, exist_ok=True)
     paths = []
-    for scene in scenes:
+    for i, scene in enumerate(scenes):
         path = os.path.join(output_dir, f"voice_{scene['scene_number']:02d}.mp3")
         duration = scene.get("duration_seconds", 15)
-        print(f"  [Voice] Scene {scene['scene_number']}...")
+        print(f"  [Voice] Scene {scene['scene_number']}/{len(scenes)}...")
         generate_voiceover(scene["narration"], path, duration_hint=duration)
         paths.append(path)
+        # Small pause between scenes — prevents edge-tts rate limiting after many requests
+        if i < len(scenes) - 1:
+            time.sleep(1.5)
     return paths

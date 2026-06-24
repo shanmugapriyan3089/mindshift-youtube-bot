@@ -401,9 +401,44 @@ def _scene_result(draw, w, h, s, bubble_fs, bubble_a, bubble_b, phase=0, label_t
 SCENE_FNS = [_scene_hook, _scene_problem, _scene_solution, _scene_result]
 
 
+# ── Narration subtitle strip ───────────────────────────────────────────────────
+
+def _narration_strip(draw, narration, w, h, word_start, words_per_frame, fs_base):
+    """Subtitle strip showing the current narration words — only for landscape (regular) videos."""
+    is_short = h > w
+    if is_short:
+        return  # shorts layout too dense for a subtitle strip
+    words = narration.split() if narration else []
+    if not words:
+        return
+    chunk = words[word_start : word_start + words_per_frame]
+    if not chunk:
+        chunk = words[-words_per_frame:]
+    line = " ".join(chunk)
+
+    fs = max(22, int(fs_base * 0.70))
+    font = _font(fs)
+    pad_x, pad_y = int(w * 0.04), int(h * 0.010)
+
+    bb = draw.textbbox((0, 0), line, font=font)
+    tw, th = bb[2] - bb[0], bb[3] - bb[1]
+
+    # Dark bar at ~72% down — below the speech bubbles, above the yellow banner (which is at ~76%)
+    bar_h = th + pad_y * 2
+    bar_y = int(h * 0.72)
+    draw.rectangle([0, bar_y, w, bar_y + bar_h], fill=(18, 18, 30))
+
+    # White text centred, with shadow
+    tx = max(pad_x, (w - tw) // 2)
+    ty = bar_y + pad_y
+    draw.text((tx + 2, ty + 2), line, fill=(0, 0, 0), font=font)
+    draw.text((tx, ty), line, fill=(255, 255, 255), font=font)
+
+
 # ── Full frame ────────────────────────────────────────────────────────────────
 
-def _create_frame(text, narration, w, h, scene_idx, phase=0, slot=0):
+def _create_frame(text, narration, w, h, scene_idx, phase=0, slot=0,
+                  word_start=0, words_per_frame=6):
     img = Image.new("RGB", (w, h), BG)
     draw = ImageDraw.Draw(img)
 
@@ -415,16 +450,17 @@ def _create_frame(text, narration, w, h, scene_idx, phase=0, slot=0):
     s = 2.5 if h > w else 1.9
     bubble_fs = max(28, w // 28) if h > w else max(22, h // 26)
 
-    # Dynamic bubble text from actual script narration
     words = narration.split() if narration else text.split()
     bubble_a = " ".join(words[:9]) if words else text[:40]
     scene_type = scene_idx % 4
-    # Seed reactions/labels consistently per scene so they don't flicker between frames
     rng = random.Random(scene_idx * 100 + slot)
     bubble_b = rng.choice(_REACTIONS[scene_type])
     label_text = _LABEL_POOLS[scene_type][(slot + scene_idx) % len(_LABEL_POOLS[scene_type])]
 
     SCENE_FNS[scene_type](draw, w, h, s, bubble_fs, bubble_a, bubble_b, phase, label_text)
+
+    # Narration subtitle strip — shows current spoken words
+    _narration_strip(draw, narration, w, h, word_start, words_per_frame, bubble_fs)
 
     # Yellow banner
     bfs = max(36, w // 17)
@@ -439,7 +475,7 @@ def _create_frame(text, narration, w, h, scene_idx, phase=0, slot=0):
     draw.text((tx+2, ty+2), safe, fill=(100,100,100), font=bfont)
     draw.text((tx,   ty),   safe, fill=(15,15,15),    font=bfont)
 
-    # Watermark — kept in safe zone (top-left, away from Shorts action buttons)
+    # Watermark
     draw.text((int(w*0.04), int(h*0.012)), "@MindShiftProductivity",
               fill=(160, 180, 210), font=_font_r(max(20, w//46)))
 
@@ -459,23 +495,32 @@ def create_scene_video(text, bg_color, duration, output_path,
     frames_dir = output_path.replace(".mp4", "_frames")
     os.makedirs(frames_dir, exist_ok=True)
 
-    # 4 animation frames: arm down, arm up, arm down, arm up (2 fps cycle → 2s loop)
-    phases = [0, 1, 0, 1]
-    for fi, phase in enumerate(phases):
-        frame = _create_frame(label, narration, w, h, scene_idx, phase, slot)
+    # 8 animation frames at 4fps = 2-second cycle that loops smoothly
+    # Arm phases alternate 0→1 for talking motion; word_start advances through narration
+    narration_words = narration.split() if narration else []
+    total_words = len(narration_words)
+    num_frames = 8
+    words_per_frame = max(4, total_words // num_frames) if total_words else 6
+
+    phases = [0, 0, 1, 1, 0, 0, 1, 1]  # smooth arm movement over 8 frames
+    for fi in range(num_frames):
+        word_start = (fi * words_per_frame) % max(1, total_words) if total_words else 0
+        frame = _create_frame(label, narration, w, h, scene_idx,
+                              phase=phases[fi], slot=slot,
+                              word_start=word_start, words_per_frame=words_per_frame)
         frame.save(os.path.join(frames_dir, f"f{fi:03d}.png"))
 
-    # Loop the 4-frame animation for the full scene duration at 24fps output
+    # Loop the 8-frame animation at 4fps — produces smooth motion for full duration
     result = subprocess.run([
-        _ffmpeg(), "-y", "-framerate", "2",
+        _ffmpeg(), "-y", "-framerate", "4",
         "-i", os.path.join(frames_dir, "f%03d.png"),
-        "-vf", f"loop=-1:size=4:start=0",
+        "-vf", f"loop=-1:size={num_frames}:start=0",
         "-t", str(duration),
         "-c:v", "libx264", "-pix_fmt", "yuv420p", "-r", "24", "-crf", "18", output_path
-    ], capture_output=True, text=True, timeout=90)
+    ], capture_output=True, text=True, timeout=120)
 
     # Cleanup temp frames
-    for fi in range(len(phases)):
+    for fi in range(num_frames):
         fp = os.path.join(frames_dir, f"f{fi:03d}.png")
         if os.path.exists(fp): os.remove(fp)
     try: os.rmdir(frames_dir)
