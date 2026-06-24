@@ -371,9 +371,7 @@ def _scene_hook(draw, w, h, s, bubble_fs, bubble_a, bubble_b, phase=0, label_tex
             hw, bubble_fs, tail="left", anchor="right")
     _bubble(draw, bx, by_ - int(100*s), bubble_b,
             hw, bubble_fs, tail="right", fill=(255,240,240), anchor="left")
-    _arrow(draw, w//2, label_y + int(bubble_fs*0.8),
-           int(w*0.40), int(h*0.52), BLUE, max(2, int(3*s)))
-    _label(draw, w//2, label_y, label_text, int(bubble_fs*0.9), RED)  # draw last — always on top
+    _label(draw, w//2, label_y, label_text, int(bubble_fs*0.9), RED)
 
 
 def _scene_problem(draw, w, h, s, bubble_fs, bubble_a, bubble_b, phase=0, label_text="THE BLOCK"):
@@ -387,9 +385,7 @@ def _scene_problem(draw, w, h, s, bubble_fs, bubble_a, bubble_b, phase=0, label_
     _bubble(draw, ax, ay - int(100*s), bubble_a,
             hw, bubble_fs, tail="left", anchor="right")
     _thought_bubble(draw, bx, by_ - int(100*s), bubble_b, w, bubble_fs)
-    _arrow(draw, w//2, label_y + int(bubble_fs*0.8),
-           int(w*0.60), int(h*0.52), PURPLE, max(2, int(3*s)))
-    _label(draw, w//2, label_y, label_text, int(bubble_fs*0.9), PURPLE)  # draw last — always on top
+    _label(draw, w//2, label_y, label_text, int(bubble_fs*0.9), PURPLE)
 
 
 def _scene_solution(draw, w, h, s, bubble_fs, bubble_a, bubble_b, phase=0, label_text="THE FIX"):
@@ -404,9 +400,7 @@ def _scene_solution(draw, w, h, s, bubble_fs, bubble_a, bubble_b, phase=0, label
             hw, bubble_fs, tail="left", anchor="right")
     _bubble(draw, bx, by_ - int(100*s), bubble_b,
             hw, bubble_fs, tail="right", fill=(240,255,240), anchor="left")
-    _arrow(draw, w//2, label_y + int(bubble_fs*0.8),
-           int(w*0.40), int(h*0.52), GREEN, max(2, int(3*s)))
-    _label(draw, w//2, label_y, label_text, int(bubble_fs*0.9), GREEN)  # draw last — always on top
+    _label(draw, w//2, label_y, label_text, int(bubble_fs*0.9), GREEN)
 
 
 def _scene_result(draw, w, h, s, bubble_fs, bubble_a, bubble_b, phase=0, label_text="LEVEL UP"):
@@ -421,11 +415,7 @@ def _scene_result(draw, w, h, s, bubble_fs, bubble_a, bubble_b, phase=0, label_t
             hw, bubble_fs, tail="left", anchor="right")
     _bubble(draw, bx, by_ - int(100*s), bubble_b,
             hw, bubble_fs, tail="right", fill=(255,255,220), anchor="left")
-    _arrow(draw, w//2, label_y + int(bubble_fs*0.8),
-           int(w*0.38), int(h*0.52), ORANGE, max(2, int(3*s)))
-    _arrow(draw, w//2, label_y + int(bubble_fs*0.8),
-           int(w*0.62), int(h*0.52), ORANGE, max(2, int(3*s)))
-    _label(draw, w//2, label_y, label_text, int(bubble_fs*0.9), GREEN)  # draw last — always on top
+    _label(draw, w//2, label_y, label_text, int(bubble_fs*0.9), GREEN)
 
 
 SCENE_FNS = [_scene_hook, _scene_problem, _scene_solution, _scene_result]
@@ -493,15 +483,10 @@ def _draw_grid(draw, w, h):
 
 
 def _draw_kinetic_text(draw, text: str, w: int, h: int):
-    """Synced narration words shown above figures — regular videos only.
-    Shorts rely on voice + label badge; text at top crowds the frame.
-    Regular: 2 lines max, ~72px.
+    """Disabled — kinetic text crowds the frame in both orientations.
+    Content is carried by voice narration + label badge.
     """
-    if not text or not text.strip():
-        return
-    is_short = h > w
-    if is_short:
-        return  # shorts: no top text — voice + label badge carry the content
+    return
     fs = max(36, w // 22) if is_short else max(40, w // 26)
     font = _font(fs)
     max_chars = max(8, int(w * 0.82 / (fs * 0.58)))

@@ -246,71 +246,72 @@ def generate_thumbnail(title: str, output_path: str, video_type: str = "regular"
         ]
         c = schemes[int(hashlib.md5(title.encode()).hexdigest(), 16) % len(schemes)]
 
-        img = Image.new("RGB", (w, h), c["bg"])
+        # Split-panel design: vivid accent panel + warm off-white panel
+        # Research shows: split layouts outperform flat-color — text pops on vivid, figure pops on light
+        off_white = (248, 245, 240)
+        panel_color = c["bg"]                            # vivid accent panel
+        spot_color  = tuple(min(255, v + 55) for v in off_white)  # subtle spotlight circle
+
+        img = Image.new("RGB", (w, h), off_white)
         draw = ImageDraw.Draw(img)
 
-        darker = tuple(max(0, v - 60) for v in c["bg"])
-        lighter = tuple(min(255, v + 40) for v in c["bg"])
-
-        # Split thumbnail_text into max-2-words-per-line, 2 lines
+        # 2-word-per-line split of the thumbnail text
         words = title.upper().split()
         mid = max(1, len(words) // 2)
         lines = [" ".join(words[:mid]), " ".join(words[mid:])]
         lines = [l for l in lines if l][:2]
 
-        if video_type == "regular":
-            # REGULAR (1280×720): text left 62%, shocked figure right
-            draw.rectangle([0, h - int(h*0.12), w, h], fill=darker)
-
-            # Giant figure right side
-            fig_cx, fig_cy, fig_s = int(w * 0.80), int(h * 0.60), 3.2
-            _draw_shocked_figure(draw, fig_cx, fig_cy, fig_s)
-
-            # Faded "!" accent behind text
-            exc_font = _thumb_font(int(h * 0.55))
-            draw.text((int(w * 0.03), int(h * -0.05)), "!", fill=c["accent"], font=exc_font)
-
-            # Auto-fit font: cap to 62% canvas width so text never overlaps figure
-            max_line = max(len(l) for l in lines)
-            fs = min(int(h * 0.200), int(w * 0.62 / max(1, max_line) * 1.55))
-            tx  = int(w * 0.05)
-            ty  = int(h * 0.10)
-            gap = int(fs * 1.22)
-            tfont = _thumb_font(fs)
+        def _draw_text_block(lines, tx, ty, max_panel_w, max_fs, text_color):
+            ml = max(len(l) for l in lines)
+            fs = min(max_fs, int(max_panel_w / max(1, ml) * 1.52))
+            gap = int(fs * 1.24)
+            tf = _thumb_font(fs)
             for i, line in enumerate(lines):
                 y = ty + i * gap
-                for dx, dy in [(-5,5),(5,5),(-5,-5),(5,-5),(0,6),(6,0),(-6,0)]:
-                    draw.text((tx+dx, y+dy), line, fill=(0, 0, 0), font=tfont)
-                draw.text((tx, y), line, fill=c["text"], font=tfont)
+                draw.text((tx + 4, y + 4), line, fill=(0, 0, 0), font=tf)
+                draw.text((tx, y), line, fill=text_color, font=tf)
 
-            draw.text((int(w*0.04), h - int(h*0.085)),
-                      "@MindShiftProductivity", fill=(255,255,255), font=_thumb_font(int(h*0.038)))
+        if video_type == "regular":
+            # LEFT 50% = vivid panel (text), RIGHT 50% = off-white (figure)
+            split_x = int(w * 0.50)
+            draw.rectangle([0, 0, split_x, h], fill=panel_color)
+
+            # Subtle spotlight circle behind figure on right panel
+            scx, scy, sr = int(w * 0.75), int(h * 0.50), int(h * 0.44)
+            draw.ellipse([scx - sr, scy - sr, scx + sr, scy + sr], fill=spot_color)
+
+            # Giant shocked figure — right side, large
+            _draw_shocked_figure(draw, int(w * 0.76), int(h * 0.62), 3.6)
+
+            # White bold text on vivid panel — auto-fit
+            _draw_text_block(lines, int(w * 0.04), int(h * 0.12),
+                             split_x * 0.90, int(h * 0.210), (255, 255, 255))
+
+            # Channel watermark on vivid panel
+            draw.text((int(w * 0.04), h - int(h * 0.10)),
+                      "@MindShiftProductivity", fill=(200, 215, 230),
+                      font=_thumb_font(int(h * 0.040)))
 
         else:
-            # SHORTS (1080×1920): figure bottom-right, bold text top-left
-            # Subtle circle accent — no clutter
-            draw.ellipse([int(w*0.45), int(h*0.30), int(w*1.15), int(h*0.95)], fill=lighter)
-            draw.rectangle([0, h - int(h*0.07), w, h], fill=darker)
+            # TOP 42% = vivid panel (text), BOTTOM 58% = off-white (figure)
+            split_y = int(h * 0.42)
+            draw.rectangle([0, 0, w, split_y], fill=panel_color)
 
-            # Large figure — bottom right, not centred so text has room
-            fig_cx, fig_cy, fig_s = int(w * 0.72), int(h * 0.72), 3.4
-            _draw_shocked_figure(draw, fig_cx, fig_cy, fig_s)
+            # Spotlight circle behind figure on bottom panel
+            scx, scy, sr = int(w * 0.52), int(h * 0.70), int(w * 0.40)
+            draw.ellipse([scx - sr, scy - sr, scx + sr, scy + sr], fill=spot_color)
 
-            # Auto-fit font: cap to 78% canvas width, max 3 lines
-            max_line = max(len(l) for l in lines)
-            fs = min(int(w * 0.175), int(w * 0.78 / max(1, max_line) * 1.55))
-            tx  = int(w * 0.04)
-            ty  = int(h * 0.06)
-            gap = int(fs * 1.22)
-            tfont = _thumb_font(fs)
-            for i, line in enumerate(lines):
-                y = ty + i * gap
-                for dx, dy in [(-5,5),(5,5),(-5,-5),(5,-5),(0,6),(6,0),(-6,0)]:
-                    draw.text((tx+dx, y+dy), line, fill=(0, 0, 0), font=tfont)
-                draw.text((tx, y), line, fill=c["text"], font=tfont)
+            # Giant shocked figure — centered-right on bottom panel
+            _draw_shocked_figure(draw, int(w * 0.60), int(h * 0.73), 3.8)
 
-            draw.text((int(w*0.05), h - int(h*0.055)),
-                      "@MindShiftProductivity", fill=(255,255,255), font=_thumb_font(int(w*0.042)))
+            # White bold text on vivid panel — auto-fit
+            _draw_text_block(lines, int(w * 0.05), int(h * 0.05),
+                             w * 0.92, int(split_y * 0.44), (255, 255, 255))
+
+            # Channel watermark bottom
+            draw.text((int(w * 0.04), h - int(h * 0.04)),
+                      "@MindShiftProductivity", fill=(160, 160, 160),
+                      font=_thumb_font(int(w * 0.040)))
 
         img.save(output_path, quality=95)
         print(f"  [Thumbnail] Saved: {output_path}")
