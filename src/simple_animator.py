@@ -6,6 +6,36 @@ Large figures, speech bubbles between them, props as context.
 import os, math, subprocess, shutil, textwrap, random
 from PIL import Image, ImageDraw, ImageFont
 
+
+# ── Pollinations.ai background ────────────────────────────────────────────────
+
+def _fetch_bg(topic: str, w: int, h: int, seed: int) -> "Image.Image | None":
+    """Fetch a free AI-generated background from Pollinations.ai (no API key).
+    Returns a PIL Image blended 55% with white so stick figures stay readable.
+    Falls back to None on any network error — caller uses plain white grid.
+    """
+    import urllib.request, urllib.parse
+    from io import BytesIO
+
+    # Build a clean scene-relevant prompt from the text overlay
+    keywords = " ".join(topic.lower().replace("'", "").split()[:7])
+    prompt = (f"minimalist abstract poster background, soft pastel gradient, "
+              f"{keywords}, psychology motivation, no text, no people, "
+              f"clean professional, dreamy light")
+    url = (f"https://image.pollinations.ai/prompt/{urllib.parse.quote(prompt)}"
+           f"?width={w}&height={h}&nologo=true&seed={seed}&model=flux")
+    try:
+        req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+        with urllib.request.urlopen(req, timeout=25) as r:
+            data = r.read()
+        img = Image.open(BytesIO(data)).convert("RGB").resize((w, h))
+        # Blend with white so dark-bg images don't swamp the figures
+        white = Image.new("RGB", (w, h), (255, 255, 255))
+        return Image.blend(img, white, 0.55)
+    except Exception as e:
+        print(f"  [BG] Pollinations failed ({e}), using plain background")
+        return None
+
 # Varied B-figure reactions per scene type (hook/problem/solution/result)
 _REACTIONS = [
     ["Wait... seriously?!", "That's unreal!", "I had no idea!", "No way...", "Whoa, really?!"],
@@ -462,11 +492,12 @@ def _draw_grid(draw, w, h):
     for i in range(0, h, max(1, h//22)): draw.line([0, i, w, i], fill=gc, width=1)
 
 
-def _create_frame_wide(text, narration, w, h, scene_idx, phase, slot, word_start, wpf):
+def _create_frame_wide(text, narration, w, h, scene_idx, phase, slot, word_start, wpf, bg=None):
     """Both figures — standard two-character scene."""
-    img = Image.new("RGB", (w, h), BG)
+    img = bg.copy() if bg else Image.new("RGB", (w, h), BG)
     draw = ImageDraw.Draw(img)
-    _draw_grid(draw, w, h)
+    if not bg:
+        _draw_grid(draw, w, h)
 
     s = 2.5 if h > w else 1.9
     bubble_fs = max(28, w // 28) if h > w else max(22, h // 26)
@@ -482,11 +513,12 @@ def _create_frame_wide(text, narration, w, h, scene_idx, phase, slot, word_start
     return img
 
 
-def _create_frame_focus_a(text, narration, w, h, scene_idx, phase, slot, word_start, wpf):
+def _create_frame_focus_a(text, narration, w, h, scene_idx, phase, slot, word_start, wpf, bg=None):
     """Figure A (speaker) solo — larger, left-centred. Figure B off screen."""
-    img = Image.new("RGB", (w, h), BG)
+    img = bg.copy() if bg else Image.new("RGB", (w, h), BG)
     draw = ImageDraw.Draw(img)
-    _draw_grid(draw, w, h)
+    if not bg:
+        _draw_grid(draw, w, h)
 
     s = 3.0 if h > w else 2.4
     bubble_fs = max(30, w // 24) if h > w else max(26, h // 22)
@@ -511,11 +543,12 @@ def _create_frame_focus_a(text, narration, w, h, scene_idx, phase, slot, word_st
     return img
 
 
-def _create_frame_focus_prop(text, narration, w, h, scene_idx, phase, slot, word_start, wpf):
+def _create_frame_focus_prop(text, narration, w, h, scene_idx, phase, slot, word_start, wpf, bg=None):
     """Concept card — large prop centred + key words from narration as bold text."""
-    img = Image.new("RGB", (w, h), BG)
+    img = bg.copy() if bg else Image.new("RGB", (w, h), BG)
     draw = ImageDraw.Draw(img)
-    _draw_grid(draw, w, h)
+    if not bg:
+        _draw_grid(draw, w, h)
 
     scene_type = scene_idx % 4
     prop_s = 2.2 if h > w else 1.6
@@ -544,11 +577,12 @@ def _create_frame_focus_prop(text, narration, w, h, scene_idx, phase, slot, word
     return img
 
 
-def _create_frame_focus_b(text, narration, w, h, scene_idx, phase, slot, word_start, wpf):
+def _create_frame_focus_b(text, narration, w, h, scene_idx, phase, slot, word_start, wpf, bg=None):
     """Figure B (reactor) solo — larger, right-centred. Shows audience reaction."""
-    img = Image.new("RGB", (w, h), BG)
+    img = bg.copy() if bg else Image.new("RGB", (w, h), BG)
     draw = ImageDraw.Draw(img)
-    _draw_grid(draw, w, h)
+    if not bg:
+        _draw_grid(draw, w, h)
 
     s = 3.0 if h > w else 2.4
     bubble_fs = max(30, w // 24) if h > w else max(26, h // 22)
@@ -615,6 +649,11 @@ def create_scene_video(text, bg_color, duration, output_path,
             ("wide",       max(3, d - 20)),
         ]
 
+    # Fetch one AI background per scene from Pollinations.ai (free, no key)
+    # All 5 shots share the same background — visual consistency within a scene
+    print(f"  [BG] Fetching AI background for scene {scene_idx + 1}...")
+    scene_bg = _fetch_bg(text, w, h, seed=scene_idx * 7 + slot)
+
     sub_clips = []
     phases = [0, 1, 0, 1]  # 4-frame arm cycle per shot
 
@@ -648,7 +687,7 @@ def create_scene_video(text, bg_color, duration, output_path,
         renderer = _SHOT_RENDERERS[shot_type]
         for fi, phase in enumerate(phases):
             ws = fi * wpf
-            frame = renderer(label, shot_narration, w, h, scene_idx, phase, slot, ws, wpf)
+            frame = renderer(label, shot_narration, w, h, scene_idx, phase, slot, ws, wpf, bg=scene_bg)
             frame.save(os.path.join(shot_frames_dir, f"f{fi:03d}.png"))
 
         sub_path = output_path.replace(".mp4", f"_shot{shot_idx}.mp4")
@@ -679,7 +718,7 @@ def create_scene_video(text, bg_color, duration, output_path,
         os.makedirs(frames_dir, exist_ok=True)
         wpf_fb = max(3, total_words // 4) if total_words else 6
         for fi, phase in enumerate(phases):
-            frame = _create_frame_wide(label, narration, w, h, scene_idx, phase, slot, fi * wpf_fb, wpf_fb)
+            frame = _create_frame_wide(label, narration, w, h, scene_idx, phase, slot, fi * wpf_fb, wpf_fb, bg=scene_bg)
             frame.save(os.path.join(frames_dir, f"f{fi:03d}.png"))
         subprocess.run([
             ff, "-y", "-framerate", "4",
