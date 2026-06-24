@@ -27,6 +27,39 @@ def _run(cmd, timeout=120):
     return result.returncode == 0
 
 
+def _add_scene_sfx(audio_path: str, n_scenes: int, scene_dur: int, ff: str, tmp_dir: str) -> str:
+    """Add a subtle pop/ding at each scene boundary — signals visual cuts like pro channels do."""
+    if n_scenes <= 1:
+        return audio_path
+    sfx_out = os.path.join(tmp_dir, "audio_sfx.mp3")
+    n_pops = n_scenes - 1  # skip t=0, first scene has no preceding cut
+
+    # Build filter_complex: voice + one sine pop per scene boundary
+    cmd = [ff, "-y", "-i", audio_path]
+    for _ in range(n_pops):
+        cmd += ["-f", "lavfi", "-i", "sine=frequency=880:duration=0.14"]
+
+    fc = ["[0:a]volume=1.0[voice]"]
+    for i in range(n_pops):
+        delay_ms = (i + 1) * scene_dur * 1000
+        fc.append(
+            f"[{i+1}:a]afade=t=out:st=0.10:d=0.04,"
+            f"volume=0.28,adelay={delay_ms}|{delay_ms}[p{i}]"
+        )
+    pop_labels = "".join(f"[p{i}]" for i in range(n_pops))
+    fc.append(f"[voice]{pop_labels}amix=inputs={n_pops+1}:duration=first:normalize=0[out]")
+
+    cmd += ["-filter_complex", ";".join(fc),
+            "-map", "[out]", "-c:a", "libmp3lame", "-q:a", "3", sfx_out]
+
+    r = subprocess.run(cmd, capture_output=True, timeout=60)
+    if r.returncode == 0 and os.path.exists(sfx_out) and os.path.getsize(sfx_out) > 100:
+        print(f"  [Assemble] SFX added ({n_pops} scene pops)")
+        return sfx_out
+    print(f"  [Assemble] SFX skipped (non-critical)")
+    return audio_path
+
+
 def _get_random_music() -> str | None:
     for pat in ["*.mp3", "*.wav", "*.m4a"]:
         files = glob.glob(os.path.join(MUSIC_DIR, pat))
@@ -96,6 +129,10 @@ def assemble_video(
         ], timeout=60)
         if success and os.path.exists(mixed_audio):
             concat_audio = mixed_audio
+
+    # Step 3b: Scene transition SFX — pop at each scene boundary
+    scene_dur = 27 if video_type == "regular" else 13
+    concat_audio = _add_scene_sfx(concat_audio, len(clip_paths), scene_dur, ff, tmp_dir)
 
     # Step 4: Merge video + audio
     print("  [Assemble] Merging video and audio...")
