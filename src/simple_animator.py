@@ -424,35 +424,47 @@ SCENE_FNS = [_scene_hook, _scene_problem, _scene_solution, _scene_result]
 # ── Narration subtitle strip ───────────────────────────────────────────────────
 
 def _narration_strip(draw, narration, w, h, word_start, words_per_frame, fs_base):
-    """Subtitle strip showing the current narration words — only for landscape (regular) videos."""
-    is_short = h > w
-    if is_short:
-        return  # shorts layout too dense for a subtitle strip
+    """Subtitle strip showing the current narration words — only for landscape (regular) videos.
+    Positioned below figure feet (h*0.86) so it never overlaps the characters."""
+    if h > w:
+        return  # shorts: too dense, captions handled by YouTube auto-captions
     words = narration.split() if narration else []
     if not words:
         return
-    chunk = words[word_start : word_start + words_per_frame]
+    chunk = words[word_start : word_start + max(1, words_per_frame)]
     if not chunk:
-        chunk = words[-words_per_frame:]
-    line = " ".join(chunk)
+        chunk = words[-min(8, len(words)):]
 
-    fs = max(22, int(fs_base * 0.70))
+    # Wrap long chunks to 2 lines max
+    import textwrap as _tw
+    max_chars = max(12, int(w * 0.80 / (fs_base * 0.55)))
+    wrapped = _tw.wrap(" ".join(chunk), width=max_chars)[:2]
+    if not wrapped:
+        return
+
+    fs = max(24, int(fs_base * 0.68))
     font = _font(fs)
-    pad_x, pad_y = int(w * 0.04), int(h * 0.010)
+    pad_x, pad_y = int(w * 0.05), int(h * 0.008)
+    lh = fs + int(fs * 0.35)
 
-    bb = draw.textbbox((0, 0), line, font=font)
-    tw, th = bb[2] - bb[0], bb[3] - bb[1]
+    # Total bar height for 1 or 2 lines
+    bar_h = len(wrapped) * lh + pad_y * 2
+    # Position at 86% height — below figure feet (which end at ~82%) for 1920x1080
+    bar_y = int(h * 0.855)
 
-    # Dark bar at ~72% down — below the speech bubbles, above the yellow banner (which is at ~76%)
-    bar_h = th + pad_y * 2
-    bar_y = int(h * 0.72)
-    draw.rectangle([0, bar_y, w, bar_y + bar_h], fill=(18, 18, 30))
+    # Rounded pill background — semi-dark for contrast
+    draw.rounded_rectangle([int(w * 0.03), bar_y,
+                             int(w * 0.97), bar_y + bar_h],
+                            radius=int(fs * 0.4),
+                            fill=(15, 16, 32))
 
-    # White text centred, with shadow
-    tx = max(pad_x, (w - tw) // 2)
-    ty = bar_y + pad_y
-    draw.text((tx + 2, ty + 2), line, fill=(0, 0, 0), font=font)
-    draw.text((tx, ty), line, fill=(255, 255, 255), font=font)
+    for i, line in enumerate(wrapped):
+        bb = draw.textbbox((0, 0), line, font=font)
+        lw2 = bb[2] - bb[0]
+        tx = max(pad_x, (w - lw2) // 2)
+        ty = bar_y + pad_y + i * lh
+        draw.text((tx + 2, ty + 2), line, fill=(0, 0, 0), font=font)
+        draw.text((tx, ty), line, fill=(255, 255, 255), font=font)
 
 
 # ── Shot-type frame renderers ─────────────────────────────────────────────────
@@ -522,6 +534,7 @@ def _create_frame_wide(text, narration, w, h, scene_idx, phase, slot, word_start
 
     SCENE_FNS[scene_type](draw, w, h, s, bubble_fs, bubble_a, bubble_b, phase, label_text)
     _draw_banner_and_watermark(draw, text, w, h)
+    _narration_strip(draw, narration, w, h, word_start, wpf, max(22, h // 44))
     return img
 
 
@@ -550,11 +563,29 @@ def _create_frame_focus_a(text, narration, w, h, scene_idx, phase, slot, word_st
     label_colors = [RED, PURPLE, GREEN, GREEN]
     _label(draw, int(w*0.72), int(h*0.22), label_text, int(bubble_fs*0.85), label_colors[scene_type])
     _draw_banner_and_watermark(draw, text, w, h)
+    _narration_strip(draw, narration, w, h, word_start, wpf, max(22, h // 44))
     return img
 
 
+def _pick_prop(narration: str, scene_type: int):
+    """Choose a prop function based on keywords in the narration, falling back to scene-type default."""
+    n = narration.lower()
+    if any(k in n for k in ("brain", "cortisol", "dopamine", "neuron", "neural", "think", "mind", "mental")):
+        return _brain
+    if any(k in n for k in ("time", "minute", "hour", "day", "week", "clock", "late", "morning", "night")):
+        return _clock
+    if any(k in n for k in ("money", "rich", "wealth", "income", "earn", "pay", "afford", "broke", "dollar")):
+        return _money
+    if any(k in n for k in ("win", "success", "goal", "achieve", "trophy", "reward", "level", "accomplish")):
+        return _trophy
+    if any(k in n for k in ("idea", "solution", "discover", "realize", "insight", "answer", "key", "unlock")):
+        return _lightbulb
+    # Default per scene_type: hook→clock, problem→brain, solution→lightbulb, result→trophy
+    return [_clock, _brain, _lightbulb, _trophy][scene_type % 4]
+
+
 def _create_frame_focus_prop(text, narration, w, h, scene_idx, phase, slot, word_start, wpf, bg=None):
-    """Concept card — large prop centred, kinetic text at top handles the narration."""
+    """Concept card — large prop centred, narration subtitle at bottom."""
     img = bg.copy() if bg else Image.new("RGB", (w, h), BG)
     draw = ImageDraw.Draw(img)
     if not bg:
@@ -563,8 +594,8 @@ def _create_frame_focus_prop(text, narration, w, h, scene_idx, phase, slot, word
     scene_type = scene_idx % 4
     prop_s = 2.2 if h > w else 1.6
     prop_y = int(h * 0.38) if h > w else int(h * 0.30)
-    prop_fns = [_clock, _brain, _lightbulb, _trophy]
-    prop_fns[scene_type](draw, w // 2, prop_y, prop_s * (1.0 + 0.04 * phase))
+    prop_fn = _pick_prop(narration, scene_type)
+    prop_fn(draw, w // 2, prop_y, prop_s * (1.0 + 0.04 * phase))
 
     label_text = _LABEL_POOLS[scene_type][(slot + scene_idx) % len(_LABEL_POOLS[scene_type])]
     label_colors = [RED, PURPLE, GREEN, ORANGE]
@@ -572,6 +603,7 @@ def _create_frame_focus_prop(text, narration, w, h, scene_idx, phase, slot, word
     _label(draw, w // 2, int(h * 0.56) if h > w else int(h * 0.50), label_text, lfs, label_colors[scene_type])
 
     _draw_banner_and_watermark(draw, text, w, h)
+    _narration_strip(draw, narration, w, h, word_start, wpf, max(22, h // 44))
     return img
 
 
@@ -601,6 +633,7 @@ def _create_frame_focus_b(text, narration, w, h, scene_idx, phase, slot, word_st
     label_colors = [RED, PURPLE, GREEN, ORANGE]
     _label(draw, int(w*0.28), int(h*0.22), label_text, int(bubble_fs*0.85), label_colors[scene_type])
     _draw_banner_and_watermark(draw, text, w, h)
+    _narration_strip(draw, narration, w, h, word_start, wpf, max(22, h // 44))
     return img
 
 
@@ -676,10 +709,9 @@ def create_scene_video(text, bg_color, duration, output_path,
         os.makedirs(shot_frames_dir, exist_ok=True)
 
         renderer = _SHOT_RENDERERS[shot_type]
+        wpf = max(1, wt - wf)  # show all words for this shot's time slice
         for fi, phase in enumerate(phases):
-            frame = renderer(label, narration, w, h, scene_idx, phase, slot, 0, 6, bg=scene_bg)
-            # Kinetic text overlaid on top of rendered frame
-            _draw_kinetic_text(ImageDraw.Draw(frame), kinetic_text, w, h)
+            frame = renderer(label, narration, w, h, scene_idx, phase, slot, wf, wpf, bg=scene_bg)
             frame.save(os.path.join(shot_frames_dir, f"f{fi:03d}.png"))
 
         sub_path = output_path.replace(".mp4", f"_shot{shot_idx}.mp4")
