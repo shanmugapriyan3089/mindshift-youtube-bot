@@ -65,6 +65,22 @@ DAILY_TOPICS = [
     "Why the Comfort Zone Is Actually Killing Your Future",
     "How to Become Mentally Unbreakable in 30 Days",
     "The Hidden Cost of Being Too Nice to Everyone Around You",
+    # Pain-naming topics — name the exact emotional moment (research-backed format)
+    "You Keep Replaying That Conversation and Cannot Stop — Here Is Why",
+    "Why You Quit on Day Four Every Single Time You Try to Change",
+    "The Exact Moment Your Brain Decides to Sabotage Your Own Success",
+    "Why You Feel Guilty When You Rest Even After Working All Day",
+    "The Loop in Your Head at 2am Is Not Anxiety — It Is This",
+    "Why Intelligent People Talk Themselves Out of Every Opportunity",
+    "You Know Exactly What to Do and Still Cannot Make Yourself Do It",
+    "The Real Reason You Apologize When You Have Done Nothing Wrong",
+    "Why You Lose Energy Around Certain People Without Knowing Why",
+    "The Invisible Script Running in Your Head Since You Were Eight",
+    "Why You Cannot Accept Compliments and What It Is Actually Costing You",
+    "The Reason You Are Always Waiting for the Right Time That Never Comes",
+    "Why Your Brain Treats Criticism From Strangers Like a Physical Threat",
+    "You Are Not Lazy — Your Nervous System Is Stuck in Survival Mode",
+    "The Comparison Trap Your Brain Falls Into Thirty Times a Day",
 ]
 
 # Auto-updated by Agent 2 every Monday — winning tags + title formulas from competitor intel

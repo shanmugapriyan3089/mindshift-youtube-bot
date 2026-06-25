@@ -46,7 +46,7 @@ Each scene narration: 28-34 words. One single punchy idea, spoken fast.
 This fills exactly 12 seconds at natural Kokoro TTS pace (155 wpm).
 Do NOT go below 28 words — shorter narrations leave dead silence.
 Scene 1: shocking hook. Scene 2: the payoff / what to do.
-End scene 2 with: "Follow for more psychology secrets."
+End scene 2 with: "The full breakdown is on the channel — search MindShiftProductivity right now."
 duration_seconds for each scene: 12"""
 
     prompt = f"""You are a top YouTube scriptwriter for a viral psychology/motivation channel like Jamie Social, Trust Me Bro, or Productive Peter. You have helped channels go from 0 to 500k subscribers.
@@ -70,20 +70,26 @@ Pick ONE of these proven viral title formulas — do NOT use generic titles:
 Title must be 50-65 characters. Must create a knowledge gap — make them feel they're missing something critical.
 
 ═══ HOOK RULES (decides 70% of watch time) ═══
-Scene 1 narration MUST follow this exact structure:
-  - Sentence 1: Shocking statement or uncomfortable truth (NOT a question)
-  - Sentence 2: Make it personal — "right now, this is happening to YOU"
-  - Sentence 3: Create dread or urgency — what they're losing by not knowing this
-  - Sentence 4: Promise — "In the next [X] minutes/seconds, you'll learn exactly how to fix this"
-Example: "Most people will never reach their goals — not because they lack talent, but because their brain is actively working against them. Right now, a hidden psychological trap is sabotaging every decision you make. Every day you don't know this, you're losing hours of productive potential. In the next few minutes, I'll show you exactly how to break free."
+Scene 1 MUST open with BRUTALLY SPECIFIC pain — name the EXACT feeling, not a vague claim.
+BAD (too generic):  "Most people will never reach their goals."
+GOOD (brutally specific): "You've set that same goal eleven times. You know the exact moment you quit — it's always around day four."
+BAD (too generic):  "Your brain is working against you."
+GOOD (brutally specific): "Right now there's a specific thought loop running in your head that you cannot shut off, and it started before you even got out of bed."
+
+Scene 1 MUST follow this exact 4-sentence structure:
+  - Sentence 1: Name the exact pain with uncomfortable precision — as if you've been watching them
+  - Sentence 2: Make it feel inevitable — "this is not weakness, it is a documented brain pattern"
+  - Sentence 3: What they are losing RIGHT NOW by not knowing this (concrete and personal)
+  - Sentence 4: Specific promise — "In the next [X] minutes you will learn exactly how to stop this"
+Example: "You've replayed that conversation in your head at least twenty times and it still doesn't feel resolved. This is not rumination — it is your brain running a documented threat-response loop that never got a shutdown signal. Every hour this loop runs, your cortisol stays elevated and your decision-making degrades. In the next eight minutes, I will show you the exact pattern interrupt that breaks it permanently."
 
 ═══ CONTENT RULES ═══
 - Use "you" throughout — make it personal, not academic
 - Each scene has a bold text overlay (max 6 words) shown on screen
 - Reference real psychology (Pavlov, Kahneman, dopamine, cortisol, etc.) — sounds credible
 - Use contrast: "Most people do X. High performers do Y instead."
-- End regular videos with: "If this helped you, subscribe — I drop psychology secrets every week. Comment below: which of these are you guilty of?"
-- End shorts with: "Follow for more psychology tricks your school never taught you."
+- End regular videos with: "If this shifted something for you, subscribe — I drop psychology secrets every week. Comment below: which of these patterns do you catch yourself in?"
+- End shorts with: "The full breakdown with the exact fix is on the channel — search MindShiftProductivity."
 
 ═══ TEXT OVERLAY RULES ═══
 - Max 5 words, ALL CAPS
@@ -93,7 +99,7 @@ Example: "Most people will never reach their goals — not because they lack tal
 Respond ONLY with valid JSON, no markdown fences, no extra text:
 {{
   "title": "viral title using one of the 7 formulas above, 50-65 chars",
-  "description": "SEO YouTube description 200 words — open with the hook, include keywords: psychology, self improvement, motivation, mindset, productivity, success, habits, brain, mental health, personal development",
+  "description": "SEO YouTube description 220 words total. Structure: (1) Hook paragraph — open with the exact same brutal pain statement from Scene 1. (2) 3-bullet value summary of what viewer will learn. (3) Keywords naturally woven in: psychology, self improvement, motivation, mindset, productivity, success, habits, brain, mental health, personal development. (4) End with this EXACT affiliate block — do not change it:\n\n📚 BOOKS THAT CHANGED MY THINKING:\n→ Thinking Fast and Slow – Daniel Kahneman: https://amzn.to/3MindShift\n→ Atomic Habits – James Clear: https://amzn.to/3AtomicH\n\n🧠 FREE THERAPY (BetterHelp — I use it): https://betterhelp.com/mindshiftproductivity\n📖 FREE AUDIOBOOK (Audible 30-day trial): https://audible.com/mt/mindshiftproductivity\n\n🔔 Subscribe — new psychology secrets every week.\n💬 Comment: which part hit you hardest?",
   "tags": ["psychology", "motivation", "self improvement", "success mindset", "habits", "productivity", "mindset", "brain psychology", "life advice", "personal development", "how to focus", "stop procrastinating"],
   "thumbnail_text": "3-5 word ALL CAPS thumbnail text — most shocking phrase from the video",
   "scenes": [

@@ -172,32 +172,33 @@ def _thumb_font(size):
     return ImageFont.load_default()
 
 
-def _draw_shocked_figure(draw, cx, cy, s=2.8):
+def _draw_shocked_figure(draw, cx, cy, s=2.8, outline_color=(20, 20, 20)):
     """Large shocked stick figure for thumbnails — arms up, wide eyes, open mouth."""
     lw = max(5, int(8 * s))
     # Head
     hr = int(32 * s)
     ht = cy - int(145 * s)
     hb = cy - int(81 * s)
-    draw.ellipse([cx-hr, ht, cx+hr, hb], fill=(255, 220, 175), outline=(20, 20, 20), width=lw)
+    skin = (255, 220, 175)
+    draw.ellipse([cx-hr, ht, cx+hr, hb], fill=skin, outline=outline_color, width=lw)
     # Wide shocked eyes
     ey = cy - int(120 * s)
     for ex in [cx - int(13*s), cx + int(13*s)]:
         er = int(10 * s)
-        draw.ellipse([ex-er, ey-er, ex+er, ey+er], fill=(20, 20, 20))
+        draw.ellipse([ex-er, ey-er, ex+er, ey+er], fill=outline_color)
         draw.ellipse([ex+int(2*s), ey-int(4*s), ex+int(5*s), ey-int(1*s)], fill=(255, 255, 255))
     # Open mouth (O shape — shock)
     mx, my = cx, cy - int(95 * s)
     mw, mh = int(12 * s), int(14 * s)
     draw.ellipse([mx-mw, my-mh, mx+mw, my+mh], fill=(100, 20, 20))
     # Body
-    draw.line([cx, hb, cx, cy - int(15*s)], fill=(20, 20, 20), width=lw)
+    draw.line([cx, hb, cx, cy - int(15*s)], fill=outline_color, width=lw)
     # Arms raised up in shock
-    draw.line([cx, cy-int(60*s), cx-int(65*s), cy-int(115*s)], fill=(20, 20, 20), width=lw)
-    draw.line([cx, cy-int(60*s), cx+int(65*s), cy-int(115*s)], fill=(20, 20, 20), width=lw)
+    draw.line([cx, cy-int(60*s), cx-int(65*s), cy-int(115*s)], fill=outline_color, width=lw)
+    draw.line([cx, cy-int(60*s), cx+int(65*s), cy-int(115*s)], fill=outline_color, width=lw)
     # Legs spread
-    draw.line([cx, cy-int(15*s), cx-int(35*s), cy+int(55*s)], fill=(20, 20, 20), width=lw)
-    draw.line([cx, cy-int(15*s), cx+int(35*s), cy+int(55*s)], fill=(20, 20, 20), width=lw)
+    draw.line([cx, cy-int(15*s), cx-int(35*s), cy+int(55*s)], fill=outline_color, width=lw)
+    draw.line([cx, cy-int(15*s), cx+int(35*s), cy+int(55*s)], fill=outline_color, width=lw)
 
 
 def _fetch_thumb_bg(title: str, w: int, h: int, tint: tuple) -> "Image.Image | None":
@@ -225,37 +226,34 @@ def _fetch_thumb_bg(title: str, w: int, h: int, tint: tuple) -> "Image.Image | N
 
 
 def generate_thumbnail(title: str, output_path: str, video_type: str = "regular") -> str:
-    """Generate eye-catching thumbnail: shocked stick figure + bold text + AI background."""
+    """Generate eye-catching thumbnail.
+    60% dark background (stands out vs competitor white thumbnails in algorithm feed).
+    40% vivid split-panel (existing design).
+    Style is deterministic per title so the same video always gets the same look.
+    """
     try:
         from PIL import Image, ImageDraw
         import hashlib
 
-        # YouTube recommended thumbnail sizes (not video resolution)
-        # Regular: 1280×720 (16:9), Shorts: 1080×1920 (9:16)
-        if video_type == "regular":
-            w, h = 1280, 720
-        else:
-            w, h = 1080, 1920
+        w, h = (1280, 720) if video_type == "regular" else (1080, 1920)
 
         schemes = [
-            {"bg": (220, 50,  50),  "text": (255, 255, 255), "accent": (255, 214,   0)},
-            {"bg": (41,  128, 185), "text": (255, 255, 255), "accent": (255, 214,   0)},
-            {"bg": (142, 68,  173), "text": (255, 255, 255), "accent": (255, 214,   0)},
-            {"bg": (230, 126,  34), "text": (255, 255, 255), "accent": (255, 214,   0)},
-            {"bg": ( 39, 174,  96), "text": (255, 255, 255), "accent": (255, 214,   0)},
+            {"bg": (220,  50,  50)},   # red
+            {"bg": ( 41, 128, 185)},   # blue
+            {"bg": (142,  68, 173)},   # purple
+            {"bg": (230, 126,  34)},   # orange
+            {"bg": ( 39, 174,  96)},   # green
         ]
-        c = schemes[int(hashlib.md5(title.encode()).hexdigest(), 16) % len(schemes)]
+        title_hash = int(hashlib.md5(title.encode()).hexdigest(), 16)
+        c = schemes[title_hash % len(schemes)]
+        panel_color = c["bg"]
 
-        # Split-panel design: vivid accent panel + warm off-white panel
-        # Research shows: split layouts outperform flat-color — text pops on vivid, figure pops on light
-        off_white = (248, 245, 240)
-        panel_color = c["bg"]                            # vivid accent panel
-        spot_color  = tuple(min(255, v + 55) for v in off_white)  # subtle spotlight circle
+        # Dark bg for ~60% of titles (remainder get split-panel)
+        use_dark = (title_hash % 10) < 6
 
-        img = Image.new("RGB", (w, h), off_white)
+        img = Image.new("RGB", (w, h), (12, 14, 30) if use_dark else (248, 245, 240))
         draw = ImageDraw.Draw(img)
 
-        # 2-word-per-line split of the thumbnail text
         words = title.upper().split()
         mid = max(1, len(words) // 2)
         lines = [" ".join(words[:mid]), " ".join(words[mid:])]
@@ -266,59 +264,86 @@ def generate_thumbnail(title: str, output_path: str, video_type: str = "regular"
             fs = min(max_fs, int(max_panel_w / max(1, ml) * 1.52))
             gap = int(fs * 1.24)
             tf = _thumb_font(fs)
+            shadow = (0, 0, 0) if use_dark else (0, 0, 0)
             for i, line in enumerate(lines):
                 y = ty + i * gap
-                draw.text((tx + 4, y + 4), line, fill=(0, 0, 0), font=tf)
+                draw.text((tx + 4, y + 4), line, fill=shadow, font=tf)
                 draw.text((tx, y), line, fill=text_color, font=tf)
 
-        if video_type == "regular":
-            # LEFT 50% = vivid panel (text), RIGHT 50% = off-white (figure)
-            split_x = int(w * 0.50)
-            draw.rectangle([0, 0, split_x, h], fill=panel_color)
+        def _blend(c1, c2, t):
+            return tuple(int(c1[j] + (c2[j] - c1[j]) * t) for j in range(3))
 
-            # Spotlight circle behind figure
-            scx, scy, sr = int(w * 0.75), int(h * 0.55), int(h * 0.40)
-            draw.ellipse([scx - sr, scy - sr, scx + sr, scy + sr], fill=spot_color)
+        bg_dark = (12, 14, 30)
 
-            # Figure — scale 2.5 fits fully within 720px height (head top ~60px, feet ~660px)
-            _draw_shocked_figure(draw, int(w * 0.76), int(h * 0.60), 2.5)
+        if use_dark:
+            # ── DARK THUMBNAIL ───────────────────────────────────────────────
+            # Radial glow (4 concentric ellipses: dark→vivid) behind figure
+            if video_type == "regular":
+                gx, gy, gr = int(w * 0.76), int(h * 0.55), int(h * 0.55)
+            else:
+                gx, gy, gr = int(w * 0.55), int(h * 0.68), int(w * 0.58)
 
-            # White bold text on vivid panel — auto-fit
-            _draw_text_block(lines, int(w * 0.04), int(h * 0.12),
-                             split_x * 0.90, int(h * 0.210), (255, 255, 255))
+            for ring_pct, blend_t in [(1.0, 0.12), (0.72, 0.30), (0.48, 0.55), (0.26, 0.80)]:
+                rr = int(gr * ring_pct)
+                draw.ellipse([gx - rr, gy - rr, gx + rr, gy + rr],
+                             fill=_blend(bg_dark, panel_color, blend_t))
 
-            # Channel watermark on vivid panel
-            draw.text((int(w * 0.04), h - int(h * 0.10)),
-                      "@MindShiftProductivity", fill=(200, 215, 230),
-                      font=_thumb_font(int(h * 0.040)))
+            # White-outlined shocked figure (visible on dark bg)
+            if video_type == "regular":
+                _draw_shocked_figure(draw, int(w * 0.76), int(h * 0.60), 2.5,
+                                     outline_color=(255, 255, 255))
+                _draw_text_block(lines, int(w * 0.04), int(h * 0.12),
+                                 int(w * 0.46), int(h * 0.210), (255, 214, 0))
+                draw.text((int(w * 0.04), h - int(h * 0.09)),
+                          "@MindShiftProductivity", fill=(110, 120, 155),
+                          font=_thumb_font(int(h * 0.038)))
+            else:
+                _draw_shocked_figure(draw, int(w * 0.58), int(h * 0.72), 3.8,
+                                     outline_color=(255, 255, 255))
+                _draw_text_block(lines, int(w * 0.05), int(h * 0.05),
+                                 w * 0.90, int(h * 0.175), (255, 214, 0))
+                draw.text((int(w * 0.04), h - int(h * 0.04)),
+                          "@MindShiftProductivity", fill=(110, 120, 155),
+                          font=_thumb_font(int(w * 0.038)))
+
+            # Thin vivid border
+            bw = max(6, int(min(w, h) * 0.009))
+            draw.rectangle([0, 0, w - 1, h - 1], outline=panel_color, width=bw)
 
         else:
-            # TOP 42% = vivid panel (text), BOTTOM 58% = off-white (figure)
-            split_y = int(h * 0.42)
-            draw.rectangle([0, 0, w, split_y], fill=panel_color)
+            # ── SPLIT-PANEL THUMBNAIL ────────────────────────────────────────
+            off_white = (248, 245, 240)
+            spot_color = tuple(min(255, v + 55) for v in off_white)
 
-            # Spotlight circle behind figure on bottom panel
-            scx, scy, sr = int(w * 0.52), int(h * 0.70), int(w * 0.40)
-            draw.ellipse([scx - sr, scy - sr, scx + sr, scy + sr], fill=spot_color)
+            if video_type == "regular":
+                split_x = int(w * 0.50)
+                draw.rectangle([0, 0, split_x, h], fill=panel_color)
+                scx, scy, sr = int(w * 0.75), int(h * 0.55), int(h * 0.40)
+                draw.ellipse([scx - sr, scy - sr, scx + sr, scy + sr], fill=spot_color)
+                _draw_shocked_figure(draw, int(w * 0.76), int(h * 0.60), 2.5)
+                _draw_text_block(lines, int(w * 0.04), int(h * 0.12),
+                                 split_x * 0.90, int(h * 0.210), (255, 255, 255))
+                draw.text((int(w * 0.04), h - int(h * 0.10)),
+                          "@MindShiftProductivity", fill=(200, 215, 230),
+                          font=_thumb_font(int(h * 0.040)))
+            else:
+                split_y = int(h * 0.42)
+                draw.rectangle([0, 0, w, split_y], fill=panel_color)
+                scx, scy, sr = int(w * 0.52), int(h * 0.70), int(w * 0.40)
+                draw.ellipse([scx - sr, scy - sr, scx + sr, scy + sr], fill=spot_color)
+                _draw_shocked_figure(draw, int(w * 0.60), int(h * 0.73), 3.8)
+                _draw_text_block(lines, int(w * 0.05), int(h * 0.05),
+                                 w * 0.92, int(split_y * 0.44), (255, 255, 255))
+                draw.text((int(w * 0.04), h - int(h * 0.04)),
+                          "@MindShiftProductivity", fill=(160, 160, 160),
+                          font=_thumb_font(int(w * 0.040)))
 
-            # Giant shocked figure — centered-right on bottom panel
-            _draw_shocked_figure(draw, int(w * 0.60), int(h * 0.73), 3.8)
-
-            # White bold text on vivid panel — auto-fit
-            _draw_text_block(lines, int(w * 0.05), int(h * 0.05),
-                             w * 0.92, int(split_y * 0.44), (255, 255, 255))
-
-            # Channel watermark bottom
-            draw.text((int(w * 0.04), h - int(h * 0.04)),
-                      "@MindShiftProductivity", fill=(160, 160, 160),
-                      font=_thumb_font(int(w * 0.040)))
-
-        # Vivid accent border around the whole thumbnail — pops in dark-mode feeds
-        bw = max(8, int(min(w, h) * 0.011))
-        draw.rectangle([0, 0, w - 1, h - 1], outline=panel_color, width=bw)
+            bw = max(8, int(min(w, h) * 0.011))
+            draw.rectangle([0, 0, w - 1, h - 1], outline=panel_color, width=bw)
 
         img.save(output_path, quality=95)
-        print(f"  [Thumbnail] Saved: {output_path}")
+        style = "dark" if use_dark else "split-panel"
+        print(f"  [Thumbnail] Saved ({style}): {output_path}")
 
     except Exception as e:
         print(f"  [Thumbnail] Pillow failed ({e}), using FFmpeg fallback")
