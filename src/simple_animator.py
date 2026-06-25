@@ -802,7 +802,150 @@ def create_scene_video(text, bg_color, duration, output_path,
     return output_path
 
 
-def create_all_scenes(scenes, output_dir, video_type="regular", slot=0):
+def _create_poll_card_frame(question: str, w: int, h: int, frame_idx: int = 0) -> "Image.Image":
+    """Interactive A/B poll card shown at end of Shorts — drives comments.
+    Parses: 'Question text? A: Option1 B: Option2'
+    Alternates highlight on A/B each cycle to look interactive.
+    """
+    # Parse question + options
+    parts = question.split(" A: ")
+    q_text = parts[0].strip().rstrip("?") + "?"
+    ab_raw = parts[1] if len(parts) > 1 else "Yes B: No"
+    ab_parts = ab_raw.split(" B: ")
+    opt_a = ab_parts[0].strip()
+    opt_b = ab_parts[1].strip() if len(ab_parts) > 1 else "Sometimes"
+
+    # Dark navy background
+    img = Image.new("RGB", (w, h), (13, 15, 40))
+    draw = ImageDraw.Draw(img)
+
+    # Subtle radial glow behind text area
+    for r_frac, alpha in [(0.95, 25), (0.65, 50), (0.38, 90)]:
+        r = int(min(w, h) * r_frac * 0.52)
+        cx_, cy_ = w // 2, int(h * 0.45)
+        overlay = Image.new("RGBA", (w, h), (0, 0, 0, 0))
+        od = ImageDraw.Draw(overlay)
+        od.ellipse([cx_ - r, cy_ - r, cx_ + r, cy_ + r], fill=(60, 80, 200, alpha))
+        img = Image.alpha_composite(img.convert("RGBA"), overlay).convert("RGB")
+        draw = ImageDraw.Draw(img)
+
+    # Font helpers
+    def _font(size):
+        for p in [
+            "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+            "/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf",
+            "C:/Windows/Fonts/arialbd.ttf", "C:/Windows/Fonts/Arial.ttf",
+        ]:
+            try:
+                from PIL import ImageFont
+                return ImageFont.truetype(p, size)
+            except Exception:
+                pass
+        from PIL import ImageFont
+        return ImageFont.load_default()
+
+    fs_q  = max(28, w // 18)   # question font
+    fs_o  = max(24, w // 22)   # option font
+    fs_cta= max(18, w // 30)   # CTA font
+
+    # "QUICK POLL" label at top
+    label_font = _font(fs_cta)
+    label = "QUICK POLL 📊"
+    bbox = draw.textbbox((0, 0), label, font=label_font)
+    lw = bbox[2] - bbox[0]
+    draw.text(((w - lw) // 2, int(h * 0.10)), label, fill=(160, 180, 220), font=label_font)
+
+    # Question text — wrapped
+    q_font = _font(fs_q)
+    max_chars = max(15, int(w * 0.80 / (fs_q * 0.55)))
+    q_lines = textwrap.wrap(q_text, width=max_chars)
+    q_start_y = int(h * 0.22)
+    line_gap = int(fs_q * 1.35)
+    for li, line in enumerate(q_lines[:3]):
+        bbox = draw.textbbox((0, 0), line, font=q_font)
+        lw_ = bbox[2] - bbox[0]
+        x_ = (w - lw_) // 2
+        draw.text((x_ + 2, q_start_y + li * line_gap + 2), line, fill=(20, 20, 60), font=q_font)
+        draw.text((x_, q_start_y + li * line_gap), line, fill=(255, 255, 255), font=q_font)
+
+    # Option buttons — alternate highlight each 2 frames for "tap" effect
+    btn_h  = int(h * 0.10)
+    btn_x  = int(w * 0.06)
+    btn_w_ = int(w * 0.88)
+    radius = btn_h // 2
+
+    highlight_a = (frame_idx // 2) % 2 == 0
+    col_a = (255, 214, 0)   if highlight_a else (40, 45, 90)
+    col_b = (40, 45, 90)    if highlight_a else (255, 214, 0)
+    txt_a = (20, 20, 50)    if highlight_a else (200, 210, 240)
+    txt_b = (200, 210, 240) if highlight_a else (20, 20, 50)
+
+    btn_y_a = int(h * 0.50)
+    btn_y_b = int(h * 0.65)
+
+    for (by, bc, tc, letter, opt_txt) in [
+        (btn_y_a, col_a, txt_a, "A", opt_a),
+        (btn_y_b, col_b, txt_b, "B", opt_b),
+    ]:
+        draw.rounded_rectangle([btn_x, by, btn_x + btn_w_, by + btn_h], radius=radius, fill=bc)
+        o_font = _font(fs_o)
+        full_label = f"  {letter}   {opt_txt}"
+        bbox = draw.textbbox((0, 0), full_label, font=o_font)
+        ty = by + (btn_h - (bbox[3] - bbox[1])) // 2
+        draw.text((btn_x + int(w * 0.06), ty), full_label, fill=tc, font=o_font)
+
+    # CTA at bottom
+    cta_font = _font(fs_cta)
+    cta = "Comment  A  or  B  below! 👇"
+    bbox = draw.textbbox((0, 0), cta, font=cta_font)
+    cta_x = (w - (bbox[2] - bbox[0])) // 2
+    draw.text((cta_x, int(h * 0.82)), cta, fill=(255, 180, 0), font=cta_font)
+
+    return img
+
+
+def _create_poll_card_video(question: str, output_dir: str, w: int, h: int, duration: int = 4) -> str:
+    """Render a 4-second animated poll card as a video clip for end of Shorts."""
+    ff_path = shutil.which("ffmpeg") or "ffmpeg"
+    try:
+        import imageio_ffmpeg
+        ff_path = imageio_ffmpeg.get_ffmpeg_exe()
+    except Exception:
+        pass
+
+    frames_dir = os.path.join(output_dir, "poll_frames")
+    os.makedirs(frames_dir, exist_ok=True)
+
+    n_frames = 8
+    for fi in range(n_frames):
+        frame = _create_poll_card_frame(question, w, h, frame_idx=fi)
+        frame.save(os.path.join(frames_dir, f"f{fi:03d}.png"))
+
+    out_path = os.path.join(output_dir, "scene_poll.mp4")
+    subprocess.run([
+        ff_path, "-y", "-framerate", "8",
+        "-i", os.path.join(frames_dir, "f%03d.png"),
+        "-vf", f"loop=-1:size={n_frames}:start=0",
+        "-t", str(duration),
+        "-c:v", "libx264", "-preset", "ultrafast",
+        "-pix_fmt", "yuv420p", "-r", "24", "-crf", "18", out_path
+    ], capture_output=True, text=True, timeout=60)
+
+    for fi in range(n_frames):
+        fp = os.path.join(frames_dir, f"f{fi:03d}.png")
+        if os.path.exists(fp):
+            os.remove(fp)
+    try:
+        os.rmdir(frames_dir)
+    except Exception:
+        pass
+
+    print(f"  [Animate] Poll card: {question[:50]}")
+    return out_path
+
+
+def create_all_scenes(scenes, output_dir, video_type="regular", slot=0, poll_question: str = ""):
+    from config import SHORTS_VIDEO
     os.makedirs(output_dir, exist_ok=True)
     paths = []
     for i, scene in enumerate(scenes):
@@ -815,4 +958,14 @@ def create_all_scenes(scenes, output_dir, video_type="regular", slot=0):
             narration=scene.get("narration", ""), slot=slot,
         )
         paths.append(out)
+
+    # Append interactive poll card at end of Shorts to drive comments
+    if video_type == "shorts" and poll_question and " A: " in poll_question:
+        spec = SHORTS_VIDEO
+        poll_path = _create_poll_card_video(
+            poll_question, output_dir, spec["width"], spec["height"], duration=4
+        )
+        if os.path.exists(poll_path) and os.path.getsize(poll_path) > 500:
+            paths.append(poll_path)
+
     return paths

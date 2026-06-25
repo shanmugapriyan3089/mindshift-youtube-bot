@@ -125,6 +125,39 @@ def _get_or_create_playlist(youtube, video_type: str) -> str:
     return resp["id"]
 
 
+def _post_engagement_comment(youtube, video_id: str, title: str):
+    """Post an engagement-driving question as first comment, then notify to pin it."""
+    import hashlib
+    questions = [
+        "Which part of this hit closest to home for you? Comment below 👇",
+        "Be honest — how many times has this exact thing happened to you? Drop a number ⬇️",
+        "Does this describe you? Comment YES or NO below 👇",
+        "Which of these patterns do you catch yourself in the most? Let me know ⬇️",
+        "What's the #1 thing stopping you right now? One word answers only 👇",
+        "Did this shift something for you? Tell me below — I read every single one ⬇️",
+        "Where are you right now: stuck in this pattern, or already past it? Comment below 👇",
+    ]
+    q_idx = int(hashlib.md5(title.encode()).hexdigest(), 16) % len(questions)
+    question = questions[q_idx]
+
+    try:
+        result = youtube.commentThreads().insert(
+            part="snippet",
+            body={
+                "snippet": {
+                    "videoId": video_id,
+                    "topLevelComment": {"snippet": {"textOriginal": question}},
+                }
+            },
+        ).execute()
+        print(f"  [YouTube] Engagement comment posted: {question[:60]}")
+        studio_url = f"https://studio.youtube.com/video/{video_id}/comments"
+        return question, studio_url
+    except Exception as e:
+        print(f"  [YouTube] Comment failed (need comment scope): {e}")
+        return None, None
+
+
 def _add_to_playlist(youtube, video_id: str, video_type: str):
     """Add video to the themed playlist. Non-critical."""
     try:
@@ -206,10 +239,31 @@ def upload_video(
     # Add to themed playlist (drives session time)
     _add_to_playlist(youtube, video_id, video_type)
 
+    # Post engagement comment + notify to pin it
+    question, studio_url = _post_engagement_comment(youtube, video_id, title)
+    if studio_url:
+        try:
+            from agents.notifier import send
+            vtype_label = "🩳 Short" if video_type == "shorts" else "📹 Video"
+            send(
+                f"✅ <b>{vtype_label} uploaded!</b>\n"
+                f"<b>{title[:80]}</b>\n"
+                f"▶️ <a href='https://youtube.com/watch?v={video_id}'>Watch on YouTube</a>\n\n"
+                f"📌 <b>ACTION NEEDED — Pin this comment:</b>\n"
+                f"<code>{question}</code>\n\n"
+                f"👉 <a href='{studio_url}'>Open YouTube Studio comments</a>\n"
+                f"(Tap the 3 dots next to the comment → Pin)\n\n"
+                f"⏱ Takes 10 seconds. Pinned comments get 3× more replies.",
+                subject=f"New upload: {title[:60]}"
+            )
+        except Exception as e:
+            print(f"  [YouTube] Upload notification failed: {e}")
+
     return video_id
 
 
-def save_upload_log(video_id: str, title: str, topic: str, video_type: str, log_file: str = "upload_log.json"):
+def save_upload_log(video_id: str, title: str, topic: str, video_type: str,
+                    log_file: str = "upload_log.json", poll_question: str = ""):
     """Append upload record to log file."""
     from datetime import datetime
     record = {
@@ -219,6 +273,7 @@ def save_upload_log(video_id: str, title: str, topic: str, video_type: str, log_
         "type": video_type,
         "url": f"https://youtube.com/watch?v={video_id}",
         "uploaded_at": datetime.utcnow().isoformat(),
+        "poll_question": poll_question,
     }
     log = []
     if os.path.exists(log_file):

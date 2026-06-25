@@ -134,7 +134,7 @@ def assemble_video(
     scene_dur = 27 if video_type == "regular" else 13
     concat_audio = _add_scene_sfx(concat_audio, len(clip_paths), scene_dur, ff, tmp_dir)
 
-    # Step 4: Merge video + audio
+    # Step 4: Merge video + audio (apad pads silence if audio ends before video — covers poll card)
     print("  [Assemble] Merging video and audio...")
     _run([
         ff, "-y",
@@ -142,6 +142,7 @@ def assemble_video(
         "-i", concat_audio,
         "-c:v", "copy",
         "-c:a", "aac",
+        "-af", "apad",
         "-shortest",
         "-map", "0:v:0",
         "-map", "1:a:0",

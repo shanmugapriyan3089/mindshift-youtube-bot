@@ -9,7 +9,7 @@ from groq import Groq
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 from config import GROQ_API_KEY, DAILY_TOPICS
 
-CHANNEL_URL = "https://youtube.com/@mindshift-productive"
+CHANNEL_URL = "https://youtube.com/@MindShiftProductivity"
 
 SUBREDDITS = [
     "GetMotivated",
@@ -19,6 +19,9 @@ SUBREDDITS = [
     "Entrepreneur",
     "LifeAdvice",
     "decidingtobebetter",
+    "mentalhealth",
+    "getdisciplined",
+    "ChangeMyView",
 ]
 
 KEYWORDS = ["motivation", "habits", "procrastination", "confidence", "success", "anxiety",
@@ -66,13 +69,14 @@ You run "MindShift Productivity" — a YouTube psychology/motivation channel.
 Our recent video topics: {', '.join(DAILY_TOPICS[:6])}
 
 Write a Reddit comment (3-5 sentences) that:
-1. Adds genuine insight relevant to this specific post
-2. Sounds like a real person sharing experience, not a marketer
-3. Naturally mentions our YouTube channel at the end with: "I actually made a video on this: {CHANNEL_URL}"
-4. No hashtags, no "check out my channel", no sycophantic opener
-5. Specific enough that it reads as helpful, not spam
+1. Opens with a SPECIFIC, genuinely insightful observation about this exact post — something most people wouldn't say
+2. Sounds like a real person sharing lived experience, not a content creator promoting anything
+3. ONE natural sentence at the very end ONLY if the video topic is directly related: "I went deep on this recently: {CHANNEL_URL}"
+4. If the topic is only loosely related, skip the channel mention entirely — a helpful comment with no link is better than a forced plug
+5. No hashtags, no "check out my channel", no "great post!", no sycophantic openers
+6. Must be helpful enough that people would upvote it on its own merit
 
-Write ONLY the comment. Nothing else."""
+Write ONLY the comment. No preamble, no quotes."""
 
     response = client.chat.completions.create(
         model="llama-3.3-70b-versatile",
@@ -138,26 +142,37 @@ def main():
         return
 
     print(f"  {len(unique)} posts found. Drafting comments for top 5...")
-    message = "💬 <b>Agent 5: Reddit Outreach Drafts</b>\n(Post these manually to get views)\n"
+    message = (
+        "💬 <b>Agent 5: Reddit Outreach — Daily Targets</b>\n"
+        "Open each link → find the post → tap Reply → paste the comment\n"
+        "⚡ Takes 5 mins. Each comment = potential viral traffic.\n"
+    )
 
-    for post in unique[:5]:
+    for i, post in enumerate(unique[:5], 1):
         try:
             comment = _draft_comment(post, client)
         except Exception as e:
-            comment = f"[Error generating draft: {e}]"
+            comment = f"[Error: {e}]"
 
         message += f"""
 ━━━━━━━━━━━━━━━━━━
-📌 <b>{post['subreddit']}</b> · {post['score']:,} upvotes
-<b>{post['title'][:65]}</b>
-🔗 {post['url']}
+<b>{i}.</b> {post['subreddit']} · 👍 {post['score']:,} upvotes · 💬 {post['num_comments']} comments
+<b>{post['title'][:70]}</b>
+👉 <a href="{post['url']}">Open post on Reddit</a>
 
-💬 <b>Your comment draft:</b>
-{comment}
+📝 <b>Paste this comment:</b>
+<code>{comment}</code>
 """
 
-    message += "\n\n✅ Copy &amp; paste these comments to get real traffic!"
-    send(message)
+    message += (
+        "\n━━━━━━━━━━━━━━━━━━\n"
+        "🎯 <b>Best subreddits to search manually:</b>\n"
+        "• r/selfimprovement — search: procrastination / anxiety / habits\n"
+        "• r/psychology — search: motivation / decision making\n"
+        "• r/GetMotivated — any hot post with 500+ upvotes\n\n"
+        f"🔗 Our channel: {CHANNEL_URL}"
+    )
+    send(message, subject="Agent 5: Reddit Outreach Targets")
 
 
 if __name__ == "__main__":

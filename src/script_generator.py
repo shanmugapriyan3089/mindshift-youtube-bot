@@ -79,7 +79,16 @@ This fills exactly 12 seconds at natural Kokoro TTS pace (155 wpm).
 Do NOT go below 28 words — shorter narrations leave dead silence.
 Scene 1: shocking hook. Scene 2: the payoff / what to do.
 End scene 2 with: "The full breakdown is on the channel — search MindShiftProductivity right now."
-duration_seconds for each scene: 12"""
+duration_seconds for each scene: 12
+
+POLL QUESTION: Also write one interactive poll_question for the end card.
+Format: "Question? A: [option1] B: [option2]"
+The question must be YES/NO or A/B style to drive comments.
+Examples:
+  "Does your brain do this too? A: Every single day B: Only sometimes"
+  "Has this ever cost you? A: Yes, badly B: Not yet but close"
+  "Are you in this loop right now? A: Trapped in it B: Just got out"
+Make it feel personal and urgent — viewers must feel compelled to answer."""
 
     prompt = f"""You are a top YouTube scriptwriter for a viral psychology/motivation channel like Jamie Social, Trust Me Bro, or Productive Peter. You have helped channels go from 0 to 500k subscribers.
 
@@ -136,6 +145,7 @@ Respond ONLY with valid JSON, no markdown fences, no extra text:
   "description": "SEO YouTube description, 200-220 words. Paragraph 1: open with the exact brutal pain statement from Scene 1 narration. Paragraph 2: 3-line bullet summary of what viewer will learn (use bullet • character). Paragraph 3: weave in these keywords naturally: psychology, self improvement, motivation, mindset, productivity, success, habits, brain, mental health, personal development. Final section (each item on its own line): a books line recommending Thinking Fast and Slow (Kahneman) and Atomic Habits (Clear) on Amazon, a BetterHelp therapy link at https://betterhelp.com/mindshiftproductivity, an Audible 30-day free trial link at https://audible.com/mt/mindshiftproductivity, a subscribe CTA, and the question: which part hit you hardest — comment below.",
   "tags": ["psychology", "motivation", "self improvement", "success mindset", "habits", "productivity", "mindset", "brain psychology", "life advice", "personal development", "how to focus", "stop procrastinating"],
   "thumbnail_text": "3-5 word ALL CAPS thumbnail text — most shocking phrase from the video",
+  "poll_question": "for Shorts only — Question? A: option1 B: option2 (leave empty string for regular videos)",
   "scenes": [
     {{
       "scene_number": 1,

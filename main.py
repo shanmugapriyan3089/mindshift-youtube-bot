@@ -47,7 +47,9 @@ def run_pipeline(video_type: str = "regular"):
 
     # 3. Animate scenes locally (free — no API)
     print(f"[3/6] Animating {len(script['scenes'])} scenes locally (Pillow + FFmpeg)...")
-    clip_paths = create_all_scenes(script["scenes"], clips_dir, video_type, slot=slot)
+    poll_q = script.get("poll_question", "") if video_type == "shorts" else ""
+    clip_paths = create_all_scenes(script["scenes"], clips_dir, video_type, slot=slot,
+                                   poll_question=poll_q)
     print()
 
     # 4. Generate voiceovers (edge-tts, free)
@@ -78,7 +80,8 @@ def run_pipeline(video_type: str = "regular"):
         scenes=script["scenes"],
     )
 
-    save_upload_log(video_id, script["title"], topic, video_type)
+    save_upload_log(video_id, script["title"], topic, video_type,
+                    poll_question=script.get("poll_question", ""))
 
     print(f"\n{'='*55}")
     print(f"  DONE! https://youtube.com/watch?v={video_id}")
