@@ -461,19 +461,16 @@ def _narration_strip(draw, narration, w, h, word_start, words_per_frame, fs_base
 # the same image; they switch to a different scene entirely.
 
 def _draw_banner_and_watermark(draw, text, w, h):
-    bfs = max(36, w // 17)
-    bfont = _font(bfs)
-    bh = int(bfs * 2.1)
-    by = h - bh - int(h * 0.018)
-    draw.rectangle([int(w*0.03), by, int(w*0.97), by+bh], fill=YELLOW, outline=LINE, width=3)
-    safe = text[:32]
-    bb = draw.textbbox((0, 0), safe, font=bfont)
-    tx = max(int(w*0.05), (w - (bb[2]-bb[0])) // 2)
-    ty = by + (bh - (bb[3]-bb[1])) // 2
-    draw.text((tx+2, ty+2), safe, fill=(100,100,100), font=bfont)
-    draw.text((tx,   ty),   safe, fill=(15, 15, 15),  font=bfont)
-    draw.text((int(w*0.04), int(h*0.012)), "@MindShiftProductivity",
-              fill=(160, 180, 210), font=_font_r(max(20, w//46)))
+    """Minimal branding — thin dark bottom bar + small top-left watermark.
+    No yellow banner: research shows top channels (Productive Peter, Trust Me Bro)
+    rely on voice + label badge for scene context, not a persistent bottom bar.
+    """
+    # Thin dark bottom strip — just enough to frame the canvas cleanly
+    bar_h = max(5, int(h * 0.006))
+    draw.rectangle([0, h - bar_h, w, h], fill=(22, 24, 55))
+    # Small top-left watermark — subtle, non-distracting
+    draw.text((int(w * 0.025), int(h * 0.012)), "@MindShiftProductivity",
+              fill=(155, 170, 205), font=_font_r(max(16, w // 56)))
 
 
 def _draw_grid(draw, w, h):

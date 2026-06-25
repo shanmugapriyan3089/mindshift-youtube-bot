@@ -276,12 +276,12 @@ def generate_thumbnail(title: str, output_path: str, video_type: str = "regular"
             split_x = int(w * 0.50)
             draw.rectangle([0, 0, split_x, h], fill=panel_color)
 
-            # Subtle spotlight circle behind figure on right panel
-            scx, scy, sr = int(w * 0.75), int(h * 0.50), int(h * 0.44)
+            # Spotlight circle behind figure
+            scx, scy, sr = int(w * 0.75), int(h * 0.55), int(h * 0.40)
             draw.ellipse([scx - sr, scy - sr, scx + sr, scy + sr], fill=spot_color)
 
-            # Giant shocked figure — right side, large
-            _draw_shocked_figure(draw, int(w * 0.76), int(h * 0.62), 3.6)
+            # Figure — scale 2.5 fits fully within 720px height (head top ~60px, feet ~660px)
+            _draw_shocked_figure(draw, int(w * 0.76), int(h * 0.60), 2.5)
 
             # White bold text on vivid panel — auto-fit
             _draw_text_block(lines, int(w * 0.04), int(h * 0.12),
@@ -312,6 +312,10 @@ def generate_thumbnail(title: str, output_path: str, video_type: str = "regular"
             draw.text((int(w * 0.04), h - int(h * 0.04)),
                       "@MindShiftProductivity", fill=(160, 160, 160),
                       font=_thumb_font(int(w * 0.040)))
+
+        # Vivid accent border around the whole thumbnail — pops in dark-mode feeds
+        bw = max(8, int(min(w, h) * 0.011))
+        draw.rectangle([0, 0, w - 1, h - 1], outline=panel_color, width=bw)
 
         img.save(output_path, quality=95)
         print(f"  [Thumbnail] Saved: {output_path}")
