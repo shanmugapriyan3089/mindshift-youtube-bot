@@ -9,13 +9,45 @@ _client = Groq(api_key=GROQ_API_KEY)
 MODEL = "llama-3.3-70b-versatile"
 
 
+def _sanitize_json(raw: str) -> str:
+    """Escape literal control characters inside JSON string values.
+    LLMs sometimes emit real newlines inside string values, which is invalid JSON.
+    This walks the string character-by-character and escapes any control char
+    that appears between unescaped double-quote delimiters.
+    """
+    out = []
+    in_str = False
+    skip = False
+    for ch in raw:
+        if skip:
+            out.append(ch)
+            skip = False
+            continue
+        if ch == "\\" and in_str:
+            out.append(ch)
+            skip = True
+            continue
+        if ch == '"':
+            in_str = not in_str
+            out.append(ch)
+            continue
+        if in_str and ord(ch) < 0x20:
+            if ch == "\n":   out.append("\\n")
+            elif ch == "\r": out.append("\\r")
+            elif ch == "\t": out.append("\\t")
+            else:            out.append(f"\\u{ord(ch):04x}")
+        else:
+            out.append(ch)
+    return "".join(out)
+
+
 def _parse_json(text: str) -> dict:
     text = re.sub(r"```json\s*", "", text)
     text = re.sub(r"```\s*", "", text)
     match = re.search(r"\{.*\}", text, re.DOTALL)
     if not match:
         raise ValueError("No JSON found in response")
-    return json.loads(match.group())
+    return json.loads(_sanitize_json(match.group()))
 
 
 def generate_script(topic: str, video_type: str = "regular") -> dict:
@@ -99,7 +131,7 @@ Example: "You've replayed that conversation in your head at least twenty times a
 Respond ONLY with valid JSON, no markdown fences, no extra text:
 {{
   "title": "viral title using one of the 7 formulas above, 50-65 chars",
-  "description": "SEO YouTube description 220 words total. Structure: (1) Hook paragraph — open with the exact same brutal pain statement from Scene 1. (2) 3-bullet value summary of what viewer will learn. (3) Keywords naturally woven in: psychology, self improvement, motivation, mindset, productivity, success, habits, brain, mental health, personal development. (4) End with this EXACT affiliate block — do not change it:\n\n📚 BOOKS THAT CHANGED MY THINKING:\n→ Thinking Fast and Slow – Daniel Kahneman: https://amzn.to/3MindShift\n→ Atomic Habits – James Clear: https://amzn.to/3AtomicH\n\n🧠 FREE THERAPY (BetterHelp — I use it): https://betterhelp.com/mindshiftproductivity\n📖 FREE AUDIOBOOK (Audible 30-day trial): https://audible.com/mt/mindshiftproductivity\n\n🔔 Subscribe — new psychology secrets every week.\n💬 Comment: which part hit you hardest?",
+  "description": "SEO YouTube description, 200-220 words. Paragraph 1: open with the exact brutal pain statement from Scene 1 narration. Paragraph 2: 3-line bullet summary of what viewer will learn (use bullet • character). Paragraph 3: weave in these keywords naturally: psychology, self improvement, motivation, mindset, productivity, success, habits, brain, mental health, personal development. Final section (each item on its own line): a books line recommending Thinking Fast and Slow (Kahneman) and Atomic Habits (Clear) on Amazon, a BetterHelp therapy link at https://betterhelp.com/mindshiftproductivity, an Audible 30-day free trial link at https://audible.com/mt/mindshiftproductivity, a subscribe CTA, and the question: which part hit you hardest — comment below.",
   "tags": ["psychology", "motivation", "self improvement", "success mindset", "habits", "productivity", "mindset", "brain psychology", "life advice", "personal development", "how to focus", "stop procrastinating"],
   "thumbnail_text": "3-5 word ALL CAPS thumbnail text — most shocking phrase from the video",
   "scenes": [
