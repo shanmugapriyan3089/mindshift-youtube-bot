@@ -128,6 +128,8 @@ Example: "You've replayed that conversation in your head at least twenty times a
 - Must be the single most shocking/intriguing phrase from that scene
 - Examples: "YOUR BRAIN IS LYING", "THIS REWIRES EVERYTHING", "MOST PEOPLE MISS THIS"
 
+CRITICAL JSON RULE: Every string value in your JSON response must be on ONE LINE — no literal newline characters inside any string. Use \\n (backslash-n) if you need a line break inside a string value. Literal newlines inside JSON strings cause a parse error and the whole pipeline fails.
+
 Respond ONLY with valid JSON, no markdown fences, no extra text:
 {{
   "title": "viral title using one of the 7 formulas above, 50-65 chars",
