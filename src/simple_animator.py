@@ -365,6 +365,7 @@ def _scene_hook(draw, w, h, s, bubble_fs, bubble_a, bubble_b, phase=0, label_tex
 
     ps = s * (1.0 + 0.06 * phase)
     _clock(draw, w//2, prop_y, ps * 0.95, hour=2)
+    # Research: hook wide shot — A is the revealer (pointing), B is the shocked viewer proxy
     _figure(draw, ax, ay,  s, pose="pointing_r", emotion="excited", phase=phase)
     _figure(draw, bx, by_, s, pose="shocked",    emotion="shocked", flip=True, phase=phase)
     _bubble(draw, ax, ay - int(100*s), bubble_a,
@@ -555,8 +556,13 @@ def _create_frame_focus_a(text, narration, w, h, scene_idx, phase, slot, word_st
 
     bubble_text = ""  # voice narrates — figure A animates, no text bubble
 
-    pose_map = ["pointing_r", "talking", "excited", "excited"]
-    emotion_map = ["excited", "thinking", "excited", "excited"]
+    # Poses intentionally DIFFERENT from the wide shot to create visual escalation:
+    # hook:     wide=pointing/excited  →  focus=shocked/shocked  (intensity up)
+    # problem:  wide=talking/thinking  →  focus=thinking/sad     (empathy deepens)
+    # solution: wide=excited/excited   →  focus=pointing_r/excited (directing viewer)
+    # result:   wide=excited/excited   →  focus=excited/excited  (peak energy maintained)
+    pose_map   = ["shocked",    "thinking", "pointing_r", "excited"]
+    emotion_map = ["shocked",   "sad",      "excited",    "excited"]
     _figure(draw, cx, cy, s, pose=pose_map[scene_type], emotion=emotion_map[scene_type], phase=phase)
     _bubble(draw, cx, cy - int(100*s), bubble_text, int(w*0.55), bubble_fs,
             tail="left", anchor="right")
@@ -585,22 +591,42 @@ def _pick_prop(narration: str, scene_type: int):
 
 
 def _create_frame_focus_prop(text, narration, w, h, scene_idx, phase, slot, word_start, wpf, bg=None):
-    """Concept card — large prop centred, narration subtitle at bottom."""
+    """Concept card — bold text_overlay headline + prop + narration strip.
+    Matches Psych2Go / Improvement Pill 'section header' technique:
+    the text_overlay from the script appears large when this shot plays."""
     img = bg.copy() if bg else Image.new("RGB", (w, h), BG)
     draw = ImageDraw.Draw(img)
     if not bg:
         _draw_grid(draw, w, h)
 
     scene_type = scene_idx % 4
+    label_colors = [RED, PURPLE, GREEN, ORANGE]
+    accent = label_colors[scene_type]
+
+    # ── Large headline text (script's text_overlay) ──────────────────────────
+    # Landscape only — shorts rely on the narration strip instead
+    if h <= w and text:
+        hl_fs = max(38, w // 24)
+        hl_font = _font(hl_fs)
+        headline = text.upper()[:38]
+        bb = draw.textbbox((0, 0), headline, font=hl_font)
+        hl_w = bb[2] - bb[0]
+        hx = max(int(w * 0.04), (w - hl_w) // 2)
+        hy = int(h * 0.06)
+        # Thick shadow → pop against gradient background
+        draw.text((hx + 3, hy + 3), headline, fill=(0, 0, 0), font=hl_font)
+        draw.text((hx, hy), headline, fill=accent, font=hl_font)
+
+    # ── Prop (keyword-matched) ────────────────────────────────────────────────
     prop_s = 2.2 if h > w else 1.6
-    prop_y = int(h * 0.38) if h > w else int(h * 0.30)
+    prop_y = int(h * 0.42) if h > w else int(h * 0.36)
     prop_fn = _pick_prop(narration, scene_type)
     prop_fn(draw, w // 2, prop_y, prop_s * (1.0 + 0.04 * phase))
 
+    # ── Small label badge below prop ─────────────────────────────────────────
     label_text = _LABEL_POOLS[scene_type][(slot + scene_idx) % len(_LABEL_POOLS[scene_type])]
-    label_colors = [RED, PURPLE, GREEN, ORANGE]
-    lfs = max(28, w // 26) if h > w else max(24, w // 30)
-    _label(draw, w // 2, int(h * 0.56) if h > w else int(h * 0.50), label_text, lfs, label_colors[scene_type])
+    lfs = max(26, w // 30) if h > w else max(22, w // 34)
+    _label(draw, w // 2, int(h * 0.62) if h > w else int(h * 0.56), label_text, lfs, accent)
 
     _draw_banner_and_watermark(draw, text, w, h)
     _narration_strip(draw, narration, w, h, word_start, wpf, max(22, h // 44))
