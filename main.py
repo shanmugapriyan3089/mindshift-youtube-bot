@@ -75,6 +75,7 @@ def run_pipeline(video_type: str = "regular"):
         description=script["description"],
         tags=script["tags"],
         video_type=video_type,
+        scenes=script["scenes"],
     )
 
     save_upload_log(video_id, script["title"], topic, video_type)
