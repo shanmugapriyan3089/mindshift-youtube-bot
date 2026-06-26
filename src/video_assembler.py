@@ -69,6 +69,39 @@ def _get_random_music() -> str | None:
     return None
 
 
+def _generate_ambient_fallback(total_dur: int, ff: str, tmp_dir: str) -> str | None:
+    """Generate a soft Cmin ambient pad via FFmpeg when assets/music/ is empty.
+
+    C3-G3-C4-Eb4 minor chord — dark, focused, suits psychology content.
+    Volume ~7%, lowpass 550Hz, gentle echo. Sounds like a distant drone.
+    To override: drop any MP3/WAV into assets/music/ and this is skipped.
+    """
+    out = os.path.join(tmp_dir, "ambient_fallback.mp3")
+    dur = total_dur + 5
+    # Cmin7 voicing: C3, G3, C4, Eb4
+    freqs = [130.81, 196.00, 261.63, 311.13]
+    cmd = [ff, "-y"]
+    for f in freqs:
+        cmd += ["-f", "lavfi", "-i", f"sine=frequency={f}:duration={dur}"]
+
+    fc = []
+    for i, _ in enumerate(freqs):
+        fc.append(f"[{i}:a]volume=0.07,afade=t=in:st=0:d=3[s{i}]")
+    mix_in = "".join(f"[s{i}]" for i in range(len(freqs)))
+    fc.append(f"{mix_in}amix=inputs={len(freqs)}:normalize=0[mix]")
+    fc.append("[mix]lowpass=f=550,aecho=0.6:0.4:350:0.2[out]")
+
+    cmd += ["-filter_complex", ";".join(fc),
+            "-map", "[out]",
+            "-c:a", "libmp3lame", "-q:a", "5", out]
+
+    ok = subprocess.run(cmd, capture_output=True, timeout=45).returncode == 0
+    if ok and os.path.exists(out) and os.path.getsize(out) > 500:
+        print("  [Assemble] Ambient pad generated (add lo-fi MP3s to assets/music/ for real music)")
+        return out
+    return None
+
+
 def assemble_video(
     clip_paths: list,
     voice_paths: list,
@@ -112,8 +145,11 @@ def assemble_video(
           "-i", concat_a_txt, "-c", "copy",
           concat_audio], timeout=120)
 
-    # Step 3: Mix background music if available
+    # Step 3: Mix background music — real file if available, otherwise generated ambient pad
     music_path = _get_random_music()
+    if not music_path:
+        total_dur = len(clip_paths) * (27 if video_type == "regular" else 13)
+        music_path = _generate_ambient_fallback(total_dur, ff, tmp_dir)
     if music_path and os.path.exists(concat_audio):
         print(f"  [Assemble] Mixing background music...")
         mixed_audio = os.path.join(tmp_dir, "mixed_audio.mp3")

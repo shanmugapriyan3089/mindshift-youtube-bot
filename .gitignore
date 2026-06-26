@@ -5,7 +5,6 @@ youtube_token.pickle
 token_for_github.txt
 *.pickle
 output/
-assets/music/
 __pycache__/
 *.pyc
 .DS_Store
