@@ -22,65 +22,71 @@ MADE_FOR_KIDS = False  # Adult audience = full monetization, no COPPA restrictio
 # Animation style — clean minimal 2D like Productive Peter
 ANIMATION_STYLE = "minimal 2D animation, clean white background, simple stick figures, bold text overlays, smooth transitions, professional motivational style"
 
-# Video topics — psychology, habits, success mindset (HIGH RPM niche)
+# Video topics — NICHE: psychology of being stuck / why you cannot change even when you want to.
+# All topics must relate to one core feeling: "I know what I should do and I still cannot do it."
+# Tight niche = algorithm clusters us correctly = higher recommendation frequency.
 DAILY_TOPICS = [
-    # Curiosity gap — makes viewers feel they're missing critical info
-    "Your Brain Is Lying to You Every Single Day — Here Is How",
-    "Stop Checking Your Phone — It Is Rewiring Your Brain Right Now",
-    "Why You Cannot Wake Up Early (It Is Not Laziness)",
-    "The Reason You Self-Sabotage Every Time You Get Close to Success",
-    "Your Dopamine System Is Broken — Here Is How to Fix It",
-    "Why Smart People Stay Poor While Average People Get Rich",
-    "The Silent Habit That Is Destroying Your Confidence Every Day",
-    "Why You Feel Empty After Getting Everything You Wanted",
-    "Your Subconscious Mind Makes 95 Percent of Your Decisions",
-    "The Psychology Behind Why You Procrastinate and Cannot Stop",
-    "Why People Who Talk Less Are Secretly More Powerful",
-    "The Real Reason You Cannot Stop Negative Thoughts",
-    "How Your Childhood Is Still Controlling You Right Now",
-    "Why Motivation Always Fails You and What Actually Works",
-    "The Dark Side of Social Media Your Brain Cannot Resist",
-    "Why Most People Are Addicted to Being Busy But Never Productive",
-    "The One Cognitive Bias Keeping You Stuck in the Same Place",
-    "How Rich People Think Differently and Why Schools Never Teach It",
-    "Why You Keep Attracting the Wrong People Into Your Life",
-    "The Sleep Habit That Silently Doubles Your Intelligence",
-    "Why Discipline Is a Myth and What High Performers Do Instead",
-    "How to Make People Respect You Without Saying a Word",
-    "The Manipulation Tactic Used on You Every Single Day",
-    "Why Your Brain Craves Drama and How to Break the Addiction",
-    "The Science of First Impressions — You Have 7 Seconds",
-    "Why the People Who Read the Most Are Usually the Loneliest",
-    "How to Stop Caring What People Think — The Psychology Behind It",
-    "The Money Mindset Keeping 99 Percent of People Broke Forever",
-    "Why High Achievers Are Almost Always Secretly Miserable",
-    "How Your Environment Controls Your Willpower Without You Knowing",
-    "The Body Language Trick That Makes Anyone Trust You Instantly",
-    "Why Saying No Is the Most Powerful Word Successful People Use",
-    "How to Rewire Your Brain After Years of Negative Thinking",
-    "The Reason Intelligent People Struggle More With Anxiety",
-    "Why Most Friendships Are Slowly Draining Your Energy",
-    "How Billionaires Use Boredom as a Superpower",
-    "The Psychological Reason You Cannot Finish What You Start",
-    "Why the Comfort Zone Is Actually Killing Your Future",
-    "How to Become Mentally Unbreakable in 30 Days",
-    "The Hidden Cost of Being Too Nice to Everyone Around You",
-    # Pain-naming topics — name the exact emotional moment (research-backed format)
+    # ── Core stuck-loop topics (the channel's primary identity) ─────────────────
     "You Keep Replaying That Conversation and Cannot Stop — Here Is Why",
     "Why You Quit on Day Four Every Single Time You Try to Change",
-    "The Exact Moment Your Brain Decides to Sabotage Your Own Success",
-    "Why You Feel Guilty When You Rest Even After Working All Day",
     "The Loop in Your Head at 2am Is Not Anxiety — It Is This",
-    "Why Intelligent People Talk Themselves Out of Every Opportunity",
     "You Know Exactly What to Do and Still Cannot Make Yourself Do It",
-    "The Real Reason You Apologize When You Have Done Nothing Wrong",
-    "Why You Lose Energy Around Certain People Without Knowing Why",
+    "You Are Not Lazy — Your Nervous System Is Stuck in Survival Mode",
+    "The Reason You Are Always Waiting for the Right Time That Never Comes",
+    "Why You Feel Guilty When You Rest Even After Working All Day",
+    "The Comparison Trap Your Brain Falls Into Thirty Times a Day",
     "The Invisible Script Running in Your Head Since You Were Eight",
     "Why You Cannot Accept Compliments and What It Is Actually Costing You",
-    "The Reason You Are Always Waiting for the Right Time That Never Comes",
+
+    # ── Self-sabotage & the internal critic ──────────────────────────────────────
+    "The Exact Moment Your Brain Decides to Sabotage Your Own Success",
+    "Why Intelligent People Talk Themselves Out of Every Opportunity",
+    "The Real Reason You Apologize When You Have Done Nothing Wrong",
     "Why Your Brain Treats Criticism From Strangers Like a Physical Threat",
-    "You Are Not Lazy — Your Nervous System Is Stuck in Survival Mode",
-    "The Comparison Trap Your Brain Falls Into Thirty Times a Day",
+    "The Reason You Self-Sabotage Every Time You Get Close to Success",
+    "Why You Freeze When You Finally Get What You Were Working For",
+    "The Part of You That Does Not Believe You Deserve Good Things",
+    "Why Your Brain Panics the Moment Things Start Going Well",
+
+    # ── Overthinking & anxiety loops ─────────────────────────────────────────────
+    "Why You Cannot Stop Overthinking No Matter How Hard You Try",
+    "The Real Reason You Cannot Stop Negative Thoughts",
+    "How Your Childhood Is Still Running Your Life in the Background",
+    "Why Your Brain Refuses to Let Go of Something That Happened Years Ago",
+    "The Exact Pattern That Keeps You Stuck in the Same Year Over and Over",
+    "Why You Feel Fine Until Someone Points Out Your Mistake and Then Spiral",
+    "The Science Behind Why You Cannot Stop Overthinking at Night",
+    "Why Trying Harder Always Makes Overthinking Worse — The Paradox Explained",
+
+    # ── Procrastination & decision paralysis ─────────────────────────────────────
+    "The Psychology Behind Why You Procrastinate and Cannot Stop",
+    "The Psychological Reason You Cannot Finish What You Start",
+    "Why You Lose Energy Around Certain People Without Knowing Why",
+    "The One Cognitive Bias Keeping You Stuck in the Same Place",
+    "Why Your Brain Craves Distraction and How to Break the Loop",
+    "The Hidden Reason You Keep Starting Over Instead of Finishing",
+    "Why Intelligent People Procrastinate More Than Everyone Else",
+    "What Actually Happens in Your Brain the Moment You Avoid a Task",
+
+    # ── Emotional regulation & the stuck nervous system ──────────────────────────
+    "Your Dopamine System Is Broken — Here Is How to Fix It",
+    "Why Motivation Always Fails You and What Actually Works",
+    "The Silent Habit That Is Destroying Your Focus Every Single Day",
+    "Your Subconscious Mind Makes 95 Percent of Your Decisions",
+    "How Your Environment Controls Your Willpower Without You Knowing",
+    "The Reason Intelligent People Struggle More With Anxiety",
+    "Why You Lose Energy Around Certain People Without Understanding Why",
+    "The Body Keeps the Score — How Past Stress Lives in Your Physical Reactions",
+
+    # ── Breaking the cycle (solution-focused) ────────────────────────────────────
+    "Why Discipline Is a Myth and What High Performers Actually Do",
+    "How to Rewire Your Brain After Years of Negative Thinking",
+    "The Psychological Reason You Cannot Finish What You Start",
+    "Why the Comfort Zone Is Not Safe — It Is Just Familiar",
+    "The Hidden Cost of Being Too Nice to Everyone Around You",
+    "Why Saying No Is Not Selfishness — It Is a Survival Mechanism",
+    "How to Stop the Thought Loop Before It Becomes a Spiral",
+    "The Pattern Interrupt That Actually Works When Anxiety Spikes",
 ]
 
 # Auto-updated by Agent 2 every Monday — winning tags + title formulas from competitor intel

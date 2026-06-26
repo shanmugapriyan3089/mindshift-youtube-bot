@@ -56,6 +56,75 @@ ORANGE = (230, 126,  34)
 PURPLE = (142,  68, 173)
 WHITE  = (255, 255, 255)
 
+# ── Keyword-driven B-figure reaction pools ────────────────────────────────────
+# Each pool maps to a SPECIFIC emotional experience, not generic reactions.
+# Figure B mirrors the viewer's psychological state — they are the audience proxy.
+
+# Viewer recognizes themselves in the struggle being described
+_REACT_STRUGGLE   = ["I feel this...", "This is me every day...", "Why can't I stop?!",
+                     "I hate this feeling", "This is exhausting...", "Every. Single. Time.",
+                     "Why does this keep happening?", "I'm so tired of this"]
+
+# Viewer is skeptical but the science is convincing them
+_REACT_SKEPTICAL  = ["Wait... really?", "That can't be right...", "Hmm. Actually...",
+                     "I never thought of it like that", "No way...", "Huh. Interesting.",
+                     "That's... actually true", "Ok that makes sense"]
+
+# Viewer has a sudden realization — the "aha" moment
+_REACT_REALIZATION= ["OH. That's why!!", "This explains EVERYTHING!", "THAT'S what happens!",
+                     "I never knew this!", "Wait — so THAT'S the reason?!",
+                     "This changes everything!", "Oh my god...", "It all makes sense now"]
+
+# Viewer sees themselves in a pattern ("this is literally me")
+_REACT_MIRROR     = ["This is literally me", "I do this ALL the time", "I thought I was the only one",
+                     "Me every single morning", "My whole life explained",
+                     "I've done this SO many times", "This is uncomfortably accurate",
+                     "How does this know me so well"]
+
+# Viewer is motivated — ready to apply the fix
+_REACT_TRANSFORM  = ["I'm trying this TODAY", "This actually works!", "Why didn't I know sooner?",
+                     "Starting right now", "This is what I needed",
+                     "Ok I'm doing this", "Finally an answer", "This is the one"]
+
+
+def _pick_reaction(narration: str, scene_type: int, rng: random.Random) -> str:
+    """Choose Figure B's reaction based on what the narration is describing.
+    Research: reactions must mirror the viewer's emotional state — not react to audio timing."""
+    n = narration.lower()
+
+    # Struggle keywords → viewer in pain/stuck/frustrated
+    if any(k in n for k in ("stuck", "can't stop", "loop", "trap", "fail", "quit", "struggle",
+                             "anxiety", "stress", "cortisol", "exhausted", "procrastin",
+                             "replay", "spiral", "overthink", "freeze", "paralyz")):
+        return rng.choice(_REACT_STRUGGLE)
+
+    # Science/stat keywords → skeptical viewer being convinced
+    if any(k in n for k in ("studies show", "research", "percent", "scientists", "study",
+                             "science", "data", "proven", "psychologist", "brain scan",
+                             "neuroscience", "documented", "clinical")):
+        return rng.choice(_REACT_SKEPTICAL)
+
+    # Revelation keywords → the "aha" moment
+    if any(k in n for k in ("the reason", "here's why", "this is because", "what actually",
+                             "the truth", "what most people", "the real cause",
+                             "not willpower", "not laziness", "not your fault", "it's not")):
+        return rng.choice(_REACT_REALIZATION)
+
+    # Relatable experience keywords → mirror the viewer's identity
+    if any(k in n for k in ("most people", "everyone", "you've done", "have you ever",
+                             "you know the feeling", "sound familiar", "you've been",
+                             "you already know", "you do this", "if you're")):
+        return rng.choice(_REACT_MIRROR)
+
+    # Fix/solution keywords → viewer getting motivated
+    if any(k in n for k in ("the fix", "solution", "step ", "instead", "try this",
+                             "start ", "change ", "works", "effective", "you can",
+                             "pattern interrupt", "here is how", "the way to")):
+        return rng.choice(_REACT_TRANSFORM)
+
+    # Fallback to scene_type pool
+    return rng.choice(_REACTIONS[scene_type])
+
 
 def _ffmpeg():
     if shutil.which("ffmpeg"): return "ffmpeg"
@@ -325,6 +394,87 @@ def _money(draw, cx, cy, s):
     draw.text((cx-int(12*s), cy-int(10*s)), "$", fill=WHITE, font=_font(int(30*s)))
 
 
+def _draw_stat_callout(draw, narration: str, w: int, h: int, scene_type: int, phase: float):
+    """Detect a number/stat in narration and render an animated floating callout.
+    Appears in bottom-left corner (landscape) — only when narration contains a concrete stat.
+    The callout slides in slightly based on phase so it feels alive, not stamped on."""
+    import re
+    if h > w:
+        return  # skip on Shorts — too cluttered
+
+    n = narration
+    stat_val = ""
+    stat_label = ""
+
+    # Extract the most compelling number from narration
+    pct = re.search(r'(\d+)\s*percent|(\d+)%', n, re.IGNORECASE)
+    ratio = re.search(r'(\d+)\s+(?:in|out of)\s+(\d+)', n, re.IGNORECASE)
+    times = re.search(r'(\d+)\s+times', n, re.IGNORECASE)
+    days  = re.search(r'(\d+)\s+days?', n, re.IGNORECASE)
+    secs  = re.search(r'(\d+)\s+seconds?', n, re.IGNORECASE)
+    study = re.search(r'stud(?:y|ies)\s+show', n, re.IGNORECASE)
+
+    if pct:
+        v = pct.group(1) or pct.group(2)
+        stat_val = f"{v}%"
+        # Find ~4 words after the match for context
+        pos = pct.end()
+        context_words = n[pos:pos+40].split()[:4]
+        stat_label = " ".join(context_words).strip(".,")
+    elif ratio:
+        stat_val = f"{ratio.group(1)} in {ratio.group(2)}"
+        stat_label = "people experience this"
+    elif times:
+        stat_val = f"×{times.group(1)}"
+        stat_label = "more likely"
+    elif days:
+        stat_val = f"{days.group(1)}d"
+        stat_label = "to form a habit"
+    elif secs:
+        stat_val = f"{secs.group(1)}s"
+        stat_label = "is all it takes"
+    elif study:
+        stat_val = "STUDY"
+        stat_label = "confirms this"
+    else:
+        return  # no stat found
+
+    # Callout box — bottom-left, small and clean
+    accent_colors = [RED, PURPLE, GREEN, ORANGE]
+    accent = accent_colors[scene_type % 4]
+
+    box_w = int(w * 0.18)
+    box_h = int(h * 0.11)
+    # Slight slide-in animation using phase
+    slide_x = int((1.0 - min(1.0, phase * 3)) * box_w * 0.3)
+    bx1 = int(w * 0.03) - slide_x
+    by1 = int(h * 0.73)
+    bx2 = bx1 + box_w
+    by2 = by1 + box_h
+
+    # Shadow
+    draw.rounded_rectangle([bx1+3, by1+3, bx2+3, by2+3], radius=8, fill=(0, 0, 0, 80))
+    # Background
+    draw.rounded_rectangle([bx1, by1, bx2, by2], radius=8, fill=(18, 20, 45))
+    # Left accent strip
+    draw.rounded_rectangle([bx1, by1, bx1+5, by2], radius=3, fill=accent)
+
+    # Stat value — large, bold
+    fs_val = max(20, int(box_h * 0.46))
+    fs_lbl = max(11, int(box_h * 0.22))
+    font_val = _font(fs_val)
+    font_lbl = _font_r(fs_lbl)
+
+    inner_x = bx1 + 12
+    inner_y = by1 + int(box_h * 0.10)
+    draw.text((inner_x, inner_y), stat_val, fill=YELLOW, font=font_val)
+
+    if stat_label:
+        lbl = stat_label[:22]
+        draw.text((inner_x, inner_y + int(box_h * 0.52)), lbl,
+                  fill=(180, 190, 215), font=font_lbl)
+
+
 # ── Scene layouts (two-figure interactions) ───────────────────────────────────
 # Portrait 1080×1920: figure zone = top 12% is watermark strip, bottom 12% is banner
 # Left figure A at ~25% width, Right figure B at ~75% width
@@ -530,7 +680,7 @@ def _create_frame_wide(text, narration, w, h, scene_idx, phase, slot, word_start
     scene_type = scene_idx % 4
     rng = random.Random(scene_idx * 100 + slot)
     # Shorts: no B bubble in wide shot — it overlaps the label badge; close-ups keep bubbles
-    bubble_b = "" if h > w else rng.choice(_REACTIONS[scene_type])
+    bubble_b = "" if h > w else _pick_reaction(narration, scene_type, rng)
     label_text = _LABEL_POOLS[scene_type][(slot + scene_idx) % len(_LABEL_POOLS[scene_type])]
 
     SCENE_FNS[scene_type](draw, w, h, s, bubble_fs, bubble_a, bubble_b, phase, label_text)
@@ -568,6 +718,7 @@ def _create_frame_focus_a(text, narration, w, h, scene_idx, phase, slot, word_st
             tail="left", anchor="right")
     label_colors = [RED, PURPLE, GREEN, GREEN]
     _label(draw, int(w*0.72), int(h*0.22), label_text, int(bubble_fs*0.85), label_colors[scene_type])
+    _draw_stat_callout(draw, narration, w, h, scene_type, phase)
     _draw_banner_and_watermark(draw, text, w, h)
     _narration_strip(draw, narration, w, h, word_start, wpf, max(22, h // 44))
     return img
@@ -646,7 +797,7 @@ def _create_frame_focus_b(text, narration, w, h, scene_idx, phase, slot, word_st
     cy = int(h * 0.62)
     scene_type = scene_idx % 4
     rng = random.Random(scene_idx * 100 + slot)
-    bubble_b = rng.choice(_REACTIONS[scene_type])
+    bubble_b = _pick_reaction(narration, scene_type, rng)
     label_text = _LABEL_POOLS[scene_type][(slot + scene_idx) % len(_LABEL_POOLS[scene_type])]
 
     pose_map = ["shocked", "thinking", "pointing_l", "excited"]
@@ -658,6 +809,7 @@ def _create_frame_focus_b(text, narration, w, h, scene_idx, phase, slot, word_st
             tail="right", fill=bubble_fill[scene_type], anchor="left")
     label_colors = [RED, PURPLE, GREEN, ORANGE]
     _label(draw, int(w*0.28), int(h*0.22), label_text, int(bubble_fs*0.85), label_colors[scene_type])
+    _draw_stat_callout(draw, narration, w, h, scene_type, phase)
     _draw_banner_and_watermark(draw, text, w, h)
     _narration_strip(draw, narration, w, h, word_start, wpf, max(22, h // 44))
     return img
@@ -750,9 +902,9 @@ def create_scene_video(text, bg_color, duration, output_path,
         wpf = max(1, wt - wf)  # show all words for this shot's time slice
 
         if shot_type == "chapter_card" and chapter_info:
-            ch_num, ch_name = chapter_info
+            ch_num, ch_name, ch_rehook = chapter_info
             for fi, phase in enumerate(phases):
-                frame = _create_chapter_card_frame(ch_num, ch_name, w, h, scene_bg)
+                frame = _create_chapter_card_frame(ch_num, ch_name, w, h, scene_bg, rehook=ch_rehook)
                 frame.save(os.path.join(shot_frames_dir, f"f{fi:03d}.png"))
         else:
             renderer = _SHOT_RENDERERS[shot_type]
@@ -822,19 +974,23 @@ def create_scene_video(text, bg_color, duration, output_path,
     return output_path
 
 
-# ── Chapter map — which scene index starts each chapter ──────────────────────
+# ── Chapter map — scene index → (number, title, tension rehook line) ─────────
+# The rehook line is shown below the chapter title and creates curiosity for what's next.
+# It must feel like unfinished business — never a summary.
 _CHAPTER_MAP = {
-    0:  ("01", "THE HOOK"),
-    2:  ("02", "THE SCIENCE"),
-    7:  ("03", "REAL STORIES"),
-    12: ("04", "THE FIX"),
-    17: ("05", "YOUR NEW LIFE"),
+    0:  ("01", "THE HOOK",       "You already know this feeling."),
+    2:  ("02", "THE SCIENCE",    "Here's what's actually happening inside your brain."),
+    7:  ("03", "REAL STORIES",   "This is where you recognize yourself."),
+    12: ("04", "THE FIX",        "This is the part most people never reach."),
+    17: ("05", "YOUR NEW LIFE",  "What happens when you actually apply this."),
 }
 
 
 def _create_chapter_card_frame(chapter_num: str, chapter_name: str,
-                                w: int, h: int, bg: "Image.Image") -> "Image.Image":
-    """Full-screen chapter title card — shown for first 2 seconds of a chapter's opening scene."""
+                                w: int, h: int, bg: "Image.Image",
+                                rehook: str = "") -> "Image.Image":
+    """Full-screen chapter title card — shown for first 2 seconds of a chapter's opening scene.
+    Includes a rehook tension line below the title to pull the viewer into the next section."""
     img = bg.copy()
     draw = ImageDraw.Draw(img)
 
@@ -843,34 +999,41 @@ def _create_chapter_card_frame(chapter_num: str, chapter_name: str,
     img = Image.alpha_composite(img.convert("RGBA"), overlay).convert("RGB")
     draw = ImageDraw.Draw(img)
 
-    fs_num  = max(24, w // 20)   # "CHAPTER 01" font
-    fs_name = max(36, w // 12)   # "THE HOOK" font
-    fs_line = max(18, w // 40)   # decorative line text
+    fs_num  = max(24, w // 20)
+    fs_name = max(36, w // 12)
+    fs_hook = max(18, w // 38)   # rehook line — smaller, italic-style
 
-    # Thin horizontal rule above
-    line_y = int(h * 0.36)
     lx1, lx2 = int(w * 0.15), int(w * 0.85)
-    draw.line([lx1, line_y, lx2, line_y], fill=(255, 214, 0), width=max(2, w // 320))
+
+    # Top rule
+    draw.line([lx1, int(h * 0.36), lx2, int(h * 0.36)],
+              fill=(255, 214, 0), width=max(2, w // 320))
 
     # "CHAPTER XX" label
     num_font = _font(fs_num)
     label = f"CHAPTER  {chapter_num}"
     bb = draw.textbbox((0, 0), label, font=num_font)
-    draw.text(((w - (bb[2]-bb[0])) // 2, int(h * 0.40)), label,
-              fill=(200, 210, 230), font=num_font)
+    draw.text(((w - (bb[2]-bb[0])) // 2, int(h * 0.40)),
+              label, fill=(200, 210, 230), font=num_font)
 
     # Chapter name — bold, large, white
     name_font = _font(fs_name)
     bb2 = draw.textbbox((0, 0), chapter_name, font=name_font)
     nx = (w - (bb2[2]-bb2[0])) // 2
-    ny = int(h * 0.50)
-    # Drop shadow
-    draw.text((nx + 3, ny + 3), chapter_name, fill=(0, 0, 0, 160), font=name_font)
+    ny = int(h * 0.49)
+    draw.text((nx + 3, ny + 3), chapter_name, fill=(0, 0, 30), font=name_font)
     draw.text((nx, ny), chapter_name, fill=(255, 255, 255), font=name_font)
 
-    # Thin horizontal rule below
-    line_y2 = int(h * 0.68)
-    draw.line([lx1, line_y2, lx2, line_y2], fill=(255, 214, 0), width=max(2, w // 320))
+    # Bottom rule
+    draw.line([lx1, int(h * 0.66), lx2, int(h * 0.66)],
+              fill=(255, 214, 0), width=max(2, w // 320))
+
+    # Rehook tension line — creates curiosity for what's coming
+    if rehook:
+        hook_font = _font_r(fs_hook)
+        bb3 = draw.textbbox((0, 0), rehook, font=hook_font)
+        hx = (w - (bb3[2]-bb3[0])) // 2
+        draw.text((hx, int(h * 0.70)), rehook, fill=(180, 195, 220), font=hook_font)
 
     return img
 

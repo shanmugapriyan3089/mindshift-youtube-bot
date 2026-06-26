@@ -112,27 +112,48 @@ Pick ONE of these proven viral title formulas — do NOT use generic titles:
 7. IDENTITY THREAT:  "If You Do This Every Day, Your Brain Is Already Damaged"
 Title must be 50-65 characters. Must create a knowledge gap — make them feel they're missing something critical.
 
-═══ HOOK RULES (decides 70% of watch time) ═══
-Scene 1 MUST open with BRUTALLY SPECIFIC pain — name the EXACT feeling, not a vague claim.
-BAD (too generic):  "Most people will never reach their goals."
-GOOD (brutally specific): "You've set that same goal eleven times. You know the exact moment you quit — it's always around day four."
-BAD (too generic):  "Your brain is working against you."
-GOOD (brutally specific): "Right now there's a specific thought loop running in your head that you cannot shut off, and it started before you even got out of bed."
+═══ HOOK RULES — SCENARIO DROP (decides 70% of watch time) ═══
+Scene 1 MUST use the "scenario drop" technique — open MID-SCENE, with the viewer already IN the situation.
+Do NOT start with the topic name. Do NOT summarize what the video is about. Do NOT say "today we're going to talk about..."
+The viewer should feel like they were dropped into their own life.
 
-Scene 1 MUST follow this exact 4-sentence structure:
-  - Sentence 1: Name the exact pain with uncomfortable precision — as if you've been watching them
-  - Sentence 2: Make it feel inevitable — "this is not weakness, it is a documented brain pattern"
-  - Sentence 3: What they are losing RIGHT NOW by not knowing this (concrete and personal)
-  - Sentence 4: Specific promise — "In the next [X] minutes you will learn exactly how to stop this"
-Example: "You've replayed that conversation in your head at least twenty times and it still doesn't feel resolved. This is not rumination — it is your brain running a documented threat-response loop that never got a shutdown signal. Every hour this loop runs, your cortisol stays elevated and your decision-making degrades. In the next eight minutes, I will show you the exact pattern interrupt that breaks it permanently."
+BAD (announces topic): "Today we're talking about procrastination and why your brain..."
+BAD (generic claim): "Most people will never reach their goals."
+GOOD (scenario drop): "You're sitting at your desk. The task has been open for forty-five minutes. You've checked your phone four times. Your cursor hasn't moved. You know exactly what you need to do. And you still cannot make yourself do it."
+
+SCENARIO DROP STRUCTURE (scene 1, exactly 70-75 words):
+  - Sentences 1-3: Place the viewer IN the exact physical/mental moment — specific details (the desk, the cursor, the phone, the 2am ceiling stare, etc.)
+  - Sentence 4: Name the MECHANISM — "this is not laziness. This is [specific brain phenomenon]."
+  - Sentence 5: What this is costing them RIGHT NOW — concrete and personal.
+  - Sentence 6: The promise — "In the next eight minutes you will learn exactly how to stop this."
+
+Scene 2 (last scene of Chapter 1) MUST end with a tension statement that makes Chapter 2 feel necessary:
+  "But here's what makes this so hard to fix — and why most advice about it actually makes it worse."
+  "That alone might not surprise you. What will surprise you is WHY your brain does this — and it has nothing to do with willpower."
+
+═══ REHOOK RULES — between every chapter ═══
+The LAST scene of each chapter (scenes 2, 7, 12, 17) must END with a tension/cliffhanger sentence.
+This makes the viewer feel the next chapter is necessary to resolve something unfinished.
+BAD transition: "So now you know the science. Let's look at how to fix it."
+GOOD transition: "But here's the uncomfortable part — knowing this is not the same as being able to stop it. And the reason you cannot just 'try harder' is something most people never learn."
+The viewer must feel they NEED to keep watching to resolve the tension you just created.
 
 ═══ CONTENT RULES ═══
 - Use "you" throughout — make it personal, not academic
-- Each scene has a bold text overlay (max 6 words) shown on screen
-- Reference real psychology (Pavlov, Kahneman, dopamine, cortisol, etc.) — sounds credible
-- Use contrast: "Most people do X. High performers do Y instead."
-- End regular videos with: "If this shifted something for you, subscribe — I drop psychology secrets every week. Comment below: which of these patterns do you catch yourself in?"
-- End shorts with: "The full breakdown with the exact fix is on the channel — search MindShiftProductivity."
+- Each scene has a bold text overlay (max 5 words) shown on screen
+- Reference real psychology (Pavlov, Kahneman, dopamine, cortisol, amygdala, prefrontal cortex) — sounds credible
+- Use contrast: "Most people do X. Here is what actually works instead."
+- IDENTITY-AFFIRMATION LINES (scenes 8-12, the Real Stories chapter): Start at least 3 scenes with phrases like:
+    "If you are the person who always puts others first..."
+    "If you have ever started something and quit right before it got good..."
+    "If you have been stuck in this exact pattern for years..."
+  These phrases trigger "this is literally me" comments — highest engagement signal.
+- Include at least 3 scenes with a specific STAT or STUDY REFERENCE — a number, a percentage, or a named researcher.
+  Example: "A 2019 study by Baumeister found that decision fatigue reduces willpower by 40% within four hours."
+- STAT FORMAT: When you include a stat, state it as: [specific number/percent] + [what it means for the viewer personally].
+- End regular videos with a SESSION-CONTINUATION CTA: "If you want to understand why [specific thing from this video] connects to [related topic], I have covered that exact link in another video — check it out next."
+  Then: "Subscribe so you catch it."
+- End shorts with: "The full breakdown is on the channel — search MindShiftProductivity right now."
 
 ═══ TEXT OVERLAY RULES ═══
 - Max 5 words, ALL CAPS
