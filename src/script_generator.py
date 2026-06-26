@@ -62,13 +62,15 @@ def generate_script(topic: str, video_type: str = "regular") -> dict:
     if video_type == "regular":
         duration_label = "8-10 minutes"
         scene_guide = f"""Exactly {num_scenes} scenes following this NARRATIVE ARC:
-Scenes 1-2   → HOOK: Shocking question or bold claim. Make viewer feel they MUST keep watching. High stakes.
-Scenes 3-7   → DEEP DIVE: The psychology/science behind the topic. One key insight per scene. Reference real studies or well-known facts.
-Scenes 8-12  → REAL EXAMPLES: Relatable everyday stories that make the science concrete. Start with "Have you ever..." or "Think about when..."
-Scenes 13-17 → THE FIX: 5 specific actionable steps the viewer can start TODAY. Not generic — precise and implementable.
-Scenes 18-20 → TRANSFORMATION + CTA: What life looks like after applying this. End with strong call to subscribe and comment.
+Scenes 1-2   → CHAPTER 1 — THE HOOK: Shocking question or bold claim. Viewer MUST keep watching.
+Scenes 3-7   → CHAPTER 2 — THE SCIENCE: Psychology/science behind the topic. One key insight per scene. Reference real studies.
+Scenes 8-12  → CHAPTER 3 — REAL STORIES: Relatable everyday stories that make the science concrete. "Have you ever..." or "Think about when..."
+Scenes 13-17 → CHAPTER 4 — THE FIX: 5 specific actionable steps the viewer can start TODAY. Precise and implementable.
+Scenes 18-20 → CHAPTER 5 — NEW LIFE: What life looks like after applying this. End with strong call to subscribe and comment.
 
-CRITICAL: Each scene narration must be 55-65 words. This is how you hit 8-10 minutes.
+CRITICAL: Each scene narration must be EXACTLY 70-75 words. Not 55, not 65 — 70 to 75.
+Count them. This fills the full 27 seconds at 155 WPM and eliminates dead air.
+If your scene narration is under 70 words, add a concrete example, a statistic, or a visceral detail.
 Speak like a smart, direct friend — not a robot or professor. Use "you" throughout.
 duration_seconds for each scene: 27"""
     else:

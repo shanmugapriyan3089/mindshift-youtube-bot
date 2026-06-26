@@ -686,6 +686,9 @@ def create_scene_video(text, bg_color, duration, output_path,
     narration_words = narration.split() if narration else []
     total_words = len(narration_words)
 
+    # Check if this scene opens a chapter (regular videos only)
+    chapter_info = _CHAPTER_MAP.get(scene_idx) if video_type == "regular" else None
+
     # Shot sequence — genuine different compositions, not zoom tricks
     # Regular: wide → speaker solo → concept card → reactor solo → wide (27s total)
     # Shorts:  wide → speaker solo → reactor solo → wide       (14s total)
@@ -697,14 +700,24 @@ def create_scene_video(text, bg_color, duration, output_path,
             ("focus_b", q),
             ("wide",    d - 3 * q),
         ]
-    else:  # Regular — 5 shots at 5-7s each
-        shots = [
-            ("wide",       5),
-            ("focus_a",    5),
-            ("focus_prop", 5),
-            ("focus_b",    5),
-            ("wide",       max(3, d - 20)),
-        ]
+    else:  # Regular — first shot of chapter scenes = 2s title card + 3s wide
+        if chapter_info:
+            shots = [
+                ("chapter_card", 2),
+                ("wide",         3),
+                ("focus_a",      5),
+                ("focus_prop",   5),
+                ("focus_b",      5),
+                ("wide",         max(3, d - 20)),
+            ]
+        else:
+            shots = [
+                ("wide",       5),
+                ("focus_a",    5),
+                ("focus_prop", 5),
+                ("focus_b",    5),
+                ("wide",       max(3, d - 20)),
+            ]
 
     # Clean gradient background — instant, no API, consistent professional look
     scene_type = scene_idx % 4
@@ -734,11 +747,18 @@ def create_scene_video(text, bg_color, duration, output_path,
         shot_frames_dir = output_path.replace(".mp4", f"_s{shot_idx}_frames")
         os.makedirs(shot_frames_dir, exist_ok=True)
 
-        renderer = _SHOT_RENDERERS[shot_type]
         wpf = max(1, wt - wf)  # show all words for this shot's time slice
-        for fi, phase in enumerate(phases):
-            frame = renderer(label, narration, w, h, scene_idx, phase, slot, wf, wpf, bg=scene_bg)
-            frame.save(os.path.join(shot_frames_dir, f"f{fi:03d}.png"))
+
+        if shot_type == "chapter_card" and chapter_info:
+            ch_num, ch_name = chapter_info
+            for fi, phase in enumerate(phases):
+                frame = _create_chapter_card_frame(ch_num, ch_name, w, h, scene_bg)
+                frame.save(os.path.join(shot_frames_dir, f"f{fi:03d}.png"))
+        else:
+            renderer = _SHOT_RENDERERS[shot_type]
+            for fi, phase in enumerate(phases):
+                frame = renderer(label, narration, w, h, scene_idx, phase, slot, wf, wpf, bg=scene_bg)
+                frame.save(os.path.join(shot_frames_dir, f"f{fi:03d}.png"))
 
         sub_path = output_path.replace(".mp4", f"_shot{shot_idx}.mp4")
         result = subprocess.run([
@@ -800,6 +820,59 @@ def create_scene_video(text, bg_color, duration, output_path,
     if os.path.exists(concat_txt): os.remove(concat_txt)
 
     return output_path
+
+
+# ── Chapter map — which scene index starts each chapter ──────────────────────
+_CHAPTER_MAP = {
+    0:  ("01", "THE HOOK"),
+    2:  ("02", "THE SCIENCE"),
+    7:  ("03", "REAL STORIES"),
+    12: ("04", "THE FIX"),
+    17: ("05", "YOUR NEW LIFE"),
+}
+
+
+def _create_chapter_card_frame(chapter_num: str, chapter_name: str,
+                                w: int, h: int, bg: "Image.Image") -> "Image.Image":
+    """Full-screen chapter title card — shown for first 2 seconds of a chapter's opening scene."""
+    img = bg.copy()
+    draw = ImageDraw.Draw(img)
+
+    # Dark translucent overlay so background shows through subtly
+    overlay = Image.new("RGBA", (w, h), (10, 12, 38, 210))
+    img = Image.alpha_composite(img.convert("RGBA"), overlay).convert("RGB")
+    draw = ImageDraw.Draw(img)
+
+    fs_num  = max(24, w // 20)   # "CHAPTER 01" font
+    fs_name = max(36, w // 12)   # "THE HOOK" font
+    fs_line = max(18, w // 40)   # decorative line text
+
+    # Thin horizontal rule above
+    line_y = int(h * 0.36)
+    lx1, lx2 = int(w * 0.15), int(w * 0.85)
+    draw.line([lx1, line_y, lx2, line_y], fill=(255, 214, 0), width=max(2, w // 320))
+
+    # "CHAPTER XX" label
+    num_font = _font(fs_num)
+    label = f"CHAPTER  {chapter_num}"
+    bb = draw.textbbox((0, 0), label, font=num_font)
+    draw.text(((w - (bb[2]-bb[0])) // 2, int(h * 0.40)), label,
+              fill=(200, 210, 230), font=num_font)
+
+    # Chapter name — bold, large, white
+    name_font = _font(fs_name)
+    bb2 = draw.textbbox((0, 0), chapter_name, font=name_font)
+    nx = (w - (bb2[2]-bb2[0])) // 2
+    ny = int(h * 0.50)
+    # Drop shadow
+    draw.text((nx + 3, ny + 3), chapter_name, fill=(0, 0, 0, 160), font=name_font)
+    draw.text((nx, ny), chapter_name, fill=(255, 255, 255), font=name_font)
+
+    # Thin horizontal rule below
+    line_y2 = int(h * 0.68)
+    draw.line([lx1, line_y2, lx2, line_y2], fill=(255, 214, 0), width=max(2, w // 320))
+
+    return img
 
 
 def _create_poll_card_frame(question: str, w: int, h: int, frame_idx: int = 0) -> "Image.Image":
