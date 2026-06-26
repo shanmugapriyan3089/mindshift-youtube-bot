@@ -84,7 +84,7 @@ def _generate_edge_tts(text: str, output_path: str, timeout: int = 60) -> bool:
                 "import asyncio, edge_tts\n"
                 "async def run():\n"
                 f"    c = edge_tts.Communicate({repr(text)}, "
-                "'en-US-JennyNeural', rate='+5%', pitch='+0Hz')\n"
+                "'en-US-GuyNeural', rate='+5%', pitch='+0Hz')\n"
                 f"    await c.save({repr(output_path)})\n"
                 "asyncio.run(run())\n"
             )
@@ -183,14 +183,15 @@ def generate_voiceover(text: str, output_path: str, duration_hint: int = 15) -> 
         exist_ok=True
     )
 
-    print("  [Voice] Kokoro-82M...")
-    if _generate_kokoro(text, output_path):
-        print("  [Voice] Kokoro OK ✓")
-        return output_path
-
-    print("  [Voice] edge-tts (Jenny Neural)...")
+    # Primary: Guy Neural — male, authoritative, suits psychology content
+    print("  [Voice] edge-tts (Guy Neural)...")
     if _generate_edge_tts(text, output_path):
         print("  [Voice] edge-tts OK ✓")
+        return output_path
+
+    print("  [Voice] Kokoro-82M fallback...")
+    if _generate_kokoro(text, output_path):
+        print("  [Voice] Kokoro OK ✓")
         return output_path
 
     print("  [Voice] gTTS fallback...")
