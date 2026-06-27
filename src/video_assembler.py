@@ -153,12 +153,14 @@ def assemble_video(
     if music_path and os.path.exists(concat_audio):
         print(f"  [Assemble] Mixing background music...")
         mixed_audio = os.path.join(tmp_dir, "mixed_audio.mp3")
+        # Shorts: 20% music so silence gaps don't feel dead. Regular: 12% subtle.
+        music_vol = "0.20" if video_type == "shorts" else "0.12"
         success = _run([
             ff, "-y",
             "-i", concat_audio,
             "-stream_loop", "-1", "-i", music_path,
             "-filter_complex",
-            "[0:a]volume=1.0[v];[1:a]volume=0.12[m];[v][m]amix=inputs=2:duration=first[out]",
+            f"[0:a]volume=1.0[v];[1:a]volume={music_vol}[m];[v][m]amix=inputs=2:duration=first[out]",
             "-map", "[out]",
             "-c:a", "libmp3lame",
             mixed_audio

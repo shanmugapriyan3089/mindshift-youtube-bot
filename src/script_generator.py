@@ -76,9 +76,10 @@ duration_seconds for each scene: 27"""
     else:
         duration_label = "20-25 seconds"
         scene_guide = f"""Exactly {num_scenes} scenes. ULTRA fast-paced. Scene 1 = hook that stops the scroll in 2 seconds.
-Each scene narration: 28-34 words. One single punchy idea, spoken fast.
-This fills exactly 12 seconds at natural Kokoro TTS pace (155 wpm).
-Do NOT go below 28 words — shorter narrations leave dead silence.
+Each scene narration: EXACTLY 36-40 words. One punchy idea with a specific detail or stat.
+This fills exactly 12 seconds at our voice pace (133 WPM, slightly slower for authority).
+COUNT THE WORDS. Do NOT go below 36 — anything shorter leaves dead silence.
+If you are under 36 words, add: a specific number, a body sensation detail, or a "you know that feeling when..." phrase.
 Scene 1: shocking hook. Scene 2: the payoff / what to do.
 End scene 2 with: "The full breakdown is on the channel — search MindShiftProductivity right now."
 duration_seconds for each scene: 12
