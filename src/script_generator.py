@@ -68,9 +68,9 @@ Scenes 8-12  → CHAPTER 3 — REAL STORIES: Relatable everyday stories that mak
 Scenes 13-17 → CHAPTER 4 — THE FIX: 5 specific actionable steps the viewer can start TODAY. Precise and implementable.
 Scenes 18-20 → CHAPTER 5 — NEW LIFE: What life looks like after applying this. End with strong call to subscribe and comment.
 
-CRITICAL: Each scene narration must be EXACTLY 70-75 words. Not 55, not 65 — 70 to 75.
-Count them. This fills the full 27 seconds at 155 WPM and eliminates dead air.
-If your scene narration is under 70 words, add a concrete example, a statistic, or a visceral detail.
+CRITICAL: Each scene narration must be EXACTLY 60-65 words. Not 50, not 70 — 60 to 65.
+Count them. This fills the full 27 seconds at a measured, deliberate pace and eliminates dead air.
+If your scene narration is under 60 words, add a concrete example, a statistic, or a visceral detail.
 Speak like a smart, direct friend — not a robot or professor. Use "you" throughout.
 duration_seconds for each scene: 27"""
     else:

@@ -84,7 +84,7 @@ def _generate_edge_tts(text: str, output_path: str, timeout: int = 60) -> bool:
                 "import asyncio, edge_tts\n"
                 "async def run():\n"
                 f"    c = edge_tts.Communicate({repr(text)}, "
-                "'en-US-GuyNeural', rate='+5%', pitch='+0Hz')\n"
+                "'en-US-GuyNeural', rate='-10%', pitch='+0Hz')\n"
                 f"    await c.save({repr(output_path)})\n"
                 "asyncio.run(run())\n"
             )
