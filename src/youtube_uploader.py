@@ -176,6 +176,27 @@ def _add_to_playlist(youtube, video_id: str, video_type: str):
 
 _TITLE_LOG = "used_titles.json"
 
+# Chapter timestamps — matches _CHAPTER_MAP in simple_animator.py (scene_idx × 27s)
+_CHAPTER_TIMESTAMPS = [
+    (0,   "Introduction"),
+    (54,  "The Science"),
+    (189, "Real Stories"),
+    (324, "The Fix"),
+    (459, "Your New Life"),
+]
+
+
+def _format_ts(seconds: int) -> str:
+    m, s = divmod(seconds, 60)
+    return f"{m}:{s:02d}"
+
+
+def _append_chapters(description: str) -> str:
+    lines = ["\n\n⏱ CHAPTERS"]
+    for secs, label in _CHAPTER_TIMESTAMPS:
+        lines.append(f"{_format_ts(secs)} {label}")
+    return description + "\n".join(lines)
+
 
 def _is_duplicate_title(title: str) -> bool:
     """Return True if this title (or one very similar) was already uploaded."""
@@ -213,6 +234,9 @@ def upload_video(
     is_short = video_type == "shorts"
     if is_short and "#Shorts" not in title:
         title = title + " #Shorts"
+
+    if not is_short:
+        description = _append_chapters(description)
 
     if _is_duplicate_title(title):
         print(f"  [YouTube] SKIPPED duplicate title: {title}")

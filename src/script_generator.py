@@ -103,15 +103,29 @@ Duration: {duration_label}
 {scene_guide}
 
 ═══ TITLE RULES (this is the #1 subscriber driver) ═══
-Pick ONE of these proven viral title formulas — do NOT use generic titles:
-1. SHOCKING TRUTH:   "Your Brain Is [Doing X] Right Now And You Don't Know It"
-2. THEY LIED TO YOU: "Why Everything You Know About [Topic] Is Wrong"
-3. SECRET REVEALED:  "The [Topic] Secret [Authority] Never Told You"
-4. CHALLENGE FORMAT: "I Tried [Method] For 30 Days — The Results Shocked Me"
-5. FEAR + CURIOSITY: "Stop [Common Habit] Immediately — Here's Why"
-6. NUMBER + TWIST:   "7 [Topic] Tricks That Sound Fake But Actually Work"
-7. IDENTITY THREAT:  "If You Do This Every Day, Your Brain Is Already Damaged"
-Title must be 50-65 characters. Must create a knowledge gap — make them feel they're missing something critical.
+EVERY title MUST contain two things:
+A) A SEARCH KEYWORD — a phrase someone in pain actually types into YouTube search
+B) A CURIOSITY GAP — something that makes them feel they are missing something critical
+
+SEARCH KEYWORD examples (use these exact phrases or close variants):
+  "why you can't stop overthinking"  |  "how to stop procrastinating"
+  "why you self sabotage"            |  "why you can't change"
+  "how to break bad habits"          |  "why your brain keeps you stuck"
+  "stop negative thoughts"           |  "why you feel empty"
+  "how to rewire your brain"         |  "why motivation never works"
+
+TITLE FORMULA (pick one, build it around a search keyword):
+1. WHY FORMAT:   "Why You Can't Stop [Search Keyword] — And How to Finally Fix It"
+2. TRUTH FORMAT: "The Real Reason You [Search Keyword] (It's Not What You Think)"
+3. BRAIN FORMAT: "Your Brain Is Doing [X] Right Now — Here Is Why You [Search Keyword]"
+4. SCIENCE:      "The Psychology Behind Why You [Search Keyword] Explained"
+5. IDENTITY:     "If You [Search Keyword] Every Day, Read This"
+
+GOOD: "Why You Can't Stop Overthinking No Matter How Hard You Try" (searchable + curiosity)
+BAD:  "YOUR BRAIN IS LYING" (nobody searches this, no keyword anchor)
+BAD:  "The Shocking Truth About Your Mind" (too vague, zero search volume)
+
+Title must be 52-68 characters. Lowercase except first word and proper nouns — sounds more human, less clickbait.
 
 ═══ HOOK RULES — SCENARIO DROP (decides 70% of watch time) ═══
 Scene 1 MUST use the "scenario drop" technique — open MID-SCENE, with the viewer already IN the situation.
