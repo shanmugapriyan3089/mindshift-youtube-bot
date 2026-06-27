@@ -10,3 +10,4 @@ __pycache__/
 .DS_Store
 used_topics.json
 upload_log.json
+used_titles.json

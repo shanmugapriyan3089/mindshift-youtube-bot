@@ -174,6 +174,29 @@ def _add_to_playlist(youtube, video_id: str, video_type: str):
         print(f"  [YouTube] Playlist add skipped ({e})")
 
 
+_TITLE_LOG = "used_titles.json"
+
+
+def _is_duplicate_title(title: str) -> bool:
+    """Return True if this title (or one very similar) was already uploaded."""
+    clean = title.lower().replace("#shorts", "").strip()
+    if not os.path.exists(_TITLE_LOG):
+        return False
+    with open(_TITLE_LOG) as f:
+        used = json.load(f)
+    return clean in [t.lower().replace("#shorts", "").strip() for t in used]
+
+
+def _record_title(title: str):
+    used = []
+    if os.path.exists(_TITLE_LOG):
+        with open(_TITLE_LOG) as f:
+            used = json.load(f)
+    used.append(title)
+    with open(_TITLE_LOG, "w") as f:
+        json.dump(used, f, indent=2)
+
+
 def upload_video(
     video_path: str,
     thumbnail_path: str,
@@ -190,6 +213,10 @@ def upload_video(
     is_short = video_type == "shorts"
     if is_short and "#Shorts" not in title:
         title = title + " #Shorts"
+
+    if _is_duplicate_title(title):
+        print(f"  [YouTube] SKIPPED duplicate title: {title}")
+        return ""
 
     body = {
         "snippet": {
@@ -219,6 +246,7 @@ def upload_video(
 
     video_id = response["id"]
     print(f"  [YouTube] Uploaded: https://youtube.com/watch?v={video_id}")
+    _record_title(title)
 
     # Set thumbnail (requires verified channel)
     if os.path.exists(thumbnail_path):

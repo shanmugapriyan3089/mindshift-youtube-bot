@@ -352,9 +352,10 @@ def generate_thumbnail(title: str, output_path: str, video_type: str = "regular"
             {"bg": (211,  84,   0)},   # deep orange
             {"bg": (155,  89, 182)},   # lavender
         ]
-        # Use separate bit regions so color/pose/side/style are independent dimensions
-        # 10 schemes × 3 poses × 2 sides = 60 distinct visual combinations
-        title_hash = int(hashlib.md5(title.encode()).hexdigest(), 16)
+        # Salt with date so same topic on different days always looks different
+        import datetime
+        date_salt = datetime.date.today().isoformat()
+        title_hash = int(hashlib.md5(f"{title}{date_salt}".encode()).hexdigest(), 16)
         c = schemes[title_hash % len(schemes)]
         panel_color = c["bg"]
 
