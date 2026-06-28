@@ -11,6 +11,22 @@ from config import GROQ_API_KEY, DAILY_TOPICS
 
 CHANNEL_URL = "https://youtube.com/@MindShiftProductivity"
 
+
+def _get_latest_video_url() -> str:
+    import json
+    try:
+        with open("upload_log.json") as f:
+            log = json.load(f)
+        regulars = sorted(
+            [v for v in log if v.get("type") == "regular"],
+            key=lambda x: x.get("uploaded_at", ""), reverse=True
+        )
+        if regulars:
+            return f"https://youtu.be/{regulars[0]['video_id']}"
+    except Exception:
+        pass
+    return CHANNEL_URL
+
 SUBREDDITS = [
     "GetMotivated",
     "selfimprovement",
@@ -58,7 +74,7 @@ def _fetch_hot_posts(subreddit: str, limit: int = 25) -> list:
         return []
 
 
-def _draft_comment(post: dict, client: Groq) -> str:
+def _draft_comment(post: dict, client: Groq, video_url: str) -> str:
     context = post["selftext"] if post["selftext"] else post["title"]
     prompt = f"""A Reddit post in {post['subreddit']} has gotten lots of attention:
 
@@ -71,7 +87,7 @@ Our recent video topics: {', '.join(DAILY_TOPICS[:6])}
 Write a Reddit comment (3-5 sentences) that:
 1. Opens with a SPECIFIC, genuinely insightful observation about this exact post — something most people wouldn't say
 2. Sounds like a real person sharing lived experience, not a content creator promoting anything
-3. ONE natural sentence at the very end ONLY if the video topic is directly related: "I went deep on this recently: {CHANNEL_URL}"
+3. ONE natural sentence at the very end ONLY if the video topic is directly related: "I went deep on this recently: {video_url}"
 4. If the topic is only loosely related, skip the channel mention entirely — a helpful comment with no link is better than a forced plug
 5. No hashtags, no "check out my channel", no "great post!", no sycophantic openers
 6. Must be helpful enough that people would upvote it on its own merit
@@ -90,12 +106,13 @@ Write ONLY the comment. No preamble, no quotes."""
 def _send_groq_fallback(client: Groq):
     """When Reddit blocks us, generate search targets + comment templates with Groq."""
     from agents.notifier import send
+    video_url = _get_latest_video_url()
     prompt = f"""Generate 5 Reddit outreach opportunities for a YouTube psychology/motivation channel "MindShift Productivity".
 
 For each opportunity provide:
 1. Which subreddit to search (from: r/GetMotivated, r/selfimprovement, r/psychology, r/productivity, r/LifeAdvice)
 2. What search term to use on reddit.com to find relevant posts
-3. A ready-to-post comment template (3-4 sentences, helpful, ends with "I made a video on this: {CHANNEL_URL}")
+3. A ready-to-post comment template (3-4 sentences, helpful, ends with "I made a video on this: {video_url}")
 
 Topics we cover: {', '.join(DAILY_TOPICS[:8])}
 
@@ -142,6 +159,7 @@ def main():
         _send_groq_fallback(client)
         return
 
+    video_url = _get_latest_video_url()
     print(f"  {len(unique)} posts found. Drafting comments for top 5...")
     lines = [
         "Agent 5: Reddit Outreach — Daily Targets",
@@ -152,7 +170,7 @@ def main():
 
     for i, post in enumerate(unique[:5], 1):
         try:
-            comment = _draft_comment(post, client)
+            comment = _draft_comment(post, client, video_url)
         except Exception as e:
             comment = f"[Error: {e}]"
 
