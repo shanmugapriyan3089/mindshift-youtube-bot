@@ -85,10 +85,10 @@ Write only the tweet. No intro, no explanation."""
             max_tokens=120,
         )
         tweet = resp.choices[0].message.content.strip()
+        tweet = tweet[:240] + "\n\nyoutube.com/@MindShiftProductivity"
         return tweet[:280]
     except Exception as e:
         print(f"[Twitter] Groq failed: {e}")
-        # Fallback hardcoded insight
         fallbacks = [
             "Your brain releases the same stress hormones for imagined threats as real ones.\nThat meeting you keep dreading? Already hurting you.\nWorry is suffering twice.\n#psychology #mindset",
             "Procrastination is not laziness.\nIt's your nervous system avoiding a task it has linked to pain or failure.\nThe block is emotional, not logical.\n#psychology #brain",
@@ -98,7 +98,7 @@ Write only the tweet. No intro, no explanation."""
         ]
         import random, datetime
         random.seed(datetime.date.today().isoformat())
-        return random.choice(fallbacks)
+        return random.choice(fallbacks) + "\n\nyoutube.com/@MindShiftProductivity"
 
 
 def _build_promo_tweet(title: str, video_id: str) -> str:
