@@ -55,26 +55,47 @@ def _mark_tweeted(video_id: str):
 
 def _generate_psychology_tweet() -> str:
     """Use Groq to write a 2-3 line psychology insight tweet."""
+    import random, datetime
+    topics = [
+        "why people self-sabotage right before success",
+        "how dopamine makes you chase but never feel satisfied",
+        "why trauma keeps you stuck in old patterns",
+        "the psychology of why validation feels addictive",
+        "why your identity resists change even when you want it",
+        "how childhood wounds show up in adult relationships",
+        "why people stay in situations that hurt them",
+        "the science of why willpower always fails eventually",
+        "how social comparison quietly destroys confidence",
+        "why your brain replays embarrassing memories at 3am",
+        "the real reason people can't take compliments",
+        "why being busy feels safer than being still",
+        "how people mistake anxiety for excitement",
+        "why some people attract chaos without realising it",
+        "the psychology behind never feeling good enough",
+        "why humans fear success more than failure",
+        "how unmet childhood needs drive adult behavior",
+        "why people push away the things they want most",
+        "the neuroscience of why habits are so hard to break",
+        "why some people can't stop apologising for everything",
+    ]
+    # Rotate topics by date + time of day so no two consecutive tweets repeat
+    seed = int(datetime.datetime.utcnow().strftime("%Y%m%d%H"))
+    random.seed(seed)
+    topic = random.choice(topics)
+
     try:
         from groq import Groq
         client = Groq(api_key=os.getenv("GROQ_API_KEY"))
-        prompt = """Write ONE psychology insight tweet for a self-improvement account.
+        prompt = f"""Write ONE psychology insight tweet about: "{topic}"
 
 Rules:
 - EXACTLY 2-3 lines. No more.
-- Line 1: A relatable observation or shocking fact (under 70 chars)
-- Line 2: The science/reason why (under 70 chars)
-- Line 3 (optional): The reframe or takeaway (under 60 chars)
-- End with 2-3 hashtags: pick from #psychology #mindset #selfimprovement #mentalhealth #motivation #habits #brain
-- DO NOT start with "Did you know" or "Fun fact"
+- Line 1: A bold, specific observation (under 70 chars) — DO NOT start with "You're stuck"
+- Line 2: The science or reason why (under 70 chars)
+- Line 3 (optional): A reframe or takeaway (under 60 chars)
+- End with 2-3 hashtags from: #psychology #mindset #selfimprovement #mentalhealth #motivation #habits #brain
 - Sound like a smart friend texting you, not a textbook
-- Topic: something about being stuck, overthinking, self-sabotage, procrastination, or emotional patterns
-
-Example format:
-Your brain treats social rejection the same as physical pain.
-That's why being left out hurts — literally.
-You're not too sensitive. You're wired that way.
-#psychology #mindset
+- DO NOT start with "Did you know", "Fun fact", "You're stuck in a loop", or "Overthinking"
 
 Write only the tweet. No intro, no explanation."""
 
