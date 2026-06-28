@@ -84,7 +84,13 @@ def main():
 
     lines = [
         "Agent 6: Quora Answers Ready to Post",
-        "Go to Quora.com, search each question, click Answer, paste the full answer below.",
+        "",
+        "HOW TO FIND FRESH QUESTIONS (posted this week):",
+        "1. Go to quora.com and log in",
+        "2. Search one of these topics: Psychology, Self Improvement, Procrastination, Mindset, Mental Health",
+        "3. Click the topic → click 'Questions' tab → sort by 'New'",
+        "4. Pick any question that matches the answer below → click Answer → paste → Submit",
+        "DO NOT search for the exact question title — those are old. Find a NEW similar question.",
         "",
     ]
 
@@ -93,17 +99,17 @@ def main():
         a = pair.get("answer", "")
         lines += [
             "─" * 40,
-            f"Q{i}: {q}",
+            f"Answer {i} — find a question about: {q}",
             "",
-            "Copy from here:",
+            "Paste this answer:",
             a,
             "",
         ]
 
     lines += [
         "─" * 40,
-        "How to post: quora.com → search question → Answer → paste → Submit",
-        "Quora answers get Google traffic for years — worth 10 minutes!",
+        "Tip: Answer questions posted in the last 7 days — they get more visibility.",
+        "5 answers = 10 minutes = traffic for years.",
     ]
     send("\n".join(lines), subject="Agent 6: Quora Answers Ready to Post")
 
