@@ -10,6 +10,8 @@ jobs:
   generate-stock-shorts:
     runs-on: ubuntu-latest
     timeout-minutes: 45
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout repo
@@ -57,8 +59,11 @@ jobs:
         run: python main_stock.py --type shorts
 
       - name: Save upload log
-        uses: actions/upload-artifact@v4
         if: always()
-        with:
-          name: upload-log-stock-shorts-${{ github.run_number }}
-          path: upload_log.json
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git pull --rebase origin main || true
+          git add upload_log.json || true
+          git diff --cached --quiet || git commit -m "chore: update upload log [skip ci]"
+          git push || true
