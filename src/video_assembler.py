@@ -145,28 +145,8 @@ def assemble_video(
           "-i", concat_a_txt, "-c", "copy",
           concat_audio], timeout=120)
 
-    # Step 3: Mix background music — real file if available, otherwise generated ambient pad
-    music_path = _get_random_music()
-    if not music_path:
-        total_dur = len(clip_paths) * (27 if video_type == "regular" else 13)
-        music_path = _generate_ambient_fallback(total_dur, ff, tmp_dir)
-    if music_path and os.path.exists(concat_audio):
-        print(f"  [Assemble] Mixing background music...")
-        mixed_audio = os.path.join(tmp_dir, "mixed_audio.mp3")
-        # Shorts: 20% music so silence gaps don't feel dead. Regular: 12% subtle.
-        music_vol = "0.20" if video_type == "shorts" else "0.12"
-        success = _run([
-            ff, "-y",
-            "-i", concat_audio,
-            "-stream_loop", "-1", "-i", music_path,
-            "-filter_complex",
-            f"[0:a]volume=1.0[v];[1:a]volume={music_vol}[m];[v][m]amix=inputs=2:duration=first[out]",
-            "-map", "[out]",
-            "-c:a", "libmp3lame",
-            mixed_audio
-        ], timeout=60)
-        if success and os.path.exists(mixed_audio):
-            concat_audio = mixed_audio
+    # Background music disabled — avoids Content ID claims on YouTube
+    # To re-enable: uncomment the block below and add royalty-free MP3s to assets/music/
 
     # Step 3b: Scene transition SFX — pop at each scene boundary
     scene_dur = 27 if video_type == "regular" else 13
