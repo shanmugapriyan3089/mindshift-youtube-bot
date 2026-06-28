@@ -191,8 +191,11 @@ def main():
 
     body_lines = ["Post these tweets on X today:\n"]
     for label, tweet, vid in tweets_to_send:
-        body_lines.append(f"── {label} ──")
+        body_lines.append(f"[ {label} ]")
+        body_lines.append("Copy from here:")
+        body_lines.append("─" * 30)
         body_lines.append(tweet)
+        body_lines.append("─" * 30)
         body_lines.append("")
 
     body_lines.append("─" * 40)
