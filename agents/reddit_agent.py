@@ -107,12 +107,13 @@ Format as plain text, 5 entries numbered 1-5."""
         temperature=0.8, max_tokens=1000,
     )
     content = response.choices[0].message.content.strip()
-    send(f"""💬 <b>Agent 5: Reddit Outreach Guide</b>
-(Reddit API unavailable today — use these manual targets)
-
-{content}
-
-🔍 <b>How to use:</b> Go to reddit.com → search each term → find a post with 50+ upvotes → post the comment template""")
+    send(
+        f"Agent 5: Reddit Outreach Guide\n"
+        f"(Reddit unavailable today — use these manual targets)\n\n"
+        f"{content}\n\n"
+        f"How to use: Go to reddit.com → search each term → find a post with 50+ upvotes → post the comment",
+        subject="Agent 5: Reddit Outreach Targets"
+    )
 
 
 def main():
@@ -142,11 +143,12 @@ def main():
         return
 
     print(f"  {len(unique)} posts found. Drafting comments for top 5...")
-    message = (
-        "💬 <b>Agent 5: Reddit Outreach — Daily Targets</b>\n"
-        "Open each link → find the post → tap Reply → paste the comment\n"
-        "⚡ Takes 5 mins. Each comment = potential viral traffic.\n"
-    )
+    lines = [
+        "Agent 5: Reddit Outreach — Daily Targets",
+        "Open each link → find the post → tap Reply → paste the comment",
+        "Takes 5 mins. Each comment = potential viral traffic.",
+        "",
+    ]
 
     for i, post in enumerate(unique[:5], 1):
         try:
@@ -154,25 +156,27 @@ def main():
         except Exception as e:
             comment = f"[Error: {e}]"
 
-        message += f"""
-━━━━━━━━━━━━━━━━━━
-<b>{i}.</b> {post['subreddit']} · 👍 {post['score']:,} upvotes · 💬 {post['num_comments']} comments
-<b>{post['title'][:70]}</b>
-👉 <a href="{post['url']}">Open post on Reddit</a>
+        lines += [
+            "─" * 40,
+            f"{i}. {post['subreddit']} — {post['score']:,} upvotes — {post['num_comments']} comments",
+            post['title'][:80],
+            f"Link: {post['url']}",
+            "",
+            "Paste this comment:",
+            comment,
+            "",
+        ]
 
-📝 <b>Paste this comment:</b>
-<code>{comment}</code>
-"""
-
-    message += (
-        "\n━━━━━━━━━━━━━━━━━━\n"
-        "🎯 <b>Best subreddits to search manually:</b>\n"
-        "• r/selfimprovement — search: procrastination / anxiety / habits\n"
-        "• r/psychology — search: motivation / decision making\n"
-        "• r/GetMotivated — any hot post with 500+ upvotes\n\n"
-        f"🔗 Our channel: {CHANNEL_URL}"
-    )
-    send(message, subject="Agent 5: Reddit Outreach Targets")
+    lines += [
+        "─" * 40,
+        "Best subreddits to search manually:",
+        "  r/selfimprovement — search: procrastination / anxiety / habits",
+        "  r/psychology — search: motivation / decision making",
+        "  r/GetMotivated — any hot post with 500+ upvotes",
+        "",
+        f"Channel: {CHANNEL_URL}",
+    ]
+    send("\n".join(lines), subject="Agent 5: Reddit Outreach Targets")
 
 
 if __name__ == "__main__":
