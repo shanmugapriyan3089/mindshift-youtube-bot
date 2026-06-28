@@ -31,13 +31,9 @@ jobs:
       - name: Run Twitter agent
         run: python -m agents.twitter_poster
         env:
-          TWITTER_API_KEY:       ${{ secrets.TWITTER_API_KEY }}
-          TWITTER_API_SECRET:    ${{ secrets.TWITTER_API_SECRET }}
-          TWITTER_ACCESS_TOKEN:  ${{ secrets.TWITTER_ACCESS_TOKEN }}
-          TWITTER_ACCESS_SECRET: ${{ secrets.TWITTER_ACCESS_SECRET }}
-          GROQ_API_KEY:          ${{ secrets.GROQ_API_KEY }}
-          NOTIFY_EMAIL:          ${{ secrets.NOTIFY_EMAIL }}
-          GMAIL_APP_PASSWORD:    ${{ secrets.GMAIL_APP_PASSWORD }}
+          GROQ_API_KEY:       ${{ secrets.GROQ_API_KEY }}
+          NOTIFY_EMAIL:       ${{ secrets.NOTIFY_EMAIL }}
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
 
       - name: Commit updated state files
         run: |

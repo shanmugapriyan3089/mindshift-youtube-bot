@@ -156,123 +156,62 @@ def _post_video_tweet(api, client, video_path: str, caption: str):
 # ── Main ──────────────────────────────────────────────────────────────────────
 
 def main():
-    api_key        = os.getenv("TWITTER_API_KEY")
-    api_secret     = os.getenv("TWITTER_API_SECRET")
-    access_token   = os.getenv("TWITTER_ACCESS_TOKEN")
-    access_secret  = os.getenv("TWITTER_ACCESS_SECRET")
-
-    if not all([api_key, api_secret, access_token, access_secret]):
-        print("[Agent 8: Twitter] Credentials not set — skipping")
-        return
-
-    try:
-        import tweepy
-    except ImportError:
-        print("[Twitter] tweepy not installed")
-        return
-
-    # v2 client for text tweets
-    client = tweepy.Client(
-        consumer_key=api_key,
-        consumer_secret=api_secret,
-        access_token=access_token,
-        access_token_secret=access_secret,
-    )
-
-    # v1.1 API for media uploads
-    auth = tweepy.OAuth1UserHandler(api_key, api_secret, access_token, access_secret)
-    api  = tweepy.API(auth)
-
-    posted_this_run = []
     tweet_count = _get_tweet_count()
 
-    # ── Step 1: Post any new Shorts as native video ──────────────────────────
+    tweets_to_send = []
+
+    # ── Step 1: Shorts promo for any new uploads ─────────────────────────────
     unposted = _get_unposted_uploads()
     shorts   = [v for v in unposted if v.get("type") == "shorts"]
 
-    for upload in shorts[:2]:  # max 2 per run
+    for upload in shorts[:2]:
         vid   = upload.get("video_id", "")
         title = upload.get("title", "").replace(" #Shorts", "").strip()
-        caption = f"{title[:120]}\n\n#psychology #mindset #Shorts"
+        tweet = f"{title[:120]}\n\nhttps://youtu.be/{vid}\n#psychology #mindset #Shorts"
+        tweets_to_send.append(("Short promo", tweet, vid))
 
-        with tempfile.TemporaryDirectory() as tmpdir:
-            video_path = _download_short(vid, tmpdir)
-            if video_path:
-                try:
-                    tweet_id = _post_video_tweet(api, client, video_path, caption)
-                    if tweet_id:
-                        _mark_tweeted(vid)
-                        tweet_count = _increment_tweet_count()
-                        posted_this_run.append(("video", caption[:80], f"https://x.com/i/web/status/{tweet_id}"))
-                        print(f"[Twitter] Short posted as native video: {title[:50]}")
-                except Exception as e:
-                    print(f"[Twitter] Video upload failed: {e}")
-                    # Fallback to link tweet
-                    try:
-                        tweet = f"{title[:120]}\n\nhttps://youtu.be/{vid}\n#psychology #Shorts"
-                        resp = client.create_tweet(text=tweet)
-                        _mark_tweeted(vid)
-                        tweet_count = _increment_tweet_count()
-                        posted_this_run.append(("link", tweet[:80], ""))
-                    except Exception as e2:
-                        print(f"[Twitter] Fallback tweet failed: {e2}")
-            else:
-                # yt-dlp failed, post link instead
-                try:
-                    tweet = f"{title[:120]}\n\nhttps://youtu.be/{vid}\n#psychology #Shorts"
-                    resp  = client.create_tweet(text=tweet)
-                    _mark_tweeted(vid)
-                    tweet_count = _increment_tweet_count()
-                    posted_this_run.append(("link", tweet[:80], ""))
-                except Exception as e:
-                    print(f"[Twitter] Link tweet failed: {e}")
-
-    # ── Step 2: Post psychology insight OR video promo ───────────────────────
-    tweet_count = _get_tweet_count()
-
+    # ── Step 2: Psychology insight OR video promo ────────────────────────────
     if tweet_count % 5 == 4:
-        # Every 5th tweet = promote latest regular video
         regulars = [v for v in _get_unposted_uploads() if v.get("type") == "regular"]
         if not regulars:
-            # All promoted already — pick most recent from full log
             all_log  = _load_json("upload_log.json", [])
             regulars = [v for v in all_log if v.get("type") == "regular"]
-
         if regulars:
-            latest = sorted(regulars, key=lambda x: x.get("uploaded_at",""), reverse=True)[0]
+            latest = sorted(regulars, key=lambda x: x.get("uploaded_at", ""), reverse=True)[0]
             tweet  = _build_promo_tweet(latest["title"], latest["video_id"])
-            try:
-                resp = client.create_tweet(text=tweet)
-                tweet_count = _increment_tweet_count()
-                posted_this_run.append(("promo", tweet[:80], ""))
-                print(f"[Twitter] Video promo posted")
-            except Exception as e:
-                print(f"[Twitter] Promo failed: {e}")
+            tweets_to_send.append(("Video promo", tweet, None))
     else:
-        # Psychology insight tweet
         tweet = _generate_psychology_tweet()
-        try:
-            resp = client.create_tweet(text=tweet)
-            tweet_count = _increment_tweet_count()
-            posted_this_run.append(("insight", tweet[:80], ""))
-            print(f"[Twitter] Psychology tweet posted")
-        except Exception as e:
-            print(f"[Twitter] Insight tweet failed: {e}")
+        tweets_to_send.append(("Psychology insight", tweet, None))
 
-    # ── Notify ───────────────────────────────────────────────────────────────
-    if posted_this_run:
-        try:
-            from agents.notifier import send
-            lines = "\n".join(
-                f"{'📹' if t=='video' else '🎯' if t=='promo' else '🧠'} {text}..."
-                for t, text, _ in posted_this_run
-            )
-            send(f"Agent 8: Twitter\n{lines}\nTotal tweets: {tweet_count}",
-                 subject="Agent 8: Twitter posted")
-        except Exception:
-            pass
-    else:
-        print("[Twitter] Nothing posted this run")
+    # ── Email all tweets to user ─────────────────────────────────────────────
+    if not tweets_to_send:
+        print("[Agent 8: Twitter] Nothing to send today")
+        return
+
+    body_lines = ["Post these tweets on X today:\n"]
+    for label, tweet, vid in tweets_to_send:
+        body_lines.append(f"── {label} ──")
+        body_lines.append(tweet)
+        body_lines.append("")
+
+    body_lines.append("─" * 40)
+    body_lines.append(f"Total tweets posted so far: {tweet_count}")
+    body = "\n".join(body_lines)
+
+    try:
+        from agents.notifier import send
+        send(body, subject="Agent 8: Post these tweets on X today")
+        print("[Agent 8: Twitter] Tweet drafts emailed")
+    except Exception as e:
+        print(f"[Agent 8: Twitter] Email failed: {e}")
+        print(body)
+
+    # Mark shorts as handled so they don't repeat tomorrow
+    for label, tweet, vid in tweets_to_send:
+        if vid:
+            _mark_tweeted(vid)
+    _increment_tweet_count()
 
 
 if __name__ == "__main__":
