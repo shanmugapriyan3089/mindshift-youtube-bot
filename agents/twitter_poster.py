@@ -170,19 +170,23 @@ def main():
         tweet = f"{title[:120]}\n\nhttps://youtu.be/{vid}\n#psychology #mindset #Shorts"
         tweets_to_send.append(("Short promo", tweet, vid))
 
-    # ── Step 2: Psychology insight OR video promo ────────────────────────────
-    if tweet_count % 5 == 4:
-        regulars = [v for v in _get_unposted_uploads() if v.get("type") == "regular"]
-        if not regulars:
-            all_log  = _load_json("upload_log.json", [])
-            regulars = [v for v in all_log if v.get("type") == "regular"]
-        if regulars:
-            latest = sorted(regulars, key=lambda x: x.get("uploaded_at", ""), reverse=True)[0]
-            tweet  = _build_promo_tweet(latest["title"], latest["video_id"])
-            tweets_to_send.append(("Video promo", tweet, None))
-    else:
-        tweet = _generate_psychology_tweet()
-        tweets_to_send.append(("Psychology insight", tweet, None))
+    # ── Step 2: Psychology insight + latest video link ──────────────────────
+    # Get latest regular video to link in every tweet
+    all_log  = _load_json("upload_log.json", [])
+    regulars = sorted(
+        [v for v in all_log if v.get("type") == "regular"],
+        key=lambda x: x.get("uploaded_at", ""), reverse=True
+    )
+    latest_video = regulars[0] if regulars else None
+
+    tweet = _generate_psychology_tweet()
+
+    # Replace channel URL with specific video URL if available
+    if latest_video:
+        video_url = f"https://youtu.be/{latest_video['video_id']}"
+        tweet = tweet.replace("youtube.com/@MindShiftProductivity", video_url)
+
+    tweets_to_send.append(("Psychology insight", tweet, None))
 
     # ── Email all tweets to user ─────────────────────────────────────────────
     if not tweets_to_send:
