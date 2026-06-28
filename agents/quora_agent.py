@@ -85,12 +85,15 @@ def main():
     lines = [
         "Agent 6: Quora Answers Ready to Post",
         "",
-        "HOW TO FIND FRESH QUESTIONS (posted this week):",
+        "HOW TO FIND FRESH QUESTIONS (step by step):",
         "1. Go to quora.com and log in",
-        "2. Search one of these topics: Psychology, Self Improvement, Procrastination, Mindset, Mental Health",
-        "3. Click the topic → click 'Questions' tab → sort by 'New'",
-        "4. Pick any question that matches the answer below → click Answer → paste → Submit",
-        "DO NOT search for the exact question title — those are old. Find a NEW similar question.",
+        "2. In the search bar type the topic — e.g. 'comparing myself to others'",
+        "3. Click the 'Questions' tab at the top of results",
+        "4. On the right side change 'Most Relevant' to 'Most Recent'",
+        "5. Pick a question showing '1d', '2d', '3d' — NOT '10y' or '5y'",
+        "6. Click the question → click 'Answer' → paste the answer below → Submit",
+        "",
+        "IMPORTANT: Never answer questions older than 7 days — they are buried and nobody sees them.",
         "",
     ]
 
