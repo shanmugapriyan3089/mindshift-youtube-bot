@@ -39,7 +39,7 @@ Our video topics:
 
 Generate 5 Quora question + answer pairs where:
 1. The question is something people genuinely search on Quora
-2. The answer is detailed, practical, and 220-280 words
+2. The answer is short, punchy, and 60-80 words maximum
 3. The answer ends naturally with: "I went deep on this recently: {video_url}"
 4. Answers should sound like a knowledgeable person sharing real experience
 5. No corporate tone, no hashtags, no "great question!"
