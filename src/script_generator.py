@@ -68,18 +68,18 @@ Scenes 8-12  → CHAPTER 3 — REAL STORIES: Relatable everyday stories that mak
 Scenes 13-17 → CHAPTER 4 — THE FIX: 5 specific actionable steps the viewer can start TODAY. Precise and implementable.
 Scenes 18-20 → CHAPTER 5 — NEW LIFE: What life looks like after applying this. End with strong call to subscribe and comment.
 
-CRITICAL: Each scene narration must be EXACTLY 60-65 words. Not 50, not 70 — 60 to 65.
-Count them. This fills the full 27 seconds at a measured, deliberate pace and eliminates dead air.
-If your scene narration is under 60 words, add a concrete example, a statistic, or a visceral detail.
+CRITICAL: Each scene narration must be EXACTLY 55-60 words. Not 45, not 65 — 55 to 60.
+Count them. This fills the full 27 seconds at our deliberate voice pace (127 WPM) and eliminates dead air.
+If your scene narration is under 55 words, add a concrete example, a statistic, or a visceral detail.
 Speak like a smart, direct friend — not a robot or professor. Use "you" throughout.
 duration_seconds for each scene: 27"""
     else:
         duration_label = "20-25 seconds"
         scene_guide = f"""Exactly {num_scenes} scenes. ULTRA fast-paced. Scene 1 = hook that stops the scroll in 2 seconds.
-Each scene narration: EXACTLY 36-40 words. One punchy idea with a specific detail or stat.
-This fills exactly 12 seconds at our voice pace (133 WPM, slightly slower for authority).
-COUNT THE WORDS. Do NOT go below 36 — anything shorter leaves dead silence.
-If you are under 36 words, add: a specific number, a body sensation detail, or a "you know that feeling when..." phrase.
+Each scene narration: EXACTLY 24-27 words. One punchy idea, single sentence or two short ones.
+This fills exactly 12 seconds at our voice pace (127 WPM, deliberate and authoritative).
+COUNT THE WORDS. Do NOT go below 24 or above 27 — too short leaves silence, too long gets cut off.
+Example (26 words): "You open your phone to check one thing. Forty minutes later you are still there. Your brain did not fail you. It was designed to do exactly this."
 Scene 1: shocking hook. Scene 2: the payoff / what to do.
 End scene 2 with: "The full breakdown is on the channel — search MindShiftProductivity right now."
 duration_seconds for each scene: 12
