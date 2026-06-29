@@ -70,6 +70,7 @@ def _download_short(video_url: str, out_dir: str) -> str | None:
                 "-f", "bestvideo[height<=1080][ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best",
                 "--merge-output-format", "mp4",
                 "--no-playlist",
+                "--extractor-args", "youtube:player_client=ios",
                 "-o", out_path,
                 video_url,
             ],
