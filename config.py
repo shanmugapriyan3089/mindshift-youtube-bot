@@ -111,7 +111,6 @@ TITLE_FORMULAS = [
     "X Ways to [Result] with [Topic]",
     "[Topic] Will Make You [Result]",
     "How to [Result] with [Topic] in X Steps",
-]",
     "[Number] Psychology Tricks That [Benefit]",
     "Why 99% of People [Problem] (The Uncomfortable Truth)",
     "Stop Doing This If You Want to [Benefit]",
