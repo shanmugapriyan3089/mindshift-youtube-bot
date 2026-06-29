@@ -251,10 +251,10 @@ def main():
 
         ig_url = f"https://www.instagram.com/reel/{media_id}/"
         send(
-            f"📸 <b>Instagram Reel Posted!</b>\n"
-            f"<b>{title[:80]}</b>\n"
-            f"▶️ <a href='{ig_url}'>View on Instagram</a>\n"
-            f"📊 Poll: {poll_q[:80] if poll_q else 'none'}",
+            f"Instagram Reel Posted!\n\n"
+            f"{title[:80]}\n\n"
+            f"View: {ig_url}\n"
+            f"Poll: {poll_q[:80] if poll_q else 'none'}",
             subject=f"Instagram Reel: {title[:50]}"
         )
         print(f"  [Instagram] Done: {ig_url}")
