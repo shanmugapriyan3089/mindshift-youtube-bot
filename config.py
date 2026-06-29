@@ -91,13 +91,27 @@ DAILY_TOPICS = [
 
 # Auto-updated by Agent 2 every Monday — winning tags + title formulas from competitor intel
 WINNING_TAGS = [
-    "motivation", "psychology", "self improvement", "success", "confidence",
-    "productivity", "personal development", "mindset", "habits", "self help",
-    "inspiration", "mental health",
+    "motivation",
+    "productivity",
+    "success",
+    "confidence",
+    "wealth",
+    "happiness",
+    "personal development",
+    "self improvement",
+    "study motivation",
+    "exam tips",
+    "public speaking",
+    "communication skills",
 ]
 
 TITLE_FORMULAS = [
-    "Give Me X Minutes and I'll Make You [Result]",
+    "X [Topic] to [Result] in X Minutes",
+    "The [Adjective] [Topic] to [Result]",
+    "X Ways to [Result] with [Topic]",
+    "[Topic] Will Make You [Result]",
+    "How to [Result] with [Topic] in X Steps",
+]",
     "[Number] Psychology Tricks That [Benefit]",
     "Why 99% of People [Problem] (The Uncomfortable Truth)",
     "Stop Doing This If You Want to [Benefit]",
