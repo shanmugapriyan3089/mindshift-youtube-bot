@@ -11,6 +11,8 @@ import os
 import sys
 import argparse
 import tempfile
+import json
+import requests
 
 sys.path.insert(0, os.path.dirname(__file__))
 
@@ -82,6 +84,35 @@ def run_pipeline(video_type: str = "regular"):
 
     save_upload_log(video_id, script["title"], topic, video_type,
                     poll_question=script.get("poll_question", ""))
+
+    # For Shorts: also host on catbox.moe so Instagram agent can post without re-downloading
+    if video_type == "shorts" and os.path.exists(video_path):
+        print("[Instagram] Uploading Short to catbox.moe for Instagram Reels...")
+        try:
+            with open(video_path, "rb") as f:
+                resp = requests.post(
+                    "https://catbox.moe/user.php",
+                    data={"reqtype": "fileupload"},
+                    files={"fileToUpload": ("short.mp4", f, "video/mp4")},
+                    timeout=180,
+                )
+            catbox_url = resp.text.strip()
+            if catbox_url.startswith("https://files.catbox.moe/"):
+                print(f"[Instagram] Hosted at: {catbox_url}")
+                log = []
+                if os.path.exists("upload_log.json"):
+                    with open("upload_log.json") as f:
+                        log = json.load(f)
+                for entry in log:
+                    if entry.get("video_id") == video_id:
+                        entry["catbox_url"] = catbox_url
+                        break
+                with open("upload_log.json", "w") as f:
+                    json.dump(log, f, indent=2)
+            else:
+                print(f"[Instagram] catbox.moe failed: {resp.text[:100]}")
+        except Exception as e:
+            print(f"[Instagram] catbox.moe upload error: {e}")
 
     print(f"\n{'='*55}")
     print(f"  DONE! https://youtube.com/watch?v={video_id}")

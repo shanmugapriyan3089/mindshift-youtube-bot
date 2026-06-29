@@ -215,18 +215,20 @@ def main():
 
         print(f"\n  Processing: {title[:60]}")
 
-        with tempfile.TemporaryDirectory(prefix="ig_short_") as tmp:
-            # 1. Download from YouTube
-            local_path = _download_short(video_url, tmp)
-            if not local_path:
-                print(f"  [Instagram] Skipping {video_id} — download failed")
-                continue
-
-            # 2. Upload to catbox.moe for public URL
-            public_url = _upload_to_catbox(local_path)
-            if not public_url:
-                print(f"  [Instagram] Skipping {video_id} — hosting upload failed")
-                continue
+        # Use catbox_url saved during upload (avoids re-downloading from YouTube)
+        public_url = upload.get("catbox_url")
+        if public_url:
+            print(f"  [Instagram] Using saved catbox URL: {public_url}")
+        else:
+            with tempfile.TemporaryDirectory(prefix="ig_short_") as tmp:
+                local_path = _download_short(video_url, tmp)
+                if not local_path:
+                    print(f"  [Instagram] Skipping {video_id} — download failed")
+                    continue
+                public_url = _upload_to_catbox(local_path)
+                if not public_url:
+                    print(f"  [Instagram] Skipping {video_id} — hosting upload failed")
+                    continue
 
         # 3. Build caption
         caption = _build_caption(title, poll_q)
