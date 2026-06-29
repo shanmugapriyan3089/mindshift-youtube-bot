@@ -89,30 +89,46 @@ def run_pipeline(video_type: str = "regular"):
     if video_type == "shorts" and os.path.exists(video_path):
         print("[Instagram] Uploading Short to catbox.moe for Instagram Reels...")
         try:
+            public_url = None
+            # Try 0x0.st first (works well from GitHub Actions)
             with open(video_path, "rb") as f:
                 resp = requests.post(
-                    "https://catbox.moe/user.php",
-                    data={"reqtype": "fileupload"},
-                    files={"fileToUpload": ("short.mp4", f, "video/mp4")},
+                    "https://0x0.st",
+                    files={"file": ("short.mp4", f, "video/mp4")},
                     timeout=180,
                 )
-            catbox_url = resp.text.strip()
-            if catbox_url.startswith("https://files.catbox.moe/"):
-                print(f"[Instagram] Hosted at: {catbox_url}")
+            url = resp.text.strip()
+            if url.startswith("https://"):
+                public_url = url
+                print(f"[Instagram] Hosted at: {public_url}")
+            else:
+                print(f"[Instagram] 0x0.st failed: {resp.text[:100]}")
+                # Fallback: catbox.moe
+                with open(video_path, "rb") as f:
+                    resp2 = requests.post(
+                        "https://catbox.moe/user.php",
+                        data={"reqtype": "fileupload"},
+                        files={"fileToUpload": ("short.mp4", f, "video/mp4")},
+                        timeout=180,
+                    )
+                url2 = resp2.text.strip()
+                if url2.startswith("https://"):
+                    public_url = url2
+                    print(f"[Instagram] Hosted at (catbox): {public_url}")
+
+            if public_url:
                 log = []
                 if os.path.exists("upload_log.json"):
-                    with open("upload_log.json") as f:
-                        log = json.load(f)
+                    with open("upload_log.json") as lf:
+                        log = json.load(lf)
                 for entry in log:
                     if entry.get("video_id") == video_id:
-                        entry["catbox_url"] = catbox_url
+                        entry["catbox_url"] = public_url
                         break
-                with open("upload_log.json", "w") as f:
-                    json.dump(log, f, indent=2)
-            else:
-                print(f"[Instagram] catbox.moe failed: {resp.text[:100]}")
+                with open("upload_log.json", "w") as lf:
+                    json.dump(log, lf, indent=2)
         except Exception as e:
-            print(f"[Instagram] catbox.moe upload error: {e}")
+            print(f"[Instagram] hosting upload error: {e}")
 
     print(f"\n{'='*55}")
     print(f"  DONE! https://youtube.com/watch?v={video_id}")

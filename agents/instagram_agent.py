@@ -88,23 +88,32 @@ def _download_short(video_url: str, out_dir: str) -> str | None:
 
 
 def _upload_to_catbox(video_path: str) -> str | None:
-    """Upload video to catbox.moe → returns permanent public URL."""
-    print("  [Instagram] Uploading to catbox.moe for public URL...")
+    """Upload video to public host → returns URL. Tries 0x0.st then catbox.moe."""
+    print("  [Instagram] Uploading video for public URL...")
     try:
         with open(video_path, "rb") as f:
-            resp = requests.post(
-                "https://catbox.moe/user.php",
-                data={"reqtype": "fileupload"},
-                files={"fileToUpload": ("short.mp4", f, "video/mp4")},
-                timeout=180,
-            )
+            resp = requests.post("https://0x0.st",
+                                 files={"file": ("short.mp4", f, "video/mp4")},
+                                 timeout=180)
         url = resp.text.strip()
-        if url.startswith("https://files.catbox.moe/"):
+        if url.startswith("https://"):
             print(f"  [Instagram] Public URL: {url}")
             return url
-        print(f"  [Instagram] catbox.moe error: {resp.text[:200]}")
+        print(f"  [Instagram] 0x0.st failed: {resp.text[:100]}")
     except Exception as e:
-        print(f"  [Instagram] catbox.moe upload failed: {e}")
+        print(f"  [Instagram] 0x0.st failed: {e}")
+    try:
+        with open(video_path, "rb") as f:
+            resp = requests.post("https://catbox.moe/user.php",
+                                 data={"reqtype": "fileupload"},
+                                 files={"fileToUpload": ("short.mp4", f, "video/mp4")},
+                                 timeout=180)
+        url = resp.text.strip()
+        if url.startswith("https://"):
+            print(f"  [Instagram] Public URL (catbox): {url}")
+            return url
+    except Exception as e:
+        print(f"  [Instagram] catbox.moe failed: {e}")
     return None
 
 
