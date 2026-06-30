@@ -1,0 +1,56 @@
+name: Agent 0 — Head Agent (Daily Report)
+
+on:
+  schedule:
+    - cron: "0 7 * * *"   # 12:30 PM IST daily (after morning uploads + Twitter)
+  workflow_dispatch:
+
+jobs:
+  head-agent:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: write
+      actions: read       # needed to check other workflow run statuses
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          pip install groq requests python-dotenv
+          pip install google-auth google-auth-oauthlib google-api-python-client
+          pip install openai   # for DeepSeek (optional)
+
+      - name: Restore YouTube token
+        run: echo "$YOUTUBE_TOKEN" | base64 -d > youtube_token.pickle
+        env:
+          YOUTUBE_TOKEN: ${{ secrets.YOUTUBE_TOKEN }}
+
+      - name: Run Head Agent
+        run: python -m agents.head_agent
+        env:
+          GROQ_API_KEY:       ${{ secrets.GROQ_API_KEY }}
+          GITHUB_TOKEN:       ${{ secrets.GITHUB_TOKEN }}
+          YOUTUBE_API_KEY:    ${{ secrets.YOUTUBE_API_KEY }}
+          DEEPSEEK_API_KEY:   ${{ secrets.DEEPSEEK_API_KEY }}
+          NOTIFY_EMAIL:       ${{ secrets.NOTIFY_EMAIL }}
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID:   ${{ secrets.TELEGRAM_CHAT_ID }}
+
+      - name: Commit report
+        if: always()
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git pull --rebase origin main || true
+          git add head_agent_report.json || true
+          git diff --cached --quiet || git commit -m "chore: update head agent report [skip ci]"
+          git push || true
