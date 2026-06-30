@@ -106,7 +106,6 @@ Write only the tweet. No intro, no explanation."""
             max_tokens=120,
         )
         tweet = resp.choices[0].message.content.strip()
-        tweet = tweet[:240] + "\n\nyoutube.com/@MindShiftProductivity"
         return tweet[:280]
     except Exception as e:
         print(f"[Twitter] Groq failed: {e}")
@@ -119,7 +118,7 @@ Write only the tweet. No intro, no explanation."""
         ]
         import random, datetime
         random.seed(datetime.date.today().isoformat())
-        return random.choice(fallbacks) + "\n\nyoutube.com/@MindShiftProductivity"
+        return random.choice(fallbacks)
 
 
 def _build_promo_tweet(title: str, video_id: str) -> str:
@@ -191,23 +190,23 @@ def main():
         tweet = f"{title[:120]}\n\nhttps://youtu.be/{vid}\n#psychology #mindset #Shorts"
         tweets_to_send.append(("Short promo", tweet, vid))
 
-    # ── Step 2: Psychology insight + latest video link ──────────────────────
-    # Get latest regular video to link in every tweet
-    all_log  = _load_json("upload_log.json", [])
-    regulars = sorted(
-        [v for v in all_log if v.get("type") == "regular"],
-        key=lambda x: x.get("uploaded_at", ""), reverse=True
-    )
-    latest_video = regulars[0] if regulars else None
-
+    # ── Step 2: Psychology insight — only every 5th tweet promotes the video ─
     tweet = _generate_psychology_tweet()
 
-    # Replace channel URL with specific video URL if available
-    if latest_video:
-        video_url = f"https://youtu.be/{latest_video['video_id']}"
-        tweet = tweet.replace("youtube.com/@MindShiftProductivity", video_url)
+    is_promo_tweet = (tweet_count + 1) % 5 == 0
+    if is_promo_tweet:
+        all_log  = _load_json("upload_log.json", [])
+        regulars = sorted(
+            [v for v in all_log if v.get("type") == "regular"],
+            key=lambda x: x.get("uploaded_at", ""), reverse=True
+        )
+        latest_video = regulars[0] if regulars else None
+        if latest_video:
+            video_url = f"https://youtu.be/{latest_video['video_id']}"
+            tweet = tweet[:240] + f"\n\n{video_url}"
 
-    tweets_to_send.append(("Psychology insight", tweet, None))
+    label = "Psychology insight (+ video promo)" if is_promo_tweet else "Psychology insight"
+    tweets_to_send.append((label, tweet, None))
 
     # ── Email all tweets to user ─────────────────────────────────────────────
     if not tweets_to_send:
