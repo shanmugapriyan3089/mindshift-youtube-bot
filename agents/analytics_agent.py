@@ -88,6 +88,13 @@ def main():
         for i, v in enumerate(videos[:3])
     ]) if videos else "  No videos yet"
 
+    if subs >= 1000 and est_watch_hours >= 4000:
+        cta = "YPP THRESHOLD REACHED! Apply in YouTube Studio!"
+    elif subs < 50:
+        cta = "Share today's video on WhatsApp groups + Reddit to grow faster!"
+    else:
+        cta = f"{1000 - subs} more subscribers needed — keep sharing!"
+
     send(f"""📊 <b>Agent 3: Daily Analytics — MindShift Productivity</b>
 {datetime.now().strftime('%A, %B %d %Y')}
 
@@ -105,7 +112,7 @@ def main():
 🏆 <b>Top 3 Videos:</b>
 {top3}
 
-{'🎉 YPP THRESHOLD REACHED! Apply in YouTube Studio!' if subs >= 1000 and est_watch_hours >= 4000 else '💡 Share today\'s video on WhatsApp groups + Reddit to grow faster!' if subs < 50 else f'📈 {1000 - subs} more subscribers needed — keep sharing!'}""")
+{cta}""")
 
 
 if __name__ == "__main__":
