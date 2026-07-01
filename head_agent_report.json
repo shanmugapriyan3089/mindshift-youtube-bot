@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-01T07:10:48.667134+00:00",
+  "generated_at": "2026-07-01T08:27:28.627628+00:00",
   "agent_statuses": {
     "Regular Video (standard)": {
       "last_run_at": "2026-07-01T04:37:15Z",
@@ -32,9 +32,9 @@
       "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/27902267344"
     },
     "Twitter": {
-      "last_run_at": "2026-06-30T18:33:27Z",
+      "last_run_at": "2026-07-01T07:38:02Z",
       "conclusion": "success",
-      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/28467305916"
+      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/28501548230"
     },
     "Instagram": {
       "last_run_at": "2026-07-01T06:57:30Z",
@@ -129,17 +129,17 @@
       "Fix failed Analytics agent to track channel performance",
       "Review and adjust SEO Optimizer agent settings"
     ],
-    "competitor_insights": "Competitors like MindValley, Productivity Game, and Thomas Frank utilize engaging thumbnails, consistent upload schedules, and community interaction to grow their channels. We should focus on creating eye-catching visuals and fostering a community around our content.",
-    "view_drop_analysis": "Views are zero, indicating a need to promote the channel and improve video discoverability. Utilize social media, collaborations, and SEO optimization to increase visibility.",
+    "competitor_insights": "Competitors like Productivity Game, Thomas Frank, and Ali Abdaal have successfully grown their audiences by consistently uploading high-quality content, engaging with their viewers, and collaborating with other creators. We should learn from their strategies and avoid common pitfalls like neglecting audience engagement.",
+    "view_drop_analysis": "Views are extremely low, likely due to the channel's newness and lack of promotion. To improve, focus on creating high-quality, engaging content and promoting it through social media and collaborations.",
     "follower_growth_tips": [
       "Offer exclusive content or tips to encourage viewers to subscribe",
-      "Engage with viewers on social media and in video comments to build a community",
-      "Utilize eye-catching thumbnails and attention-grabbing titles to increase click-through rates"
+      "Host Q&A sessions or live streams to engage with potential subscribers",
+      "Utilize eye-catching thumbnails and attention-grabbing titles to increase video click-through rates"
     ]
   },
   "agent_improvement_tips": {
-    "Regular Video (standard)": "The agent likely failed due to an issue with video rendering or uploading, possibly caused by a mismatch in video format or resolution. To fix, check the video settings and ensure they match YouTube's requirements, then retry the upload.",
-    "Shorts (standard)": "The Shorts agent may have failed due to YouTube's strict guidelines for short-form content, such as incorrect video length or formatting. Verify that the short video meets YouTube's Shorts requirements and adjust the settings accordingly.",
-    "Analytics": "The Analytics agent probably failed due to authentication or API issues, such as an expired token or incorrect credentials. To resolve, check the API credentials and authentication flow, then restart the agent to re-establish the connection."
+    "Regular Video (standard)": "The agent likely failed due to an issue with video rendering or uploading, possibly caused by a mismatch in video format or resolution, and can be fixed by checking the video settings and ensuring they match YouTube's requirements.",
+    "Shorts (standard)": "The agent likely failed due to an issue with video duration or format, as YouTube Shorts have specific requirements, and can be fixed by verifying that the video length and format comply with YouTube Shorts' guidelines.",
+    "Analytics": "The agent likely failed due to an issue with API authentication or data retrieval, possibly caused by an expired token or incorrect API credentials, and can be fixed by checking the API credentials and authentication flow to ensure they are valid and properly configured."
   }
 }
