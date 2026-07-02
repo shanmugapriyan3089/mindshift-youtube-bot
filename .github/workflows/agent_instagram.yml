@@ -40,6 +40,7 @@ jobs:
         env:
           INSTAGRAM_ACCOUNT_ID:   ${{ secrets.INSTAGRAM_ACCOUNT_ID }}
           INSTAGRAM_ACCESS_TOKEN: ${{ secrets.INSTAGRAM_ACCESS_TOKEN }}
+          YOUTUBE_COOKIES:        ${{ secrets.YOUTUBE_COOKIES }}
           NOTIFY_EMAIL:           ${{ secrets.NOTIFY_EMAIL }}
           GMAIL_APP_PASSWORD:     ${{ secrets.GMAIL_APP_PASSWORD }}
           TELEGRAM_BOT_TOKEN:     ${{ secrets.TELEGRAM_BOT_TOKEN }}

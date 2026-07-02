@@ -60,22 +60,34 @@ def _get_unposted_shorts() -> list:
     return [v for v in log if v.get("type") == "shorts" and v.get("video_id") not in posted]
 
 
+def _write_cookies_file(out_dir: str) -> str | None:
+    """Write YouTube cookies from env var to a file for yt-dlp. Returns path or None."""
+    cookies_b64 = os.getenv("YOUTUBE_COOKIES")
+    if not cookies_b64:
+        return None
+    import base64
+    cookies_path = os.path.join(out_dir, "yt_cookies.txt")
+    with open(cookies_path, "wb") as f:
+        f.write(base64.b64decode(cookies_b64))
+    return cookies_path
+
+
 def _download_short(video_url: str, out_dir: str) -> str | None:
     """Download YouTube Short using yt-dlp. Returns local file path."""
     out_path = os.path.join(out_dir, "short.mp4")
+    cookies_path = _write_cookies_file(out_dir)
     try:
-        result = subprocess.run(
-            [
-                "yt-dlp",
-                "-f", "bestvideo[height<=1080][ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best",
-                "--merge-output-format", "mp4",
-                "--no-playlist",
-                "--extractor-args", "youtube:player_client=ios",
-                "-o", out_path,
-                video_url,
-            ],
-            capture_output=True, text=True, timeout=120,
-        )
+        cmd = [
+            "yt-dlp",
+            "-f", "bestvideo[height<=1080][ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best",
+            "--merge-output-format", "mp4",
+            "--no-playlist",
+            "--extractor-args", "youtube:player_client=ios",
+        ]
+        if cookies_path:
+            cmd += ["--cookies", cookies_path]
+        cmd += ["-o", out_path, video_url]
+        result = subprocess.run(cmd, capture_output=True, text=True, timeout=120)
         if result.returncode == 0 and os.path.exists(out_path) and os.path.getsize(out_path) > 10_000:
             print(f"  [Instagram] Downloaded: {os.path.getsize(out_path) // 1024} KB")
             return out_path
@@ -203,8 +215,18 @@ def main():
 
     if not ig_account_id or not access_token:
         print("[Agent 10: Instagram] Credentials not set — skipping")
-        print("[Instagram] Add INSTAGRAM_ACCOUNT_ID + INSTAGRAM_ACCESS_TOKEN to GitHub Secrets")
-        print("[Instagram] See setup instructions at top of this file")
+        try:
+            send(
+                "Instagram agent skipped — credentials missing.\n\n"
+                "Add these to GitHub Secrets to enable auto-posting:\n"
+                "  • INSTAGRAM_ACCOUNT_ID  — your numeric IG account ID\n"
+                "  • INSTAGRAM_ACCESS_TOKEN — long-lived token from Meta\n\n"
+                "Setup guide: developers.facebook.com → Create App → Instagram Graph API\n"
+                "See full steps at top of agents/instagram_agent.py",
+                subject="Action needed: Instagram credentials not set"
+            )
+        except Exception:
+            pass
         return
 
     unposted = _get_unposted_shorts()
@@ -225,7 +247,8 @@ def main():
         print(f"\n  Processing: {title[:60]}")
 
         # Use catbox_url saved during upload (avoids re-downloading from YouTube)
-        public_url = upload.get("catbox_url")
+        raw_url = upload.get("catbox_url", "")
+        public_url = raw_url if (raw_url and raw_url.startswith("https://")) else None
         if public_url:
             print(f"  [Instagram] Using saved catbox URL: {public_url}")
         else:
