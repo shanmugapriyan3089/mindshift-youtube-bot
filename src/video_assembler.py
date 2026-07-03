@@ -102,12 +102,45 @@ def _generate_ambient_fallback(total_dur: int, ff: str, tmp_dir: str) -> str | N
     return None
 
 
+def _srt_time(t: float) -> str:
+    h, rem = divmod(int(t), 3600)
+    m, s = divmod(rem, 60)
+    ms = int((t - int(t)) * 1000)
+    return f"{h:02d}:{m:02d}:{s:02d},{ms:03d}"
+
+
+def _make_srt(scenes: list) -> str:
+    """Generate SRT from scene narrations — 5 words per cue, evenly spaced across each scene.
+    Even distribution within a scene matches TTS pace far better than the old per-shot slicing."""
+    WORDS_PER_CUE = 5
+    lines = []
+    idx = 1
+    t = 0.0
+    for scene in scenes:
+        narration = scene.get("narration", "").strip()
+        dur = float(scene.get("duration_seconds", 27))
+        words = narration.split()
+        if not words:
+            t += dur
+            continue
+        chunks = [words[i:i + WORDS_PER_CUE] for i in range(0, len(words), WORDS_PER_CUE)]
+        chunk_dur = max(0.1, (dur - 0.3) / len(chunks))
+        for ci, chunk in enumerate(chunks):
+            start = t + ci * chunk_dur
+            end = start + chunk_dur - 0.08
+            lines += [str(idx), f"{_srt_time(start)} --> {_srt_time(end)}", " ".join(chunk), ""]
+            idx += 1
+        t += dur
+    return "\n".join(lines)
+
+
 def assemble_video(
     clip_paths: list,
     voice_paths: list,
     output_path: str,
     video_type: str = "regular",
     tmp_dir: str = None,
+    scenes: list = None,
 ) -> str:
     import tempfile
     if tmp_dir is None:
@@ -154,6 +187,7 @@ def assemble_video(
 
     # Step 4: Merge video + audio (apad pads silence if audio ends before video — covers poll card)
     print("  [Assemble] Merging video and audio...")
+    merged_path = os.path.join(tmp_dir, "merged.mp4")
     _run([
         ff, "-y",
         "-i", concat_video,
@@ -164,13 +198,38 @@ def assemble_video(
         "-shortest",
         "-map", "0:v:0",
         "-map", "1:a:0",
-        output_path
+        merged_path,
     ], timeout=300)
 
-    # If merge failed, try video-only
-    if not os.path.exists(output_path) or os.path.getsize(output_path) < 1000:
+    if not os.path.exists(merged_path) or os.path.getsize(merged_path) < 1000:
         print("  [Assemble] Fallback: video only (no audio)")
-        shutil.copy(concat_video, output_path)
+        shutil.copy(concat_video, merged_path)
+
+    # Step 5: Burn SRT subtitles for regular videos — properly synced 5-word rolling cues
+    if video_type == "regular" and scenes:
+        srt_path = os.path.join(tmp_dir, "subs.srt")
+        with open(srt_path, "w", encoding="utf-8") as f:
+            f.write(_make_srt(scenes))
+        srt_esc = srt_path.replace("\\", "/").replace(":", "\\:")
+        sub_ok = _run([
+            ff, "-y", "-i", merged_path,
+            "-vf", (
+                f"subtitles='{srt_esc}':force_style='"
+                "FontName=Arial,FontSize=22,PrimaryColour=&H00FFFFFF,"
+                "BackColour=&H80000000,BorderStyle=4,Outline=0,Shadow=0,"
+                "Alignment=2,MarginV=40'"
+            ),
+            "-c:v", "libx264", "-preset", "ultrafast", "-crf", "18",
+            "-c:a", "copy",
+            output_path,
+        ], timeout=600)
+        if not sub_ok or not os.path.exists(output_path) or os.path.getsize(output_path) < 1000:
+            print("  [Assemble] Subtitle burn failed — using video without subtitles")
+            shutil.copy(merged_path, output_path)
+        else:
+            print("  [Assemble] Subtitles burned in (5-word rolling cues)")
+    else:
+        shutil.copy(merged_path, output_path)
 
     print(f"  [Assemble] Done: {output_path}")
     return output_path

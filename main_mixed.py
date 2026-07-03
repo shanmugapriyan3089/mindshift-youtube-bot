@@ -108,7 +108,8 @@ def run_pipeline(video_type: str = "regular"):
     video_path = os.path.join(output_dir, f"mixed_{safe_title}.mp4")
     thumbnail_path = os.path.join(output_dir, f"mixed_{safe_title}_thumb.jpg")
 
-    assemble_video(clip_paths, voice_paths, video_path, video_type, tmp_dir)
+    assemble_video(clip_paths, voice_paths, video_path, video_type, tmp_dir,
+                   scenes=scenes if video_type == "regular" else None)
     generate_thumbnail(
         script.get("thumbnail_text", script["title"]), thumbnail_path, video_type
     )
