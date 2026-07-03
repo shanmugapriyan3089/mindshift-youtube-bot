@@ -50,6 +50,28 @@ def _parse_json(text: str) -> dict:
     return json.loads(_sanitize_json(match.group()))
 
 
+_TITLE_FORMULAS = [
+    ('WHY',      '"Why You [Search Keyword] — And What It Says About Your Brain"'),
+    ('TRUTH',    '"The Real Reason You [Search Keyword] (It\'s Not What You Think)"'),
+    ('BRAIN',    '"Your Brain Is [X] Right Now — Here Is Why You [Search Keyword]"'),
+    ('SCIENCE',  '"The Psychology Behind Why You [Search Keyword] Explained"'),
+    ('IDENTITY', '"If You [Search Keyword] Every Day, Read This"'),
+    ('NUMBER',   '"7 Signs Your Brain Is [X] (And What To Do About It)"'),
+    ('QUESTION', '"Do You [Search Keyword]? Here Is What Your Brain Is Actually Doing"'),
+]
+
+def _get_recent_titles(n: int = 8) -> list[str]:
+    """Load last N uploaded video titles to avoid repeating them."""
+    import os, json
+    log_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "upload_log.json")
+    try:
+        with open(log_path) as f:
+            log = json.load(f)
+        return [v.get("title", "") for v in log[-n:] if v.get("title")]
+    except Exception:
+        return []
+
+
 def generate_script(topic: str, video_type: str = "regular") -> dict:
     """
     Generate a motivational/psychology YouTube script.
@@ -58,6 +80,21 @@ def generate_script(topic: str, video_type: str = "regular") -> dict:
     """
     spec = REGULAR_VIDEO if video_type == "regular" else SHORTS_VIDEO
     num_scenes = spec["scenes"]
+
+    # Rotate title formula by day so consecutive videos never use the same one
+    day_of_year = datetime.date.today().timetuple().tm_yday
+    formula_tag, formula_template = _TITLE_FORMULAS[day_of_year % len(_TITLE_FORMULAS)]
+
+    # Load recent titles so the prompt can avoid repeating them
+    recent_titles = _get_recent_titles(8)
+    avoid_block = ""
+    if recent_titles:
+        avoid_list = "\n".join(f"  - {t}" for t in recent_titles)
+        avoid_block = f"""
+═══ AVOID REPEATING — DO NOT use titles similar to any of these recent uploads ═══
+{avoid_list}
+Your title MUST differ in both formula AND keyword from all of the above.
+"""
 
     if video_type == "regular":
         duration_label = "8-10 minutes"
@@ -107,24 +144,23 @@ EVERY title MUST contain two things:
 A) A SEARCH KEYWORD — a phrase someone in pain actually types into YouTube search
 B) A CURIOSITY GAP — something that makes them feel they are missing something critical
 
-SEARCH KEYWORD examples (use these exact phrases or close variants):
-  "why you can't stop overthinking"  |  "how to stop procrastinating"
-  "why you self sabotage"            |  "why you can't change"
-  "how to break bad habits"          |  "why your brain keeps you stuck"
-  "stop negative thoughts"           |  "why you feel empty"
-  "how to rewire your brain"         |  "why motivation never works"
+SEARCH KEYWORD examples (pick whichever fits the topic — do NOT default to overthinking/procrastination):
+  "why you self sabotage"         |  "why you can't change"
+  "how to break bad habits"       |  "why your brain keeps you stuck"
+  "stop negative thoughts"        |  "why you feel empty inside"
+  "how to rewire your brain"      |  "why motivation never works"
+  "why you feel drained"          |  "how to build self discipline"
+  "why you can't focus"           |  "why you overthink decisions"
+  "imposter syndrome"             |  "decision fatigue"
+  "why you people please"         |  "why you feel behind in life"
 
-TITLE FORMULA (pick one, build it around a search keyword):
-1. WHY FORMAT:   "Why You Can't Stop [Search Keyword] — And How to Finally Fix It"
-2. TRUTH FORMAT: "The Real Reason You [Search Keyword] (It's Not What You Think)"
-3. BRAIN FORMAT: "Your Brain Is Doing [X] Right Now — Here Is Why You [Search Keyword]"
-4. SCIENCE:      "The Psychology Behind Why You [Search Keyword] Explained"
-5. IDENTITY:     "If You [Search Keyword] Every Day, Read This"
+TODAY'S REQUIRED TITLE FORMULA — use ONLY this format (do not use any other):
+  {formula_tag}: {formula_template}
 
-GOOD: "Why You Can't Stop Overthinking No Matter How Hard You Try" (searchable + curiosity)
+GOOD: "The Real Reason You Keep Losing Motivation (It's Not Laziness)" (searchable + curiosity)
 BAD:  "YOUR BRAIN IS LYING" (nobody searches this, no keyword anchor)
 BAD:  "The Shocking Truth About Your Mind" (too vague, zero search volume)
-
+{avoid_block}
 Title must be 52-68 characters. Lowercase except first word and proper nouns — sounds more human, less clickbait.
 
 ═══ HOOK RULES — SCENARIO DROP (decides 70% of watch time) ═══

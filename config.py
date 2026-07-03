@@ -26,7 +26,7 @@ ANIMATION_STYLE = "minimal 2D animation, clean white background, simple stick fi
 # All topics must relate to one core feeling: "I know what I should do and I still cannot do it."
 # Tight niche = algorithm clusters us correctly = higher recommendation frequency.
 DAILY_TOPICS = [
-    # ── Core stuck-loop topics (the channel's primary identity) ─────────────────
+    # ── Core stuck-loop topics ───────────────────────────────────────────────────
     "You Keep Replaying That Conversation and Cannot Stop — Here Is Why",
     "Why You Quit on Day Four Every Single Time You Try to Change",
     "The Loop in Your Head at 2am Is Not Anxiety — It Is This",
@@ -54,19 +54,17 @@ DAILY_TOPICS = [
     "How Your Childhood Is Still Running Your Life in the Background",
     "Why Your Brain Refuses to Let Go of Something That Happened Years Ago",
     "The Exact Pattern That Keeps You Stuck in the Same Year Over and Over",
-    "Why You Feel Fine Until Someone Points Out Your Mistake and Then Spiral",
     "The Science Behind Why You Cannot Stop Overthinking at Night",
     "Why Trying Harder Always Makes Overthinking Worse — The Paradox Explained",
 
     # ── Procrastination & decision paralysis ─────────────────────────────────────
     "The Psychology Behind Why You Procrastinate and Cannot Stop",
-    "The Psychological Reason You Cannot Finish What You Start",
-    "Why You Lose Energy Around Certain People Without Knowing Why",
     "The One Cognitive Bias Keeping You Stuck in the Same Place",
     "Why Your Brain Craves Distraction and How to Break the Loop",
     "The Hidden Reason You Keep Starting Over Instead of Finishing",
     "Why Intelligent People Procrastinate More Than Everyone Else",
     "What Actually Happens in Your Brain the Moment You Avoid a Task",
+    "Why You Lose Energy Around Certain People Without Knowing Why",
 
     # ── Emotional regulation & the stuck nervous system ──────────────────────────
     "Your Dopamine System Is Broken — Here Is How to Fix It",
@@ -75,18 +73,53 @@ DAILY_TOPICS = [
     "Your Subconscious Mind Makes 95 Percent of Your Decisions",
     "How Your Environment Controls Your Willpower Without You Knowing",
     "The Reason Intelligent People Struggle More With Anxiety",
-    "Why You Lose Energy Around Certain People Without Understanding Why",
     "The Body Keeps the Score — How Past Stress Lives in Your Physical Reactions",
 
     # ── Breaking the cycle (solution-focused) ────────────────────────────────────
     "Why Discipline Is a Myth and What High Performers Actually Do",
     "How to Rewire Your Brain After Years of Negative Thinking",
-    "The Psychological Reason You Cannot Finish What You Start",
     "Why the Comfort Zone Is Not Safe — It Is Just Familiar",
     "The Hidden Cost of Being Too Nice to Everyone Around You",
     "Why Saying No Is Not Selfishness — It Is a Survival Mechanism",
     "How to Stop the Thought Loop Before It Becomes a Spiral",
     "The Pattern Interrupt That Actually Works When Anxiety Spikes",
+
+    # ── Identity & self-worth ─────────────────────────────────────────────────────
+    "Why You Feel Like a Fraud Even When You Are Actually Good at Things",
+    "The Psychological Reason You Cannot Stop People Pleasing",
+    "Why You Keep Shrinking Yourself to Make Others Comfortable",
+    "The Real Cost of Needing Everyone to Like You",
+    "Why Highly Sensitive People Feel Everything So Much More Intensely",
+    "The Science of Why You Feel Behind Everyone Else Your Age",
+    "Why You Are Hardest on Yourself at 3am and What to Do About It",
+
+    # ── Focus & digital age psychology ───────────────────────────────────────────
+    "Why Your Phone Is Physically Rewiring Your Ability to Focus",
+    "The Attention Residue Effect — Why Multitasking Is Destroying Your Brain",
+    "Why You Cannot Read a Book Anymore and What Social Media Did to You",
+    "Decision Fatigue — Why You Make Terrible Choices After 3pm",
+    "Why Boredom Is the Most Productive State Your Brain Can Be In",
+    "The Science of Deep Work — Why Most People Will Never Focus Again",
+    "How Notification Culture Has Shortened Your Attention Span by 40 Percent",
+
+    # ── Relationships & social psychology ────────────────────────────────────────
+    "The Spotlight Effect — Nobody Is Watching You as Much as You Think",
+    "Why You Replay Arguments in Your Head Instead of Sleeping",
+    "The Psychological Reason You Attract the Same Type of Person",
+    "Why Loneliness Feels Like a Physical Pain — The Science Explained",
+    "How to Stop Absorbing Other People's Emotions Like a Sponge",
+    "The Real Reason You Cannot Set Boundaries With Certain People",
+    "Why Your Brain Confuses Being Busy With Being Important",
+
+    # ── Growth mindset & high performance ────────────────────────────────────────
+    "Why Most Advice About Building Habits Is Completely Wrong",
+    "The Two-Minute Rule That Rewired How High Performers Work",
+    "Why You Are More Creative When You Are Slightly Bored",
+    "The Morning Routine Science — What Actually Matters Before 9am",
+    "Why Sleep Deprivation Makes You Overconfident and Dangerously Wrong",
+    "How to Build Self-Discipline When You Have Zero Motivation",
+    "The Growth Mindset Trap — Why Believing in Yourself Is Not Enough",
+    "Why Journaling Works When Nothing Else Does — The Neuroscience",
 ]
 
 # Auto-updated by Agent 2 every Monday — winning tags + title formulas from competitor intel
