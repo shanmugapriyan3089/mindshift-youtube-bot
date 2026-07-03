@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-07-02T08:05:03.200147+00:00",
+  "generated_at": "2026-07-03T08:04:16.188641+00:00",
   "agent_statuses": {
     "Regular Video (standard)": {
-      "last_run_at": "2026-07-02T04:29:04Z",
+      "last_run_at": "2026-07-03T04:21:48Z",
       "conclusion": "success",
-      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/28565449587"
+      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/28638215456"
     },
     "Regular Video (mixed)": {
       "last_run_at": "2026-06-20T12:08:27Z",
@@ -17,9 +17,9 @@
       "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/27898268584"
     },
     "Shorts (standard)": {
-      "last_run_at": "2026-07-02T05:47:43Z",
+      "last_run_at": "2026-07-03T05:46:58Z",
       "conclusion": "success",
-      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/28568434220"
+      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/28641183242"
     },
     "Shorts (mixed)": {
       "last_run_at": "2026-06-20T13:35:15Z",
@@ -32,19 +32,19 @@
       "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/27902267344"
     },
     "Twitter": {
-      "last_run_at": "2026-07-02T07:14:21Z",
+      "last_run_at": "2026-07-03T04:17:42Z",
       "conclusion": "success",
-      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/28572372455"
+      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/28638075963"
     },
     "Instagram": {
-      "last_run_at": "2026-07-02T06:47:35Z",
+      "last_run_at": "2026-07-03T06:41:47Z",
       "conclusion": "success",
-      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/28571069591"
+      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/28643373860"
     },
     "Reddit": {
-      "last_run_at": "2026-07-01T09:19:10Z",
+      "last_run_at": "2026-07-02T09:12:46Z",
       "conclusion": "success",
-      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/28507097828"
+      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/28578899622"
     },
     "Quora": {
       "last_run_at": "2026-07-01T10:21:52Z",
@@ -62,14 +62,14 @@
       "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/28351055386"
     },
     "SEO Optimizer": {
-      "last_run_at": "2026-07-01T11:10:52Z",
+      "last_run_at": "2026-07-02T10:57:46Z",
       "conclusion": "success",
-      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/28513273720"
+      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/28584850439"
     },
     "Analytics": {
-      "last_run_at": "2026-07-02T02:19:30Z",
+      "last_run_at": "2026-07-03T02:18:11Z",
       "conclusion": "success",
-      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/28560797263"
+      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/28634092124"
     },
     "Revenue Tracker": {
       "last_run_at": "2026-06-28T05:59:13Z",
@@ -83,32 +83,32 @@
     "failed": 0
   },
   "upload_stats": {
-    "total_uploaded": 10,
-    "regular_count": 4,
-    "shorts_count": 6,
+    "total_uploaded": 12,
+    "regular_count": 5,
+    "shorts_count": 7,
     "last_regular": {
-      "video_id": "qwaU7A7zrCk",
-      "title": "Why You Can't Stop Overthinking — And How to Finally Fix It",
-      "topic": "How to Stop the Thought Loop Before It Becomes a Spiral",
+      "video_id": "e03iPBpq5ww",
+      "title": "Why You Can't Stop Procrastinating — And How to Fix It",
+      "topic": "You Are Not Lazy — Your Nervous System Is Stuck in Survival Mode",
       "type": "regular",
-      "url": "https://youtube.com/watch?v=qwaU7A7zrCk",
-      "uploaded_at": "2026-07-02T04:34:13.948032",
+      "url": "https://youtube.com/watch?v=e03iPBpq5ww",
+      "uploaded_at": "2026-07-03T04:27:09.359865",
       "poll_question": ""
     },
     "last_short": {
-      "video_id": "kGInZEN6hwk",
-      "title": "Why You Can't Stop Overthinking — And How to Finally Fix It",
-      "topic": "The Pattern Interrupt That Actually Works When Anxiety Spikes",
+      "video_id": "xopaByxQGa4",
+      "title": "Why You Can't Stop Waiting For The Right Time",
+      "topic": "The Reason You Are Always Waiting for the Right Time That Never Comes",
       "type": "shorts",
-      "url": "https://youtube.com/watch?v=kGInZEN6hwk",
-      "uploaded_at": "2026-07-02T05:50:47.885545",
-      "poll_question": "Are you stuck in this loop right now? A: Trapped in it B: Just got out"
+      "url": "https://youtube.com/watch?v=xopaByxQGa4",
+      "uploaded_at": "2026-07-03T05:49:30.970006",
+      "poll_question": "Are you waiting for the right time? A: Every day B: Only sometimes"
     }
   },
   "channel_stats": {
-    "subscribers": 11,
-    "total_views": 2111,
-    "video_count": 54,
+    "subscribers": 12,
+    "total_views": 2580,
+    "video_count": 56,
     "channel_title": "MindShift Productivity"
   },
   "video_stats": [
@@ -123,7 +123,7 @@
     {
       "video_id": "71q0dfexuq4",
       "title": "The Shocking Truth Behind Addiction",
-      "views": 43,
+      "views": 44,
       "likes": 2,
       "comments": 0,
       "url": "https://youtu.be/71q0dfexuq4"
@@ -132,15 +132,15 @@
       "video_id": "GVtWTBFOqGQ",
       "title": "YOUR BRAIN IS SABOTAGING YOU #Shorts",
       "views": 110,
-      "likes": 1,
+      "likes": 2,
       "comments": 0,
       "url": "https://youtu.be/GVtWTBFOqGQ"
     },
     {
       "video_id": "1LpdGzXH7Zs",
       "title": "Why You Can't Stop Starting Over — Fix The Hidden Pattern #Shorts",
-      "views": 95,
-      "likes": 2,
+      "views": 96,
+      "likes": 3,
       "comments": 0,
       "url": "https://youtu.be/1LpdGzXH7Zs"
     },
@@ -148,7 +148,7 @@
       "video_id": "_deNKPoiLws",
       "title": "Stop Self Sabotage For Good — Here's How",
       "views": 146,
-      "likes": 1,
+      "likes": 2,
       "comments": 0,
       "url": "https://youtu.be/_deNKPoiLws"
     },
@@ -163,23 +163,23 @@
     {
       "video_id": "YfK8QWn6FeM",
       "title": "The Hidden Force Behind 95% Decisions",
-      "views": 163,
-      "likes": 1,
+      "views": 164,
+      "likes": 2,
       "comments": 0,
       "url": "https://youtu.be/YfK8QWn6FeM"
     },
     {
       "video_id": "FRgNqVz1wds",
-      "title": "Rewire Your Brain in 5",
-      "views": 34,
-      "likes": 0,
+      "title": "5 Brain Hacks to Rewire Now",
+      "views": 97,
+      "likes": 3,
       "comments": 0,
       "url": "https://youtu.be/FRgNqVz1wds"
     },
     {
       "video_id": "qwaU7A7zrCk",
-      "title": "Why You Can't Stop Overthinking — And How to Finally Fix It",
-      "views": 2,
+      "title": "The Hidden Reason You Can't Stop Overthinking",
+      "views": 8,
       "likes": 0,
       "comments": 0,
       "url": "https://youtu.be/qwaU7A7zrCk"
@@ -187,40 +187,55 @@
     {
       "video_id": "kGInZEN6hwk",
       "title": "Why You Can't Stop Overthinking — And How to Finally Fix It #Shorts",
-      "views": 102,
-      "likes": 0,
+      "views": 136,
+      "likes": 1,
       "comments": 0,
       "url": "https://youtu.be/kGInZEN6hwk"
+    },
+    {
+      "video_id": "e03iPBpq5ww",
+      "title": "Why You Can't Stop Procrastinating — And How to Fix It",
+      "views": 3,
+      "likes": 1,
+      "comments": 0,
+      "url": "https://youtu.be/e03iPBpq5ww"
+    },
+    {
+      "video_id": "xopaByxQGa4",
+      "title": "Why You Can't Stop Waiting For The Right Time #Shorts",
+      "views": 27,
+      "likes": 3,
+      "comments": 0,
+      "url": "https://youtu.be/xopaByxQGa4"
     }
   ],
   "competitors": [],
   "analysis": {
     "channel_health_score": 4,
     "what_is_working": [
-      "Engaging topic selection, such as 'The Hidden Force Behind 95% Decisions' which gained 163 views",
-      "Use of stick figure animation, which is a unique and attention-grabbing style",
-      "Consistent upload of both regular and short videos, with a total of 10 videos uploaded"
+      "Engaging topic selection, such as 'The Hidden Force Behind 95% Decisions' which received 164 views",
+      "Use of stick figure animation, which is a unique aspect of the channel",
+      "Consistent upload of both regular and short videos, with a total of 12 videos uploaded"
     ],
     "what_needs_improvement": [
-      "Low engagement, with only 5 likes across all videos and no comments",
-      "Limited reach, with only 11 subscribers and 2,111 total views",
-      "Lack of competitor analysis, with no competitor data available"
+      "Low subscriber count of 12, indicating a need for more effective promotion and engagement strategies",
+      "Limited views on videos, with the top video having only 164 views, suggesting a need for better SEO and marketing",
+      "Low engagement in terms of likes, with most videos having only 1-2 likes"
     ],
     "growth_tactics": [
       "Collaborate with other psychology or motivation channels to reach a broader audience",
-      "Utilize SEO Optimizer agent to improve video titles, descriptions, and tags for better discoverability",
-      "Promote the channel on social media platforms, such as Twitter, Instagram, and Reddit, to drive traffic to the channel"
+      "Utilize social media platforms, such as Twitter and Instagram, to promote the channel and engage with potential subscribers",
+      "Optimize video titles and descriptions with relevant keywords to improve video discoverability"
     ],
-    "urgent_actions": [
-      "Fix the low engagement issue by responding to comments and creating a community around the channel"
-    ],
-    "competitor_insights": "Since there is no competitor data available, it's essential to research popular channels in the psychology and motivation niche, such as MindValley or Productivity Game, to learn from their strategies and content styles. Analyze their strengths and weaknesses to identify opportunities for differentiation and growth.",
+    "urgent_actions": [],
+    "competitor_insights": "Since there is no competitor data, it's essential to research and analyze popular psychology and motivation channels, such as MindValley or TED-Ed, to learn from their strategies and content creation. This will help identify gaps in the market and opportunities for growth.",
     "view_drop_analysis": "Views seem low, likely due to the small subscriber base and limited promotion. To improve, focus on creating high-quality, engaging content and promoting the channel through social media and collaborations.",
     "follower_growth_tips": [
       "Offer exclusive content or discounts to encourage viewers to subscribe",
-      "Utilize the Trend Scout agent to identify trending topics and create relevant content",
-      "Engage with the audience by responding to comments and creating a community around the channel"
+      "Engage with viewers by responding to comments and creating a community around the channel",
+      "Utilize eye-catching thumbnails and attention-grabbing titles to increase video click-through rates"
     ]
   },
-  "agent_improvement_tips": {}
+  "agent_improvement_tips": {},
+  "video_review": {}
 }
