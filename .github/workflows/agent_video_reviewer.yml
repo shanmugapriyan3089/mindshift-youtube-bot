@@ -1,0 +1,34 @@
+name: Agent 11 — Video Quality Reviewer (Weekly)
+
+on:
+  schedule:
+    - cron: '0 5 * * 0'   # Every Sunday 10:30 AM IST (5:00 AM UTC)
+  workflow_dispatch:        # Manual trigger anytime
+
+jobs:
+  review-videos:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install groq openai requests python-dotenv
+
+      - name: Run Video Reviewer Agent
+        run: python -m agents.video_reviewer
+        env:
+          GLM_API_KEY:        ${{ secrets.GLM_API_KEY }}
+          GLM_MODEL:          ${{ secrets.GLM_MODEL }}
+          GROQ_API_KEY:       ${{ secrets.GROQ_API_KEY }}
+          NOTIFY_EMAIL:       ${{ secrets.NOTIFY_EMAIL }}
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID:   ${{ secrets.TELEGRAM_CHAT_ID }}
