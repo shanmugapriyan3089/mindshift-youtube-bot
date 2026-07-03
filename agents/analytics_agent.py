@@ -95,6 +95,18 @@ def main():
     else:
         cta = f"{1000 - subs} more subscribers needed — keep sharing!"
 
+    from agents.notifier import write_agent_report
+    write_agent_report("analytics", {
+        "status":       "ok",
+        "subscribers":  subs,
+        "total_views":  total_views,
+        "video_count":  video_count,
+        "watch_hours":  round(est_watch_hours, 1),
+        "top_video":    videos[0]["title"][:60] if videos else "",
+        "summary":      f"{subs:,} subs, {total_views:,} views, {video_count} videos",
+        "errors":       [],
+    })
+
     send(f"""📊 <b>Agent 3: Daily Analytics — MindShift Productivity</b>
 {datetime.now().strftime('%A, %B %d %Y')}
 

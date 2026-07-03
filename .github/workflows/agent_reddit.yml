@@ -2,13 +2,15 @@ name: Agent 5 — Reddit Outreach (Daily)
 
 on:
   schedule:
-    - cron: '0 8 * * *'  # Every day 1:30 PM IST (8:00 AM UTC) — after morning uploads
+    - cron: '0 8 * * *'  # Every day 1:30 PM IST (8:00 AM UTC)
   workflow_dispatch:
 
 jobs:
   reddit-agent:
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout repo
@@ -30,3 +32,13 @@ jobs:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID:   ${{ secrets.TELEGRAM_CHAT_ID }}
         run: python -m agents.reddit_agent
+
+      - name: Commit agent report
+        if: always()
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git pull --rebase origin main || true
+          git add agents_state/ || true
+          git diff --cached --quiet || git commit -m "chore: update reddit agent report [skip ci]"
+          git push || true

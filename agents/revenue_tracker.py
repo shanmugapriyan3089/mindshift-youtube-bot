@@ -73,6 +73,20 @@ def main():
         # Show realistic projection assuming 1000 views/video once channel grows
         monthly_est = f"${int(1000 * 30 * RPM_MID / 1000)}–${int(1000 * 30 * RPM_HIGH / 1000)}/month (at 1K views/video after YPP)"
 
+    from agents.notifier import write_agent_report
+    write_agent_report("revenue_tracker", {
+        "status":           "ok",
+        "subscribers":      subs,
+        "total_views":      total_views,
+        "est_watch_hours":  round(est_watch_hours, 1),
+        "earnings_mid_usd": round(earnings_mid, 2),
+        "ypp_subs_pct":     round(subs_pct, 1),
+        "ypp_watch_pct":    round(watch_pct, 1),
+        "weeks_to_ypp":     round(weeks_to_ypp, 1),
+        "summary":          f"{subs:,} subs ({subs_pct:.0f}% to YPP), ${earnings_mid:.2f} earned so far, ~{weeks_to_ypp:.0f} weeks to monetization",
+        "errors":           [],
+    })
+
     send(f"""💰 <b>Agent 4: Weekly Revenue Report</b>
 {datetime.now().strftime('%B %d, %Y')}
 

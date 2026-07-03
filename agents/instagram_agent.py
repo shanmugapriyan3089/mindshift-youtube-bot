@@ -227,6 +227,12 @@ def main():
             )
         except Exception:
             pass
+        from agents.notifier import write_agent_report
+        write_agent_report("instagram", {
+            "status":  "skipped",
+            "summary": "Credentials missing — INSTAGRAM_ACCOUNT_ID or INSTAGRAM_ACCESS_TOKEN not set",
+            "errors":  ["INSTAGRAM_ACCOUNT_ID missing" if not ig_account_id else "INSTAGRAM_ACCESS_TOKEN missing"],
+        })
         return
 
     unposted = _get_unposted_shorts()
@@ -295,6 +301,15 @@ def main():
         print(f"  [Instagram] Done: {ig_url}")
 
     print("\n[Instagram] Run complete")
+
+    from agents.notifier import write_agent_report
+    write_agent_report("instagram", {
+        "status":       "ok",
+        "reels_posted": len(posted) - (len(posted) - sum(1 for u in unposted[:2] if u.get("video_id") in posted)),
+        "unposted_remaining": max(0, len(unposted) - 2),
+        "summary":      f"{len(unposted)} Short(s) found, up to 2 posted per run",
+        "errors":       [],
+    })
 
 
 if __name__ == "__main__":

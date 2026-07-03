@@ -117,6 +117,16 @@ def main():
 
     _update_config(new_topics)
 
+    from agents.notifier import write_agent_report
+    write_agent_report("trend_scout", {
+        "status":         "ok",
+        "reddit_posts":   len(all_titles),
+        "topics_updated": len(new_topics),
+        "top_topics":     new_topics[:5],
+        "summary":        f"{len(all_titles)} Reddit posts analyzed, {len(new_topics)} topics updated in config.py",
+        "errors":         [],
+    })
+
     preview = "\n".join(f"• {t}" for t in new_topics[:10])
     send(f"""🔥 <b>Agent 1: Trend Scout — Weekly Update</b>
 

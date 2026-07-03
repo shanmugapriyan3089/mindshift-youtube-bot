@@ -55,9 +55,21 @@ def _send_telegram(message: str) -> bool:
 
 def send(message: str, subject: str = "MindShift Bot Update"):
     """Send notification — Gmail first, Telegram as fallback."""
-    # Try Gmail (works everywhere)
     sent = _send_email(subject, message)
-    # Also try Telegram if configured (for when ban lifts)
     _send_telegram(message)
     if not sent:
         print(f"[Notifier] No notification method configured.\n{message}")
+
+
+def write_agent_report(agent_name: str, data: dict):
+    """Write agent run report to agents_state/{agent_name}_report.json.
+    Called by every agent at the end of its run so Head Agent can read it."""
+    import json, os
+    from datetime import datetime, timezone
+    os.makedirs("agents_state", exist_ok=True)
+    data["agent"]       = agent_name
+    data["reported_at"] = datetime.now(timezone.utc).isoformat()
+    path = os.path.join("agents_state", f"{agent_name}_report.json")
+    with open(path, "w") as f:
+        json.dump(data, f, indent=2)
+    print(f"[{agent_name}] Report saved → {path}")

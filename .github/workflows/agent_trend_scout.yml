@@ -39,6 +39,6 @@ jobs:
         run: |
           git config user.name "MindShift Trend Bot"
           git config user.email "bot@mindshiftproductivity.com"
-          git add config.py
+          git add config.py agents_state/ || true
           git diff --staged --quiet || git commit -m "Auto: update trending topics [skip ci]"
           git push

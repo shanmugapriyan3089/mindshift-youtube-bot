@@ -34,6 +34,21 @@ WORKFLOWS = {
     "SEO Optimizer":             "agent_seo.yml",
     "Analytics":                 "agent_analytics.yml",
     "Revenue Tracker":           "agent_revenue.yml",
+    "Video Reviewer":            "agent_video_reviewer.yml",
+}
+
+# Maps workflow name → agents_state report key
+AGENT_REPORT_KEYS = {
+    "Twitter":        "twitter",
+    "Instagram":      "instagram",
+    "Reddit":         "reddit",
+    "Quora":          "quora",
+    "Analytics":      "analytics",
+    "Revenue Tracker":"revenue_tracker",
+    "Trend Scout":    "trend_scout",
+    "Competitor Spy": "competitor_spy",
+    "SEO Optimizer":  "seo_optimizer",
+    "Video Reviewer": "video_reviewer",
 }
 
 COMPETITORS = [
@@ -77,6 +92,25 @@ def _check_workflow_statuses(github_token: str) -> dict:
             statuses[name] = {"last_run_at": None, "conclusion": "error", "run_url": ""}
             print(f"  [Head] Workflow status error for {name}: {e}")
     return statuses
+
+
+# ── Agent State Reports ───────────────────────────────────────────────────────
+
+def _read_all_agent_reports() -> dict:
+    """Read every agent's self-reported state from agents_state/*.json."""
+    reports = {}
+    state_dir = "agents_state"
+    if not os.path.exists(state_dir):
+        return reports
+    for fname in os.listdir(state_dir):
+        if fname.endswith("_report.json"):
+            key = fname.replace("_report.json", "")
+            try:
+                with open(os.path.join(state_dir, fname)) as f:
+                    reports[key] = json.load(f)
+            except Exception:
+                pass
+    return reports
 
 
 # ── Upload Log Stats ──────────────────────────────────────────────────────────
@@ -221,53 +255,85 @@ def _ai_call(prompt: str) -> str:
     return resp.choices[0].message.content.strip()
 
 
-def _analyze(upload_stats: dict, yt_stats: dict, workflow_statuses: dict, competitors: list) -> dict:
+def _analyze_all(upload_stats: dict, yt_stats: dict, workflow_statuses: dict,
+                  competitors: list, agent_reports: dict, video_review: dict) -> dict:
+    """Comprehensive AI analysis across all agents + channel. Returns fix plan + growth strategy."""
+
     failed  = [n for n, s in workflow_statuses.items() if s.get("conclusion") in ("failure", "error", "timed_out")]
     success = [n for n, s in workflow_statuses.items() if s.get("conclusion") == "success"]
+    our_subs = yt_stats.get("subscribers", 0)
 
     video_perf = "No video data yet"
     if yt_stats.get("video_stats"):
         top = sorted(yt_stats["video_stats"], key=lambda x: x["views"], reverse=True)[:5]
-        video_perf = "\n".join(f"  {v['title'][:55]}: {v['views']:,} views, {v['likes']} likes" for v in top)
+        video_perf = "\n".join(f"  {v['title'][:55]}: {v['views']:,} views" for v in top)
 
     comp_lines = "No competitor data" if not competitors else "\n".join(
-        f"  {c['name']}: {c['subscribers']:,} subs, {c['video_count']} videos, {c['total_views']:,} total views"
+        f"  {c['name']}: {c.get('subscribers',0):,} subs"
         for c in competitors
     )
-    our_subs = yt_stats.get("subscribers", 0)
 
-    prompt = f"""Analyze this YouTube channel "MindShift Productivity" (psychology/motivation, stick figure animation):
+    # Build per-agent report block
+    agent_block = ""
+    for wf_name, report_key in AGENT_REPORT_KEYS.items():
+        wf_status  = workflow_statuses.get(wf_name, {})
+        conclusion = wf_status.get("conclusion", "never_run")
+        report     = agent_reports.get(report_key, {})
+        summary    = report.get("summary", "no report yet")
+        errors     = report.get("errors", [])
+        err_str    = f" | ERRORS: {'; '.join(errors[:2])}" if errors else ""
+        agent_block += f"  {wf_name} [{conclusion}]: {summary}{err_str}\n"
 
-OUR STATS:
+    # Video reviewer insights
+    vr = video_review.get("strategy", {})
+    vr_block = ""
+    if vr:
+        vr_block = f"""
+VIDEO REVIEWER SAYS (weekly deep analysis):
+- Content variety score: {video_review.get('our_channel', {}).get('variety_score','?')}/10
+- Change urgency: {vr.get('urgency_score','?')}/10
+- What competitors do that works: {vr.get('competitor_insights', {}).get('what_works_for_them','N/A')}
+- Trending opportunity: {vr.get('trending_opportunity','N/A')}
+- 30-day strategy: {vr.get('30_day_strategy','N/A')}"""
+
+    prompt = f"""You are the master controller of a fully-automated YouTube channel "MindShift Productivity".
+Psychology/motivation niche, stick figure animation, daily uploads. Goal: reach 1,000 subscribers fast.
+
+CHANNEL STATS:
 - Subscribers: {our_subs:,}
 - Total views: {yt_stats.get('total_views', 0):,}
-- Videos uploaded: {upload_stats.get('regular_count', 0)} regular + {upload_stats.get('shorts_count', 0)} shorts
+- Videos: {upload_stats.get('regular_count', 0)} regular + {upload_stats.get('shorts_count', 0)} shorts
 
-TOP VIDEOS (by views):
+TOP VIDEOS:
 {video_perf}
 
 COMPETITORS:
 {comp_lines}
 
-AGENT HEALTH:
-- Working agents ({len(success)}): {', '.join(success) or 'none'}
-- Failed agents ({len(failed)}): {', '.join(failed) or 'none'}
+ALL AGENT STATUS (what each agent last did and any errors):
+{agent_block}
+WORKFLOW HEALTH: {len(success)}/{len(workflow_statuses)} agents healthy, {len(failed)} failed
+{vr_block}
 
-TOPICS WE COVER: {', '.join(DAILY_TOPICS[:6])}
+Your job: produce a complete control-panel JSON.
+For "fix_instructions", give SPECIFIC actionable instructions — not vague advice.
+Example of bad fix: "Fix the Instagram agent"
+Example of good fix: "Instagram agent is missing INSTAGRAM_ACCESS_TOKEN in GitHub Secrets → go to Settings → Secrets → add it"
 
-Produce a JSON analysis. Be SPECIFIC — reference actual numbers and competitor names:
+Respond ONLY in valid JSON:
 {{
-  "channel_health_score": <1-10 integer>,
-  "what_is_working": ["3 specific things working well"],
-  "what_needs_improvement": ["3 specific things to improve"],
-  "growth_tactics": ["3 actionable tactics for this week"],
-  "urgent_actions": ["things to fix immediately, empty list if none"],
-  "competitor_insights": "2-3 sentences on what competitors do that we should learn from or avoid",
-  "view_drop_analysis": "if views seem low, why and what to do — or 'Views look healthy' if fine",
-  "follower_growth_tips": ["3 specific tactics to grow subscribers faster"]
-}}
-
-Output ONLY the JSON. No explanation."""
+  "channel_health_score": <1-10>,
+  "what_is_working": ["3 specific things that ARE working"],
+  "what_needs_improvement": ["3 things holding us back"],
+  "urgent_actions": ["things that MUST be fixed today — empty list if all healthy"],
+  "fix_instructions": {{
+    "AgentName": "specific step-by-step fix for THIS agent's reported error"
+  }},
+  "growth_tactics": ["3 specific tactics to gain subscribers THIS week"],
+  "next_video_topics": ["3 specific video topic suggestions based on trends + gaps"],
+  "view_drop_analysis": "why views might be low and what to do — or 'Views look healthy'",
+  "follower_growth_tips": ["3 concrete sub-growth tactics"]
+}}"""
 
     try:
         text  = _ai_call(prompt)
@@ -277,43 +343,17 @@ Output ONLY the JSON. No explanation."""
     except Exception as e:
         print(f"  [Head] Analysis parse error: {e}")
 
-    # Safe fallback
     return {
         "channel_health_score": 5,
-        "what_is_working": ["Content pipeline is active"],
-        "what_needs_improvement": ["Need more data for full analysis"],
-        "growth_tactics": ["Post consistently and engage with comments"],
-        "urgent_actions": [f"Fix failed agents: {', '.join(failed)}"] if failed else [],
-        "competitor_insights": "Continue monitoring Productive Peter and Trust Me Bro for upload frequency.",
-        "view_drop_analysis": "Not enough data yet.",
-        "follower_growth_tips": ["Respond to every comment in first 24h", "Post Shorts daily", "SEO-optimized titles"],
+        "what_is_working":       ["Content pipeline active"],
+        "what_needs_improvement":["Need more data"],
+        "urgent_actions":        [f"Fix failed: {', '.join(failed)}"] if failed else [],
+        "fix_instructions":      {n: "Check GitHub Actions logs" for n in failed},
+        "growth_tactics":        ["Post consistently", "Engage with comments", "SEO titles"],
+        "next_video_topics":     ["Check video_review_report.json for suggestions"],
+        "view_drop_analysis":    "Not enough data yet.",
+        "follower_growth_tips":  ["Reply to every comment", "Post Shorts daily", "Share on WhatsApp"],
     }
-
-
-# ── Per-Agent Improvement Suggestions ────────────────────────────────────────
-
-def _improve_agents(workflow_statuses: dict, upload_stats: dict) -> dict:
-    """Generate specific improvement suggestions for each agent."""
-    failed = [n for n, s in workflow_statuses.items() if s.get("conclusion") not in ("success", "in_progress", "never_run")]
-    if not failed:
-        return {}
-
-    prompt = f"""These GitHub Actions agents for a YouTube automation pipeline are failing:
-{chr(10).join(f"  - {name}" for name in failed)}
-
-The pipeline makes psychology/motivation YouTube videos.
-For each failed agent, suggest in 1-2 sentences what likely went wrong and how to fix it.
-
-Return as JSON: {{"AgentName": "diagnosis + fix"}}"""
-
-    try:
-        text  = _ai_call(prompt)
-        match = re.search(r'\{.*\}', text, re.DOTALL)
-        if match:
-            return json.loads(match.group())
-    except Exception:
-        pass
-    return {name: "Check GitHub Actions logs for details" for name in failed}
 
 
 # ── Main ──────────────────────────────────────────────────────────────────────
@@ -345,7 +385,12 @@ def main():
     print("[Head] Fetching competitor stats...")
     competitors = _get_competitor_stats(yt_api_key)
 
-    # 4b. Video Reviewer report (generated by Agent 11 weekly)
+    # 4b. All agent self-reports
+    print("[Head] Reading all agent reports...")
+    agent_reports = _read_all_agent_reports()
+    print(f"  Found reports from: {', '.join(agent_reports.keys()) or 'none yet'}")
+
+    # 4c. Video Reviewer report (generated by Agent 11 weekly)
     video_review = {}
     try:
         with open(VIDEO_REVIEW_FILE) as f:
@@ -353,22 +398,23 @@ def main():
         age_hours = (datetime.now(timezone.utc) - datetime.fromisoformat(
             video_review.get("generated_at", "2000-01-01T00:00:00+00:00")
         )).total_seconds() / 3600
-        if age_hours < 200:   # use if less than ~8 days old
+        if age_hours < 200:
             print(f"[Head] Video review loaded (age: {age_hours:.0f}h)")
         else:
             video_review = {}
     except Exception:
         pass
 
-    # 5. AI analysis
-    print("[Head] Running AI analysis...")
-    analysis        = _analyze(upload_stats, yt_stats, workflow_statuses, competitors)
-    agent_fixes     = _improve_agents(workflow_statuses, upload_stats)
+    # 5. Comprehensive AI analysis
+    print("[Head] Running comprehensive AI analysis...")
+    analysis = _analyze_all(upload_stats, yt_stats, workflow_statuses,
+                            competitors, agent_reports, video_review)
 
     # 6. Build and save report
     report = {
         "generated_at":        datetime.now(timezone.utc).isoformat(),
         "agent_statuses":      workflow_statuses,
+        "agent_reports":       agent_reports,
         "agent_health_summary": {
             "total":   len(workflow_statuses),
             "healthy": success_count,
@@ -379,7 +425,6 @@ def main():
         "video_stats":         yt_stats.get("video_stats", []),
         "competitors":         competitors,
         "analysis":            analysis,
-        "agent_improvement_tips": agent_fixes,
         "video_review":        video_review.get("strategy", {}),
     }
 
@@ -387,62 +432,114 @@ def main():
         json.dump(report, f, indent=2, ensure_ascii=False)
     print(f"[Head] Report saved → {REPORT_FILE}")
 
-    # 7. Send notification
+    # 7. Build control-panel email
     score    = analysis.get("channel_health_score", "?")
     urgent   = analysis.get("urgent_actions", [])
+    fixes    = analysis.get("fix_instructions", {})
     working  = analysis.get("what_is_working", [])
     improve  = analysis.get("what_needs_improvement", [])
     tactics  = analysis.get("growth_tactics", [])
     sub_tips = analysis.get("follower_growth_tips", [])
+    next_vids= analysis.get("next_video_topics", [])
+
+    subs_str = f"{yt_stats['subscribers']:,}" if yt_stats.get('subscribers') else "(add YOUTUBE_API_KEY)"
 
     lines = [
-        f"MINDSHIFT — Daily Channel Report",
-        f"Health Score: {score}/10  |  Agents: {success_count}/{len(workflow_statuses)} healthy",
-        f"Subscribers: {yt_stats.get('subscribers', 'n/a'):,}" if yt_stats.get('subscribers') else "Subscribers: (add YOUTUBE_API_KEY for live stats)",
-        f"Videos uploaded: {upload_stats.get('regular_count',0)} regular + {upload_stats.get('shorts_count',0)} shorts",
+        "═"*60,
+        "MINDSHIFT — DAILY CONTROL PANEL",
+        f"{datetime.now().strftime('%A, %B %d %Y')}",
+        "═"*60,
+        "",
+        f"Health Score : {score}/10",
+        f"Subscribers  : {subs_str}",
+        f"Total Views  : {yt_stats.get('total_views', 0):,}",
+        f"Videos       : {upload_stats.get('regular_count',0)} regular + {upload_stats.get('shorts_count',0)} shorts",
+        f"Agents       : {success_count}/{len(workflow_statuses)} healthy  |  {failed_count} failed",
         "",
     ]
-    if urgent:
-        lines += ["URGENT:", *[f"  !! {a}" for a in urgent], ""]
-    if failed_count:
-        lines += [f"FAILED AGENTS ({failed_count}):",
-                  *[f"  x {n}" for n, s in workflow_statuses.items()
-                    if s.get('conclusion') not in ('success','in_progress','never_run')], ""]
-    lines += ["WHAT'S WORKING:",  *[f"  + {w}" for w in working],  ""]
-    lines += ["NEEDS WORK:",       *[f"  -> {i}" for i in improve], ""]
-    lines += ["GROWTH TACTICS:",   *[f"  * {t}" for t in tactics],  ""]
-    lines += ["SUBSCRIBER TIPS:",  *[f"  * {t}" for t in sub_tips], ""]
-    lines += ["", f"Competitor note: {analysis.get('competitor_insights', '')}"]
-    lines += ["", f"View drop check: {analysis.get('view_drop_analysis', '')}"]
 
-    # Video Reviewer intelligence (Agent 11 — runs weekly)
+    # Urgent actions first
+    if urgent:
+        lines += ["━"*60, "!! URGENT — FIX TODAY !!", "━"*60]
+        for a in urgent:
+            lines.append(f"  !! {a}")
+        lines.append("")
+
+    # Per-agent status table
+    lines += ["━"*60, "ALL AGENT STATUS", "━"*60]
+    STATUS_ICON = {"success": "✅", "failure": "❌", "error": "❌",
+                   "timed_out": "⏱", "in_progress": "⏳", "never_run": "⬜"}
+    for wf_name in WORKFLOWS:
+        wf  = workflow_statuses.get(wf_name, {})
+        con = wf.get("conclusion", "never_run")
+        icon = STATUS_ICON.get(con, "❓")
+        rkey = AGENT_REPORT_KEYS.get(wf_name, "")
+        rep  = agent_reports.get(rkey, {})
+        summary = rep.get("summary", "no report yet")
+        lines.append(f"  {icon} {wf_name:<26} {summary[:55]}")
+    lines.append("")
+
+    # Fix instructions for any agent with errors or failures
+    broken = {n for n, s in workflow_statuses.items()
+              if s.get("conclusion") in ("failure", "error", "timed_out")}
+    broken |= {wf for wf, rk in AGENT_REPORT_KEYS.items()
+               if agent_reports.get(rk, {}).get("errors")}
+    if broken or fixes:
+        lines += ["━"*60, "HOW TO FIX EACH BROKEN AGENT", "━"*60]
+        for agent_name, fix in fixes.items():
+            lines.append(f"  >> {agent_name}:")
+            lines.append(f"     {fix}")
+            lines.append("")
+        # Also show raw errors for agents with errors but not in AI fixes
+        for wf_name in broken:
+            if wf_name not in fixes:
+                rkey = AGENT_REPORT_KEYS.get(wf_name, "")
+                errs = agent_reports.get(rkey, {}).get("errors", [])
+                run_url = workflow_statuses.get(wf_name, {}).get("run_url", "")
+                lines.append(f"  >> {wf_name}: {'; '.join(errs) or 'check logs'}")
+                if run_url:
+                    lines.append(f"     Logs: {run_url}")
+                lines.append("")
+
+    # Channel performance
+    lines += ["━"*60, "CHANNEL PERFORMANCE", "━"*60]
+    lines += ["WORKING WELL:", *[f"  + {w}" for w in working], ""]
+    lines += ["NEEDS WORK:",  *[f"  → {i}" for i in improve], ""]
+    lines.append(f"Views: {analysis.get('view_drop_analysis','')}")
+    lines.append("")
+
+    # Growth plan
+    lines += ["━"*60, "GROWTH PLAN THIS WEEK", "━"*60]
+    lines += ["TACTICS:", *[f"  * {t}" for t in tactics], ""]
+    lines += ["SUBSCRIBER TIPS:", *[f"  * {t}" for t in sub_tips], ""]
+    if next_vids:
+        lines += ["NEXT VIDEO TOPICS:", *[f"  → {v}" for v in next_vids], ""]
+
+    # Video reviewer intelligence
     vr = video_review.get("strategy", {})
     if vr:
-        lines += ["", "─"*50, "VIDEO REVIEWER INTELLIGENCE (Agent 11)", "─"*50]
-        urgency = vr.get("urgency_score")
-        if urgency:
-            lines.append(f"Change Urgency: {urgency}/10")
-        trending = vr.get("trending_opportunity")
-        if trending:
-            lines.append(f"Trending Now: {trending}")
-        next_titles = vr.get("next_5_video_titles", [])
-        if next_titles:
-            lines.append("Suggested Next Titles:")
-            for i, t in enumerate(next_titles[:3], 1):
+        lines += ["━"*60, "VIDEO REVIEWER INTEL (Agent 11 — weekly)", "━"*60]
+        if vr.get("urgency_score"):
+            lines.append(f"Content Change Urgency: {vr['urgency_score']}/10")
+        if vr.get("trending_opportunity"):
+            lines.append(f"Trending Now: {vr['trending_opportunity']}")
+        next_t = vr.get("next_5_video_titles", [])
+        if next_t:
+            lines.append("Suggested Titles:")
+            for i, t in enumerate(next_t[:3], 1):
                 lines.append(f"  {i}. {t}")
-        hook = vr.get("hook_advice")
-        if hook:
-            lines.append(f"Hook Tip: {hook}")
-        sub_tactic = vr.get("subscribe_growth_tactic")
-        if sub_tactic:
-            lines.append(f"Sub Tactic: {sub_tactic}")
-        strategy_30 = vr.get("30_day_strategy")
-        if strategy_30:
-            lines.append(f"30-Day Strategy: {strategy_30}")
+        if vr.get("hook_advice"):
+            lines.append(f"Hook: {vr['hook_advice']}")
+        if vr.get("subscribe_growth_tactic"):
+            lines.append(f"Sub Tactic: {vr['subscribe_growth_tactic']}")
+        if vr.get("30_day_strategy"):
+            lines.append(f"30-Day Plan: {vr['30_day_strategy']}")
+        lines.append("")
 
-    lines += ["", "Full dashboard: deploy dashboard/app.py to Streamlit Cloud"]
+    lines += ["═"*60, "Full report: head_agent_report.json committed to repo", "═"*60]
 
-    send("\n".join(lines), subject=f"MindShift Report: Health {score}/10, {success_count}/{len(workflow_statuses)} agents OK")
+    body = "\n".join(lines)
+    send(body, subject=f"MindShift Control Panel: {score}/10 health | {success_count}/{len(workflow_statuses)} agents OK | {failed_count} need fix")
     print("[Agent 0: Head] Done.")
 
 

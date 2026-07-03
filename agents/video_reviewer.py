@@ -479,6 +479,21 @@ def main():
     print(body[:600] + "\n...")
 
     send(body, subject=f"Agent 11: Video Review + Competitor Intel — Urgency {strategy.get('urgency_score','?')}/10")
+
+    from agents.notifier import write_agent_report
+    write_agent_report("video_reviewer", {
+        "status":               "ok",
+        "variety_score":        our_analysis.get("variety_score", 0),
+        "urgency_score":        strategy.get("urgency_score", 0),
+        "competitors_analyzed": len(competitors),
+        "trending_topics":      len(trending),
+        "similar_pairs":        len(our_analysis.get("similar_pairs", [])),
+        "trending_opportunity": strategy.get("trending_opportunity", ""),
+        "next_titles":          strategy.get("next_5_video_titles", [])[:3],
+        "what_to_change":       strategy.get("what_to_change_immediately", []),
+        "summary":              f"Variety {our_analysis.get('variety_score','?')}/10, urgency {strategy.get('urgency_score','?')}/10, {len(competitors)} competitors analyzed",
+        "errors":               [],
+    })
     print("[Reviewer] Done.")
 
 

@@ -2,13 +2,15 @@ name: Agent 7 — SEO Optimizer (Daily)
 
 on:
   schedule:
-    - cron: '0 10 * * *'  # Every day 3:30 PM IST (10:00 AM UTC) — after all uploads
+    - cron: '0 10 * * *'  # Every day 3:30 PM IST (10:00 AM UTC)
   workflow_dispatch:
 
 jobs:
   seo-optimizer:
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout repo
@@ -30,10 +32,20 @@ jobs:
 
       - name: Run SEO Optimizer Agent
         env:
-          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
-          NOTIFY_EMAIL: ${{ secrets.NOTIFY_EMAIL }}
+          GROQ_API_KEY:       ${{ secrets.GROQ_API_KEY }}
+          NOTIFY_EMAIL:       ${{ secrets.NOTIFY_EMAIL }}
           GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          TELEGRAM_CHAT_ID:   ${{ secrets.TELEGRAM_CHAT_ID }}
           YOUTUBE_CLIENT_SECRETS_PATH: client_secrets.json
         run: python -m agents.seo_optimizer
+
+      - name: Commit agent report
+        if: always()
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git pull --rebase origin main || true
+          git add agents_state/ || true
+          git diff --cached --quiet || git commit -m "chore: update seo agent report [skip ci]"
+          git push || true

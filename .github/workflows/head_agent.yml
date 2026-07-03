@@ -51,6 +51,6 @@ jobs:
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git pull --rebase origin main || true
-          git add head_agent_report.json || true
+          git add head_agent_report.json agents_state/ || true
           git diff --cached --quiet || git commit -m "chore: update head agent report [skip ci]"
           git push || true

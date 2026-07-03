@@ -305,6 +305,18 @@ def main():
         _mark_regular_promoted(promo_video_id)
     _increment_tweet_count()
 
+    from agents.notifier import write_agent_report
+    write_agent_report("twitter", {
+        "status":          "ok",
+        "tweets_drafted":  len(tweets_to_send),
+        "shorts_promoted": sum(1 for l,_,v,_ in tweets_to_send if v and "Short" in l),
+        "promo_video_id":  promo_video_id or "",
+        "question_mode":   question_mode,
+        "tweet_count":     tweet_count + 1,
+        "summary":         f"{len(tweets_to_send)} tweet(s) drafted, promo video: {promo_video_id or 'none'}",
+        "errors":          [],
+    })
+
 
 if __name__ == "__main__":
     main()

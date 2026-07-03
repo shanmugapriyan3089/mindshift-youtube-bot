@@ -161,6 +161,18 @@ def main():
     else:
         config_status = "⚠️ Could not parse patterns — config.py unchanged"
 
+    from agents.notifier import write_agent_report
+    write_agent_report("competitor_spy", {
+        "status":               "ok" if tags else "partial",
+        "videos_analyzed":      len(unique),
+        "tags_updated":         len(tags),
+        "formulas_updated":     len(formulas),
+        "top_video":            unique[0]["title"][:60] if unique else "",
+        "market_gap":           analysis.get("market_gap", ""),
+        "summary":              f"{len(unique)} competitor videos analyzed, {len(tags)} tags + {len(formulas)} formulas {'updated' if tags else 'NOT updated'}",
+        "errors":               [] if tags else ["Could not parse patterns from AI response"],
+    })
+
     top3 = "\n".join([
         f"  {i+1}. <b>{v['title'][:58]}</b>\n     └ {v.get('views', 0):,} views — {v['channel']}"
         for i, v in enumerate(unique[:3])

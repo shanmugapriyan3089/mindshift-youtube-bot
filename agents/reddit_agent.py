@@ -231,6 +231,16 @@ def main():
     ]
     send("\n".join(lines), subject="Agent 5: Reddit Outreach Targets")
 
+    from agents.notifier import write_agent_report
+    write_agent_report("reddit", {
+        "status":           "ok",
+        "posts_found":      len(unique),
+        "comments_drafted": min(5, len(unique)),
+        "subreddits":       SUBREDDITS,
+        "summary":          f"{len(unique)} posts found, {min(5, len(unique))} comment drafts sent to email",
+        "errors":           [],
+    })
+
 
 if __name__ == "__main__":
     main()

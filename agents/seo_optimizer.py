@@ -175,6 +175,20 @@ def main():
             f"  🖼 Thumbnail: {seo.get('thumbnail_text', '')}"
         )
 
+    applied_count = sum(1 for l in applied_lines if l.startswith("✅"))
+    failed_count  = len(applied_lines) - applied_count
+
+    from agents.notifier import write_agent_report
+    write_agent_report("seo_optimizer", {
+        "status":            "ok" if not failed_count else "partial",
+        "videos_found":      len(videos),
+        "seo_applied":       applied_count,
+        "seo_failed":        failed_count,
+        "skipped":           len(skipped),
+        "summary":           f"{applied_count}/{len(videos[:3])} SEO updates applied, {len(skipped)} skipped",
+        "errors":            [f"SEO failed for: {t}" for t in skipped],
+    })
+
     updates = "\n\n━━━━━━━━━━━━━━━━━━\n".join(applied_lines)
     send(
         f"🔍 <b>Agent 7: SEO Auto-Applied</b>\n\n{updates}\n\n"

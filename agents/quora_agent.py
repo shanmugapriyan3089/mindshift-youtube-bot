@@ -246,6 +246,16 @@ def main():
     ]
     send("\n".join(lines), subject="Agent 6: Quora Answers Ready to Post")
 
+    from agents.notifier import write_agent_report
+    write_agent_report("quora", {
+        "status":           "ok",
+        "questions_found":  len(questions),
+        "answers_drafted":  len(pairs[:5]),
+        "source":           source_label,
+        "summary":          f"{len(pairs[:5])} Quora answer drafts sent to email ({source_label})",
+        "errors":           [],
+    })
+
 
 if __name__ == "__main__":
     main()
