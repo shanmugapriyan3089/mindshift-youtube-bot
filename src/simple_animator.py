@@ -126,6 +126,64 @@ def _pick_reaction(narration: str, scene_type: int, rng: random.Random) -> str:
     return rng.choice(_REACTIONS[scene_type])
 
 
+def _detect_content_emotion(narration: str) -> tuple:
+    """Return (pose_A, emotion_A, pose_B, emotion_B) driven by narration keywords.
+    Figure A = teacher/speaker. Figure B = viewer/reactor.
+    This is what makes the figures visually react to the content instead of looping the same 4 poses."""
+    n = narration.lower() if narration else ""
+
+    # PAIN / STRUGGLE — viewer is stuck, suffering, exhausted
+    if any(k in n for k in ("stuck", "can't stop", "loop", "trap", "fail", "quit",
+                              "exhaust", "procrastin", "replay", "spiral", "overthink",
+                              "freeze", "paralyze", "hurt", "pain", "empty", "alone",
+                              "tired", "guilt", "shame", "worthless", "hopeless",
+                              "dread", "miserable", "cry", "suffer", "drain")):
+        return ("talking", "sad", "shocked", "sad")
+
+    # FEAR / PANIC — high-arousal, threat response
+    if any(k in n for k in ("fear", "panic", "scared", "threat", "danger", "alarm",
+                              "fight or flight", "survival mode", "triggered", "nervous",
+                              "amygdala", "cortisol spike", "stress response")):
+        return ("shocked", "shocked", "shocked", "shocked")
+
+    # REALIZATION / AHA — the hidden truth being revealed
+    if any(k in n for k in ("the reason", "here's why", "this is because", "what actually",
+                              "the truth is", "not willpower", "not laziness", "not your fault",
+                              "turns out", "secretly", "hidden", "what nobody tells",
+                              "what most people", "the real cause")):
+        return ("pointing_r", "excited", "shocked", "shocked")
+
+    # SCIENCE / TEACHING — explaining the mechanism
+    if any(k in n for k in ("research", "percent", "study", "psychology", "neuroscience",
+                              "dopamine", "cortisol", "prefrontal", "psychologist",
+                              "studies show", "data", "proven", "clinical", "brain scan",
+                              "experiment", "scientists", "according to")):
+        return ("pointing_l", "happy", "thinking", "thinking")
+
+    # SOLUTION / ACTION — steps, fixes, methods
+    if any(k in n for k in ("step ", "the fix", "solution", "try this", "instead",
+                              "here is how", "the way to", "method", "technique",
+                              "pattern interrupt", "what works", "actually works",
+                              "practice this", "do this", "start with")):
+        return ("pointing_l", "happy", "excited", "excited")
+
+    # MOTIVATION / RESULT — transformation, success
+    if any(k in n for k in ("success", "achieve", "win", "free", "better", "transform",
+                              "level up", "possible", "accomplish", "progress",
+                              "finally", "proud", "changed", "rewire", "break free",
+                              "new version", "subscribe", "life changes")):
+        return ("excited", "excited", "excited", "excited")
+
+    # THINKING / REFLECTIVE — questions, self-awareness
+    if any(k in n for k in ("what if", "imagine", "think about", "have you ever",
+                              "consider", "wonder", "reflect", "when was the last",
+                              "how often", "ask yourself", "notice that", "pay attention")):
+        return ("thinking", "thinking", "thinking", "thinking")
+
+    # DEFAULT — general talking / engaging
+    return ("talking", "happy", "shocked", "shocked")
+
+
 def _ffmpeg():
     if shutil.which("ffmpeg"): return "ffmpeg"
     try:
@@ -575,10 +633,10 @@ SCENE_FNS = [_scene_hook, _scene_problem, _scene_solution, _scene_result]
 # ── Narration subtitle strip ───────────────────────────────────────────────────
 
 def _narration_strip(draw, narration, w, h, word_start, words_per_frame, fs_base):
-    """Subtitle strip showing the current narration words — only for landscape (regular) videos.
-    Positioned below figure feet (h*0.86) so it never overlaps the characters."""
-    if h > w:
-        return  # shorts: too dense, captions handled by YouTube auto-captions
+    """Disabled — subtitles are now burned in via SRT at assembly time (regular) or
+    handled by YouTube auto-captions (shorts). Proportional shot-word slicing caused
+    captions to show different words than what the TTS voice was actually saying."""
+    return
     words = narration.split() if narration else []
     if not words:
         return
@@ -711,9 +769,8 @@ def _create_frame_focus_a(text, narration, w, h, scene_idx, phase, slot, word_st
     # problem:  wide=talking/thinking  →  focus=thinking/sad     (empathy deepens)
     # solution: wide=excited/excited   →  focus=pointing_r/excited (directing viewer)
     # result:   wide=excited/excited   →  focus=excited/excited  (peak energy maintained)
-    pose_map   = ["shocked",    "thinking", "pointing_r", "excited"]
-    emotion_map = ["shocked",   "sad",      "excited",    "excited"]
-    _figure(draw, cx, cy, s, pose=pose_map[scene_type], emotion=emotion_map[scene_type], phase=phase)
+    a_pose, a_emotion, _, _ = _detect_content_emotion(narration)
+    _figure(draw, cx, cy, s, pose=a_pose, emotion=a_emotion, phase=phase)
     _bubble(draw, cx, cy - int(100*s), bubble_text, int(w*0.55), bubble_fs,
             tail="left", anchor="right")
     label_colors = [RED, PURPLE, GREEN, GREEN]
@@ -800,9 +857,8 @@ def _create_frame_focus_b(text, narration, w, h, scene_idx, phase, slot, word_st
     bubble_b = _pick_reaction(narration, scene_type, rng)
     label_text = _LABEL_POOLS[scene_type][(slot + scene_idx) % len(_LABEL_POOLS[scene_type])]
 
-    pose_map = ["shocked", "thinking", "pointing_l", "excited"]
-    emotion_map = ["shocked", "sad", "happy", "excited"]
-    _figure(draw, cx, cy, s, pose=pose_map[scene_type], emotion=emotion_map[scene_type],
+    _, _, b_pose, b_emotion = _detect_content_emotion(narration)
+    _figure(draw, cx, cy, s, pose=b_pose, emotion=b_emotion,
             flip=True, phase=phase)
     bubble_fill = [(255,240,240), (240,240,255), (240,255,240), (255,255,220)]
     _bubble(draw, cx, cy - int(100*s), bubble_b, int(w*0.55), bubble_fs,
