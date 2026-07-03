@@ -1,20 +1,21 @@
 """
 Agent 8: Twitter/X Content Poster
 
-Posts 2 types of content (all via email draft — you copy-paste to X manually):
-1. Psychology insight tweets (2-3 lines, NO external link) — builds audience reach
-2. Every 5th tweet: same insight + a REPLY suggestion with the YouTube link
+Posts 3 pieces of content every day (email draft — you copy-paste to X manually):
+1. Latest SHORT promo  — once per day (first run that day)
+2. Latest REGULAR video promo — once per day (first run that day)
+3. Psychology insight tweet — every run (3x/day), question mode every 3rd
 
 Why no links in tweet body: X/Twitter suppresses tweets with external links by 60-90%.
-Strategy: post the engaging tweet first, put the link in the first reply (thread trick).
-Big accounts (Ali Abdaal, etc.) all do this.
+Strategy: post the engaging tweet, put the link in the FIRST REPLY (thread trick).
 """
-import os, sys, json, tempfile, subprocess
+import os, sys, json, datetime, tempfile, subprocess
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
-TWEET_LOG        = "tweet_log.json"
+TWEET_LOG        = "tweet_log.json"       # historical record (kept for reference)
 TWEET_COUNT_LOG  = "tweet_count.json"
-PROMO_LOG        = "twitter_promo_log.json"   # tracks which regular videos were promoted
+PROMO_LOG        = "twitter_promo_log.json"   # rotates which regular video to promote
+DAILY_LOG        = "twitter_daily_log.json"   # tracks what was posted TODAY
 CHANNEL_URL      = "https://youtube.com/@MindShiftProductivity"
 
 
@@ -41,14 +42,28 @@ def _increment_tweet_count():
     _save_json(TWEET_COUNT_LOG, {"count": count})
     return count
 
-def _get_unposted_uploads() -> list:
-    log = _load_json("upload_log.json", [])
-    tweeted = set(_load_json(TWEET_LOG, []))
-    return [v for v in log if v.get("video_id") not in tweeted]
+def _get_daily_status() -> dict:
+    """Returns today's posting status — resets each day."""
+    log   = _load_json(DAILY_LOG, {})
+    today = datetime.date.today().isoformat()
+    if log.get("date") != today:
+        return {"date": today, "short_done": False, "regular_done": False}
+    return log
+
+def _save_daily_status(status: dict):
+    _save_json(DAILY_LOG, status)
+
+def _get_latest_short() -> dict | None:
+    """Return the most recently uploaded Short."""
+    all_log = _load_json("upload_log.json", [])
+    shorts  = sorted([v for v in all_log if v.get("type") == "shorts"],
+                     key=lambda x: x.get("uploaded_at", ""), reverse=True)
+    return shorts[0] if shorts else None
 
 def _mark_tweeted(video_id: str):
     tweeted = list(set(_load_json(TWEET_LOG, [])))
-    tweeted.append(video_id)
+    if video_id not in tweeted:
+        tweeted.append(video_id)
     _save_json(TWEET_LOG, tweeted)
 
 def _get_next_promo_video() -> dict | None:
@@ -215,106 +230,121 @@ def _post_video_tweet(api, client, video_path: str, caption: str):
 # ── Main ──────────────────────────────────────────────────────────────────────
 
 def main():
+    from agents.notifier import send, write_agent_report
+
     tweet_count = _get_tweet_count()
+    daily       = _get_daily_status()
+    today_str   = datetime.date.today().strftime("%A %d %b")
 
-    # tweets_to_send: list of (label, tweet_body, vid_to_mark, reply_text_or_None)
-    # reply_text: put the YouTube link here — post as a reply to your own tweet, NOT in the tweet body
+    # tweets_to_send: list of (label, tweet_body, reply_text_or_None)
     tweets_to_send = []
-
-    # ── Step 1: Shorts promo for any new uploads ─────────────────────────────
-    unposted = _get_unposted_uploads()
-    shorts   = [v for v in unposted if v.get("type") == "shorts"]
-
-    for upload in shorts[:2]:
-        vid   = upload.get("video_id", "")
-        title = upload.get("title", "").replace(" #Shorts", "").strip()
-        # Tweet body: title as hook, no link — link goes in reply to avoid X suppression
-        tweet = f"{title}\n\n#psychology #mindset"
-        reply = f"Watch it here → https://youtu.be/{vid}"
-        tweets_to_send.append(("Short promo", tweet, vid, reply))
-
-    # ── Step 2: Psychology insight — question mode every 3rd run, link every 5th ──
-    question_mode = (tweet_count + 1) % 3 == 0
-    tweet = _generate_psychology_tweet(question_mode=question_mode)
-    reply = None
     promo_video_id = None
+    short_vid_id   = None
+    errors         = []
 
-    is_promo_tweet = (tweet_count + 1) % 5 == 0
-    if is_promo_tweet:
+    # ── DAILY SHORT PROMO (once per day — first run that day) ────────────────
+    if not daily["short_done"]:
+        short = _get_latest_short()
+        if short:
+            short_vid_id = short.get("video_id", "")
+            title = short.get("title", "").replace(" #Shorts", "").strip()
+            tweet = f"{title}\n\n#psychology #mindset"
+            reply = f"Watch now → https://youtu.be/{short_vid_id}"
+            tweets_to_send.append(("TODAY'S SHORT", tweet, reply))
+            daily["short_done"] = True
+            print(f"[Twitter] Short added: {title[:50]}")
+        else:
+            errors.append("No Shorts found in upload_log.json")
+
+    # ── DAILY REGULAR VIDEO PROMO (once per day — first run that day) ────────
+    if not daily["regular_done"]:
         video = _get_next_promo_video()
         if video:
             promo_video_id = video["video_id"]
-            vid_title = video.get("title", "")[:60]
-            reply = f"Full breakdown → https://youtu.be/{promo_video_id}"
+            vid_title      = video.get("title", "")
+            # Psychology hook tweet + regular video link in reply
+            reg_tweet = _generate_psychology_tweet(question_mode=False)
+            reg_reply = f"Full breakdown → https://youtu.be/{promo_video_id}"
+            tweets_to_send.append((f"TODAY'S REGULAR VIDEO — {vid_title[:45]}", reg_tweet, reg_reply))
+            daily["regular_done"] = True
+            print(f"[Twitter] Regular added: {vid_title[:50]}")
+        else:
+            errors.append("No regular videos found in upload_log.json")
 
-    promo_in = 5 - ((tweet_count + 1) % 5)
-    mode_tag = " [question]" if question_mode else ""
-    if is_promo_tweet:
-        vid_label = f" — {vid_title}" if promo_video_id else ""
-        label = f"Psychology insight{mode_tag} (promo run{vid_label})"
-    else:
-        label = f"Psychology insight{mode_tag} (next promo in {promo_in} tweet{'s' if promo_in != 1 else ''})"
-    tweets_to_send.append((label, tweet, None, reply))
+    # ── PSYCHOLOGY INSIGHT (every run, 3x/day — question mode every 3rd) ─────
+    question_mode = (tweet_count + 1) % 3 == 0
+    insight_tweet = _generate_psychology_tweet(question_mode=question_mode)
+    mode_tag = " [question — drives replies]" if question_mode else ""
+    tweets_to_send.append((f"PSYCHOLOGY INSIGHT{mode_tag}", insight_tweet, None))
 
-    # ── Email all tweets to user ─────────────────────────────────────────────
-    if not tweets_to_send:
-        print("[Agent 8: Twitter] Nothing to send today")
-        return
-
+    # ── Build email ───────────────────────────────────────────────────────────
     body_lines = [
-        "X (Twitter) drafts for today:",
-        "NOTE: NEVER put YouTube links in the tweet body — X suppresses them.",
-        "Put links in your REPLY to your own tweet instead (see STEP 2 below).",
+        f"X (Twitter) — {today_str}  |  Run #{tweet_count + 1}",
+        "═" * 50,
+        "NOTE: NEVER paste YouTube links in the tweet body — X suppresses reach by 60-90%.",
+        "Always put the link in STEP 2 (your reply to your own tweet).",
         "",
     ]
-    for label, tweet, vid, reply in tweets_to_send:
-        body_lines.append(f"┌── {label} ──")
-        if reply:
-            body_lines.append("STEP 1 — Post this tweet on X:")
+
+    for i, (label, tweet_text, reply_text) in enumerate(tweets_to_send, 1):
+        body_lines += [
+            f"{'─'*50}",
+            f"TWEET {i}  ·  {label}",
+            f"{'─'*50}",
+        ]
+        if reply_text:
+            body_lines += [
+                "STEP 1 — Post this tweet:",
+                tweet_text,
+                "",
+                "STEP 2 — Immediately reply to YOUR OWN tweet with:",
+                reply_text,
+            ]
         else:
-            body_lines.append("Post this tweet on X:")
-        body_lines.append("─" * 40)
-        body_lines.append(tweet)
-        body_lines.append("─" * 40)
-        if reply:
-            body_lines.append("")
-            body_lines.append("STEP 2 — Immediately reply to your OWN tweet above with this:")
-            body_lines.append("(tap Reply on your tweet, paste this, post)")
-            body_lines.append("─" * 40)
-            body_lines.append(reply)
-            body_lines.append("─" * 40)
+            body_lines += [
+                "Post this tweet:",
+                tweet_text,
+            ]
         body_lines.append("")
 
-    body_lines.append(f"Total tweet runs so far: {tweet_count + 1}")
+    body_lines += [
+        "─" * 50,
+        f"Short posted today: {'✅ YES' if daily['short_done'] else '⬜ NO — no Shorts in log'}",
+        f"Regular video posted today: {'✅ YES' if daily['regular_done'] else '⬜ NO — no regulars in log'}",
+        f"Run #{tweet_count + 1} of the day",
+    ]
+
     body = "\n".join(body_lines)
 
     try:
-        from agents.notifier import send
-        send(body, subject="Agent 8: Post these tweets on X today")
-        print("[Agent 8: Twitter] Tweet drafts emailed")
+        short_label = "Short + Regular + Insight" if (daily["short_done"] and daily["regular_done"]) \
+                      else "Insight only (Short/Regular already sent today)"
+        send(body, subject=f"Agent 8 Twitter — {short_label} | {today_str}")
+        print("[Twitter] Email sent")
     except Exception as e:
-        print(f"[Agent 8: Twitter] Email failed: {e}")
+        print(f"[Twitter] Email failed: {e}")
+        errors.append(f"Email failed: {e}")
         print(body)
 
-    # Mark shorts as handled so they don't repeat tomorrow
-    for label, tweet, vid, reply in tweets_to_send:
-        if vid:
-            _mark_tweeted(vid)
-    # Mark which regular video was promoted so we don't repeat it next run
+    # ── Mark & save ───────────────────────────────────────────────────────────
+    if short_vid_id:
+        _mark_tweeted(short_vid_id)   # keep historical log
     if promo_video_id:
         _mark_regular_promoted(promo_video_id)
+    _save_daily_status(daily)
     _increment_tweet_count()
 
-    from agents.notifier import write_agent_report
     write_agent_report("twitter", {
-        "status":          "ok",
-        "tweets_drafted":  len(tweets_to_send),
-        "shorts_promoted": sum(1 for l,_,v,_ in tweets_to_send if v and "Short" in l),
-        "promo_video_id":  promo_video_id or "",
-        "question_mode":   question_mode,
-        "tweet_count":     tweet_count + 1,
-        "summary":         f"{len(tweets_to_send)} tweet(s) drafted, promo video: {promo_video_id or 'none'}",
-        "errors":          [],
+        "status":           "ok" if not errors else "partial",
+        "tweets_drafted":   len(tweets_to_send),
+        "short_posted_today":   daily["short_done"],
+        "regular_posted_today": daily["regular_done"],
+        "short_video_id":   short_vid_id or "",
+        "promo_video_id":   promo_video_id or "",
+        "question_mode":    question_mode,
+        "tweet_count":      tweet_count + 1,
+        "summary":          f"{len(tweets_to_send)} tweet(s) — Short: {'✅' if daily['short_done'] else '❌'}, Regular: {'✅' if daily['regular_done'] else '❌'}, Insight: ✅",
+        "errors":           errors,
     })
 
 
