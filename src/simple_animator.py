@@ -46,15 +46,17 @@ _SOLUTION_LABELS= ["THE FIX", "GAME CHANGER", "KEY INSIGHT", "BREAKTHROUGH", "TH
 _RESULT_LABELS  = ["LEVEL UP", "NEW YOU", "SUCCESS MODE", "TRANSFORMATION", "YOU GOT THIS", "THE PAYOFF"]
 _LABEL_POOLS    = [_HOOK_LABELS, _PROBLEM_LABELS, _SOLUTION_LABELS, _RESULT_LABELS]
 
-BG     = (245, 248, 252)
-LINE   = (15,  15,  15)
-YELLOW = (255, 214,   0)
-RED    = (220,  50,  50)
-BLUE   = ( 41, 128, 185)
-GREEN  = ( 39, 174,  96)
-ORANGE = (230, 126,  34)
-PURPLE = (142,  68, 173)
-WHITE  = (255, 255, 255)
+BG       = (245, 248, 252)
+LINE     = (15,  15,  15)
+YELLOW   = (255, 214,   0)
+RED      = (220,  50,  50)
+BLUE     = ( 41, 128, 185)
+GREEN    = ( 39, 174,  96)
+ORANGE   = (230, 126,  34)
+PURPLE   = (142,  68, 173)
+WHITE    = (255, 255, 255)
+LAVENDER = (123, 104, 238)   # Wise Joe contemplation palette
+SOFT_INDIGO = (100,  90, 200)
 
 # ── Keyword-driven B-figure reaction pools ────────────────────────────────────
 # Each pool maps to a SPECIFIC emotional experience, not generic reactions.
@@ -346,11 +348,17 @@ def _bubble(draw, cx, cy, text, w, fs, tail="left", fill=WHITE, anchor="center")
 # ── Thought bubble (for thinking pose) ───────────────────────────────────────
 
 def _thought_bubble(draw, cx, cy, text, w, fs):
-    # Dots trail
-    for i, r in enumerate([5, 7, 10]):
-        bx = cx + int((30 + i*20))
-        by = cy - int((60 + i*22))
-        draw.ellipse([bx-r, by-r, bx+r, by+r], fill=WHITE, outline=LINE, width=2)
+    """Wise Joe-style cloud thought bubble — soft lavender with growing dot trail."""
+    CLOUD_FILL   = (235, 232, 255)   # soft lavender
+    CLOUD_STROKE = (140, 120, 210)   # indigo outline
+    TEXT_COLOR   = (55,  40, 130)    # deep indigo text
+
+    # Growing dot trail leading to the cloud
+    for i, r in enumerate([4, 6, 9, 13]):
+        bx = cx + int((22 + i * 18))
+        by = cy - int((42 + i * 19))
+        draw.ellipse([bx-r, by-r, bx+r, by+r], fill=CLOUD_FILL, outline=CLOUD_STROKE, width=2)
+
     font = _font(fs)
     max_chars = max(8, int(w * 0.35 / (fs * 0.62)))
     lines = textwrap.wrap(text, width=max_chars)
@@ -359,18 +367,28 @@ def _thought_bubble(draw, cx, cy, text, w, fs):
     lh = fs + 8
     tw = max(draw.textbbox((0,0), l, font=font)[2] for l in lines)
     th = len(lines) * lh
-    pad = int(fs * 0.5)
+    pad = int(fs * 0.6)
     bw = tw + pad * 2
     bh = th + pad * 2
-    bx = cx + int(80)
-    by = cy - int(160)
+    bx = cx + int(68)
+    by = cy - int(165)
     bx = max(8, min(bx, w - bw - 8))
+
+    # Main cloud body (rounded rectangle base)
     draw.rounded_rectangle([bx, by, bx+bw, by+bh],
-                            radius=int(fs * 0.5), fill=WHITE, outline=LINE, width=3)
+                            radius=int(fs * 0.7), fill=CLOUD_FILL, outline=CLOUD_STROKE, width=3)
+    # Cloud bumps along the top edge
+    for bump_frac, bump_r in [(0.2, int(fs*0.55)), (0.5, int(fs*0.7)), (0.8, int(fs*0.5))]:
+        bumpx = bx + int(bw * bump_frac)
+        bumpy = by + int(fs * 0.35)
+        draw.ellipse([bumpx-bump_r, bumpy-bump_r, bumpx+bump_r, bumpy+bump_r],
+                     fill=CLOUD_FILL, outline=CLOUD_STROKE, width=2)
+
+    # Text
     for i, line in enumerate(lines):
         lbb = draw.textbbox((0,0), line, font=font)
         lw2 = lbb[2] - lbb[0]
-        draw.text((bx + pad + (tw - lw2)//2, by + pad + i*lh), line, fill=LINE, font=font)
+        draw.text((bx + pad + (tw - lw2)//2, by + pad + i*lh), line, fill=TEXT_COLOR, font=font)
 
 
 # ── Floating label (coloured badge) ──────────────────────────────────────────
@@ -383,6 +401,66 @@ def _label(draw, cx, cy, text, fs, color=BLUE):
     draw.rounded_rectangle([cx-tw//2-pad, cy-th//2-pad, cx+tw//2+pad, cy+th//2+pad],
                             radius=int(fs * 0.35), fill=color, outline=LINE, width=2)
     draw.text((cx - tw//2, cy - th//2), text, fill=WHITE, font=font)
+
+
+# ── Wise Joe-style reflection aura ───────────────────────────────────────────
+# Drawn around a figure in "thinking" pose. Rings go BEFORE the figure;
+# floating ?-marks and dots go AFTER so they appear in front of the figure.
+
+def _reflection_aura_rings(draw, cx, cy, s, phase):
+    """Soft pulsing halo rings behind the figure's head — contemplation glow."""
+    hx = cx
+    hy = cy - int(s * 88)   # approximate head centre
+    pulse = 1.0 + 0.07 * math.sin(phase * math.pi)
+    for ring_r, ring_col in [
+        (int(54*s*pulse), (215, 210, 255)),
+        (int(70*s*pulse), (232, 228, 255)),
+        (int(86*s*pulse), (242, 240, 255)),
+    ]:
+        draw.ellipse([hx-ring_r, hy-ring_r, hx+ring_r, hy+ring_r],
+                     fill=None, outline=ring_col, width=max(2, int(2.5*s)))
+
+
+def _reflection_aura_front(draw, cx, cy, s, phase, canvas_w):
+    """Floating question marks + constellation dots in front of the thinking figure."""
+    hx = cx
+    hy = cy - int(s * 88)
+    q_font_base = max(18, int(26 * s))
+
+    # 3 orbiting question marks at different distances and sizes
+    for i, (angle_offset, dist_mult, size_mult) in enumerate([
+        (50,  1.0, 1.0),
+        (125, 0.82, 0.72),
+        (15,  1.15, 0.58),
+    ]):
+        angle = math.radians(angle_offset + phase * 12)   # slow orbit
+        dist  = int(dist_mult * 68 * s)
+        qx = hx + int(dist * math.cos(angle))
+        qy = hy + int(dist * math.sin(angle))
+        q_fs   = max(14, int(q_font_base * size_mult))
+        q_font = _font(q_fs)
+        dot_r  = int(q_fs * 0.78)
+        # Soft indigo badge
+        draw.ellipse([qx-dot_r, qy-dot_r, qx+dot_r, qy+dot_r],
+                     fill=(220, 215, 252), outline=(160, 145, 220), width=max(1, int(1.5*s)))
+        bb = draw.textbbox((0,0), "?", font=q_font)
+        tw, th = bb[2]-bb[0], bb[3]-bb[1]
+        draw.text((qx-tw//2, qy-th//2), "?", fill=(90, 65, 175), font=q_font)
+
+    # Constellation dots — small circles around head at various positions
+    for di, (dx_off, dy_off) in enumerate([
+        (-int(40*s), -int(52*s)),
+        ( int(34*s), -int(58*s)),
+        (-int(24*s), -int(72*s)),
+        ( int(22*s), -int(76*s)),
+        (-int(58*s), -int(35*s)),
+    ]):
+        dot_r = max(3, int((4 + di % 3) * s * 0.45))
+        col   = [(185, 175, 245), (205, 195, 255), (165, 155, 230),
+                 (195, 185, 250), (175, 165, 240)][di]
+        draw.ellipse([hx+dx_off-dot_r, hy+dy_off-dot_r,
+                      hx+dx_off+dot_r, hy+dy_off+dot_r],
+                     fill=col, outline=(140, 128, 210), width=1)
 
 
 # ── Arrow ─────────────────────────────────────────────────────────────────────
@@ -589,11 +667,15 @@ def _scene_problem(draw, w, h, s, bubble_fs, bubble_a, bubble_b, phase=0, label_
 
     ps = s * (1.0 + 0.06 * phase)
     _brain(draw, w//2, prop_y, ps * 0.9)
+    # Wise Joe contemplation aura rings drawn BEFORE figures so figures sit in front
+    _reflection_aura_rings(draw, bx, by_, s, phase)
     _figure(draw, ax, ay,  s, pose="talking",  emotion="thinking", phase=phase)
     _figure(draw, bx, by_, s, pose="thinking", emotion="sad", flip=True, phase=phase)
     _bubble(draw, ax, ay - int(100*s), bubble_a,
             hw, bubble_fs, tail="left", anchor="right")
     _thought_bubble(draw, bx, by_ - int(100*s), bubble_b, w, bubble_fs)
+    # Floating ?-marks and dots drawn AFTER figures so they appear in front
+    _reflection_aura_front(draw, bx, by_, s, phase, w)
     _label(draw, w//2, label_y, label_text, int(bubble_fs*0.9), PURPLE)
 
 
@@ -770,7 +852,12 @@ def _create_frame_focus_a(text, narration, w, h, scene_idx, phase, slot, word_st
     # solution: wide=excited/excited   →  focus=pointing_r/excited (directing viewer)
     # result:   wide=excited/excited   →  focus=excited/excited  (peak energy maintained)
     a_pose, a_emotion, _, _ = _detect_content_emotion(narration)
+    # Wise Joe-style contemplation aura for thinking moments
+    if a_emotion == "thinking":
+        _reflection_aura_rings(draw, cx, cy, s, phase)
     _figure(draw, cx, cy, s, pose=a_pose, emotion=a_emotion, phase=phase)
+    if a_emotion == "thinking":
+        _reflection_aura_front(draw, cx, cy, s, phase, w)
     _bubble(draw, cx, cy - int(100*s), bubble_text, int(w*0.55), bubble_fs,
             tail="left", anchor="right")
     label_colors = [RED, PURPLE, GREEN, GREEN]
@@ -858,11 +945,20 @@ def _create_frame_focus_b(text, narration, w, h, scene_idx, phase, slot, word_st
     label_text = _LABEL_POOLS[scene_type][(slot + scene_idx) % len(_LABEL_POOLS[scene_type])]
 
     _, _, b_pose, b_emotion = _detect_content_emotion(narration)
+    # Wise Joe-style contemplation aura for thinking moments
+    if b_emotion == "thinking":
+        _reflection_aura_rings(draw, cx, cy, s, phase)
     _figure(draw, cx, cy, s, pose=b_pose, emotion=b_emotion,
             flip=True, phase=phase)
+    if b_emotion == "thinking":
+        _reflection_aura_front(draw, cx, cy, s, phase, w)
     bubble_fill = [(255,240,240), (240,240,255), (240,255,240), (255,255,220)]
-    _bubble(draw, cx, cy - int(100*s), bubble_b, int(w*0.55), bubble_fs,
-            tail="right", fill=bubble_fill[scene_type], anchor="left")
+    if b_emotion == "thinking":
+        # Use the cloud thought bubble instead of a speech bubble
+        _thought_bubble(draw, cx, cy - int(100*s), bubble_b, w, bubble_fs)
+    else:
+        _bubble(draw, cx, cy - int(100*s), bubble_b, int(w*0.55), bubble_fs,
+                tail="right", fill=bubble_fill[scene_type], anchor="left")
     label_colors = [RED, PURPLE, GREEN, ORANGE]
     _label(draw, int(w*0.28), int(h*0.22), label_text, int(bubble_fs*0.85), label_colors[scene_type])
     _draw_stat_callout(draw, narration, w, h, scene_type, phase)

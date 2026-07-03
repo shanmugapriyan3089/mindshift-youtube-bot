@@ -21,6 +21,7 @@ GLM_MODEL    = os.getenv("GLM_MODEL", "glm-4-flash")
 COMPETITORS = [
     "Productive Peter",
     "Trust Me Bro",
+    "Wise Joe",
     "Charisma on Command",
     "Improvement Pill",
     "Better Ideas",
@@ -118,6 +119,7 @@ TITLES:
 KNOWN ISSUES:
 - Stick figures used for animation — viewer said "all videos look the same"
 - Need more visual and content variety
+- Wise Joe (competitor) uses beautiful contemplation visuals when showing thought — our thinking scenes need to match that quality
 
 Respond in JSON only:
 {{
