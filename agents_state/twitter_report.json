@@ -5,10 +5,10 @@
   "regular_posted_today": true,
   "short_video_id": "",
   "promo_video_id": "",
-  "question_mode": true,
-  "tweet_count": 15,
+  "question_mode": false,
+  "tweet_count": 16,
   "summary": "1 tweet(s) \u2014 Short: \u2705, Regular: \u2705, Insight: \u2705",
   "errors": [],
   "agent": "twitter",
-  "reported_at": "2026-07-04T08:59:15.090893+00:00"
+  "reported_at": "2026-07-04T14:29:51.808677+00:00"
 }
