@@ -1,0 +1,11 @@
+{
+  "status": "ok",
+  "videos_found": 5,
+  "seo_applied": 3,
+  "seo_failed": 0,
+  "skipped": 0,
+  "summary": "3/3 SEO updates applied, 0 skipped",
+  "errors": [],
+  "agent": "seo_optimizer",
+  "reported_at": "2026-07-04T10:41:58.475807+00:00"
+}
