@@ -20,10 +20,19 @@ def _ffmpeg():
 
 
 def _run(cmd, timeout=120):
-    """Run FFmpeg command with timeout. Prints error if fails."""
-    result = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout)
+    """Run FFmpeg command with timeout. Redirects output to avoid pipe deadlock."""
+    result = subprocess.run(
+        cmd,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.PIPE,
+        timeout=timeout,
+    )
     if result.returncode != 0:
-        print(f"  [FFmpeg warn]: {result.stderr[-300:]}")
+        try:
+            err = result.stderr.decode("utf-8", errors="replace")[-300:]
+        except Exception:
+            err = str(result.stderr)[-300:]
+        print(f"  [FFmpeg warn]: {err}")
     return result.returncode == 0
 
 
@@ -199,7 +208,7 @@ def assemble_video(
         "-map", "0:v:0",
         "-map", "1:a:0",
         merged_path,
-    ], timeout=300)
+    ], timeout=600)
 
     if not os.path.exists(merged_path) or os.path.getsize(merged_path) < 1000:
         print("  [Assemble] Fallback: video only (no audio)")

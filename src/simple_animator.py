@@ -330,6 +330,17 @@ def _apply_costume(draw, cx, cy, s, narration: str):
         fn(draw, cx, cy, s)
 
 
+def _draw_ground_shadow(draw, cx, cy, s):
+    """Soft ellipse shadow on the ground beneath each character — adds depth."""
+    foot_y = cy + int(96 * s)
+    sw = int(52 * s)
+    sh = int(10 * s)
+    for i, (r_off, col) in enumerate([(sw, (0,0,0,45)), (int(sw*.7), (0,0,0,60)), (int(sw*.4), (0,0,0,75))]):
+        # approximate alpha with grey blend — no RGBA needed
+        grey = 180 + i * 22
+        draw.ellipse([cx-r_off, foot_y-sh, cx+r_off, foot_y+sh], fill=(grey, grey, grey))
+
+
 # Varied B-figure reactions per scene type (hook/problem/solution/result)
 _REACTIONS = [
     ["Wait... seriously?!", "That's unreal!", "I had no idea!", "No way...", "Whoa, really?!"],
@@ -950,7 +961,8 @@ def _scene_hook(draw, w, h, s, bubble_fs, bubble_a, bubble_b, phase=0, label_tex
 
     ps = s * (1.0 + 0.06 * phase)
     _clock(draw, w//2, prop_y, ps * 0.95, hour=2)
-    # Research: hook wide shot — A is the revealer (pointing), B is the shocked viewer proxy
+    _draw_ground_shadow(draw, ax, ay, s)
+    _draw_ground_shadow(draw, bx, by_, s)
     _figure(draw, ax, ay,  s, pose="pointing_r", emotion="excited", phase=phase)
     _figure(draw, bx, by_, s, pose="shocked",    emotion="shocked", flip=True, phase=phase)
     _bubble(draw, ax, ay - int(100*s), bubble_a,
@@ -966,8 +978,9 @@ def _scene_problem(draw, w, h, s, bubble_fs, bubble_a, bubble_b, phase=0, label_
 
     ps = s * (1.0 + 0.06 * phase)
     _brain(draw, w//2, prop_y, ps * 0.9)
-    # Wise Joe contemplation aura rings drawn BEFORE figures so figures sit in front
     _reflection_aura_rings(draw, bx, by_, s, phase)
+    _draw_ground_shadow(draw, ax, ay, s)
+    _draw_ground_shadow(draw, bx, by_, s)
     _figure(draw, ax, ay,  s, pose="talking",  emotion="thinking", phase=phase)
     _figure(draw, bx, by_, s, pose="thinking", emotion="sad", flip=True, phase=phase)
     _bubble(draw, ax, ay - int(100*s), bubble_a,
@@ -984,6 +997,8 @@ def _scene_solution(draw, w, h, s, bubble_fs, bubble_a, bubble_b, phase=0, label
 
     ps = s * (1.0 + 0.06 * phase)
     _lightbulb(draw, w//2, prop_y, ps * 1.0)
+    _draw_ground_shadow(draw, ax, ay, s)
+    _draw_ground_shadow(draw, bx, by_, s)
     _figure(draw, ax, ay,  s, pose="excited",    emotion="excited", phase=phase)
     _figure(draw, bx, by_, s, pose="pointing_l", emotion="happy",   flip=True, phase=phase)
     _bubble(draw, ax, ay - int(100*s), bubble_a,
@@ -999,6 +1014,8 @@ def _scene_result(draw, w, h, s, bubble_fs, bubble_a, bubble_b, phase=0, label_t
 
     ps = s * (1.0 + 0.06 * phase)
     _trophy(draw, w//2, prop_y, ps * 0.95)
+    _draw_ground_shadow(draw, ax, ay, s)
+    _draw_ground_shadow(draw, bx, by_, s)
     _figure(draw, ax, ay,  s, pose="excited", emotion="excited", phase=phase)
     _figure(draw, bx, by_, s, pose="excited", emotion="excited", flip=True, phase=phase)
     _bubble(draw, ax, ay - int(100*s), bubble_a,
@@ -1151,9 +1168,9 @@ def _create_frame_focus_a(text, narration, w, h, scene_idx, phase, slot, word_st
     # solution: wide=excited/excited   →  focus=pointing_r/excited (directing viewer)
     # result:   wide=excited/excited   →  focus=excited/excited  (peak energy maintained)
     a_pose, a_emotion, _, _ = _detect_content_emotion(narration)
-    # Wise Joe-style contemplation aura for thinking moments
     if a_emotion == "thinking":
         _reflection_aura_rings(draw, cx, cy, s, phase)
+    _draw_ground_shadow(draw, cx, cy, s)
     _figure(draw, cx, cy, s, pose=a_pose, emotion=a_emotion, phase=phase)
     _apply_costume(draw, cx, cy, s, narration)
     if a_emotion == "thinking":
@@ -1248,6 +1265,7 @@ def _create_frame_focus_b(text, narration, w, h, scene_idx, phase, slot, word_st
     # Wise Joe-style contemplation aura for thinking moments
     if b_emotion == "thinking":
         _reflection_aura_rings(draw, cx, cy, s, phase)
+    _draw_ground_shadow(draw, cx, cy, s)
     _figure(draw, cx, cy, s, pose=b_pose, emotion=b_emotion,
             flip=True, phase=phase)
     _apply_costume(draw, cx, cy, s, narration)

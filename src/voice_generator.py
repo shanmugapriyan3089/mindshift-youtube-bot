@@ -186,22 +186,22 @@ def generate_voiceover(text: str, output_path: str, duration_hint: int = 15) -> 
     # Primary: Guy Neural — male, authoritative, suits psychology content
     print("  [Voice] edge-tts (Guy Neural)...")
     if _generate_edge_tts(text, output_path):
-        print("  [Voice] edge-tts OK ✓")
+        print("  [Voice] edge-tts OK")
         return output_path
 
     print("  [Voice] Kokoro-82M fallback...")
     if _generate_kokoro(text, output_path):
-        print("  [Voice] Kokoro OK ✓")
+        print("  [Voice] Kokoro OK")
         return output_path
 
     print("  [Voice] gTTS fallback...")
     if _generate_gtts(text, output_path):
-        print("  [Voice] gTTS OK ✓")
+        print("  [Voice] gTTS OK")
         return output_path
 
     print("  [Voice] espeak fallback...")
     if _generate_espeak(text, output_path):
-        print("  [Voice] espeak OK ✓")
+        print("  [Voice] espeak OK")
         return output_path
 
     print("  [Voice] silence fallback")
