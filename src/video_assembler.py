@@ -191,7 +191,12 @@ def assemble_video(
     # To re-enable: uncomment the block below and add royalty-free MP3s to assets/music/
 
     # Step 3b: Scene transition SFX — pop at each scene boundary
-    scene_dur = 27 if video_type == "regular" else 13
+    # Use actual average scene duration to place pops correctly
+    if scenes:
+        total_dur = sum(s.get("duration_seconds", 27) for s in scenes)
+        scene_dur = max(5, total_dur // max(1, len(scenes)))
+    else:
+        scene_dur = 27 if video_type == "regular" else 13
     concat_audio = _add_scene_sfx(concat_audio, len(clip_paths), scene_dur, ff, tmp_dir)
 
     # Step 4: Merge video + audio (apad pads silence if audio ends before video — covers poll card)
