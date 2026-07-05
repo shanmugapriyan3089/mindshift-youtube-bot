@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-07-04T07:58:49.812221+00:00",
+  "generated_at": "2026-07-05T08:02:02.828908+00:00",
   "agent_statuses": {
     "Regular Video (standard)": {
-      "last_run_at": "2026-07-04T04:18:52Z",
+      "last_run_at": "2026-07-05T04:27:58Z",
       "conclusion": "success",
-      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/28694689778"
+      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/28729463555"
     },
     "Regular Video (mixed)": {
       "last_run_at": "2026-06-20T12:08:27Z",
@@ -17,9 +17,9 @@
       "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/27898268584"
     },
     "Shorts (standard)": {
-      "last_run_at": "2026-07-04T05:45:47Z",
+      "last_run_at": "2026-07-05T05:48:48Z",
       "conclusion": "success",
-      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/28696690106"
+      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/28731126942"
     },
     "Shorts (mixed)": {
       "last_run_at": "2026-06-20T13:35:15Z",
@@ -32,19 +32,19 @@
       "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/27902267344"
     },
     "Twitter": {
-      "last_run_at": "2026-07-04T04:15:22Z",
+      "last_run_at": "2026-07-05T04:23:24Z",
       "conclusion": "success",
-      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/28694610088"
+      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/28729372580"
     },
     "Instagram": {
-      "last_run_at": "2026-07-04T06:33:46Z",
+      "last_run_at": "2026-07-05T06:47:23Z",
       "conclusion": "success",
-      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/28697859272"
+      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/28732417433"
     },
     "Reddit": {
-      "last_run_at": "2026-07-03T09:11:44Z",
+      "last_run_at": "2026-07-04T08:59:32Z",
       "conclusion": "success",
-      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/28650681811"
+      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/28701255686"
     },
     "Quora": {
       "last_run_at": "2026-07-03T10:01:23Z",
@@ -62,70 +62,95 @@
       "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/28351055386"
     },
     "SEO Optimizer": {
-      "last_run_at": "2026-07-03T10:57:31Z",
+      "last_run_at": "2026-07-04T10:41:39Z",
       "conclusion": "success",
-      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/28656086476"
+      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/28703640551"
     },
     "Analytics": {
-      "last_run_at": "2026-07-04T02:17:56Z",
+      "last_run_at": "2026-07-05T02:18:05Z",
       "conclusion": "success",
-      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/28691918218"
+      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/28726759972"
     },
     "Revenue Tracker": {
-      "last_run_at": "2026-06-28T05:59:13Z",
+      "last_run_at": "2026-07-05T05:50:43Z",
       "conclusion": "success",
-      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/28313184173"
+      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/28731168389"
     },
     "Video Reviewer": {
-      "last_run_at": "2026-07-03T06:49:49Z",
-      "conclusion": "success",
-      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/28643719323"
+      "last_run_at": "2026-07-05T06:19:41Z",
+      "conclusion": "failure",
+      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/28731805404"
     }
   },
   "agent_reports": {
+    "seo_optimizer": {
+      "status": "ok",
+      "videos_found": 5,
+      "seo_applied": 3,
+      "seo_failed": 0,
+      "skipped": 0,
+      "summary": "3/3 SEO updates applied, 0 skipped",
+      "errors": [],
+      "agent": "seo_optimizer",
+      "reported_at": "2026-07-04T10:41:58.475807+00:00"
+    },
     "twitter": {
       "status": "ok",
       "tweets_drafted": 3,
+      "content_format": "yesno",
       "short_posted_today": true,
       "regular_posted_today": true,
-      "short_video_id": "xopaByxQGa4",
-      "promo_video_id": "e03iPBpq5ww",
-      "question_mode": false,
-      "tweet_count": 14,
-      "summary": "3 tweet(s) — Short: ✅, Regular: ✅, Insight: ✅",
+      "short_video_id": "rPWKuysk7ts",
+      "promo_video_id": "7eNH1VAEmtM",
+      "tweet_count": 17,
+      "summary": "Format: YESNO | Short: ✅ | Regular: ✅ | Insight: ✅ | Reply drops: 3",
       "errors": [],
       "agent": "twitter",
-      "reported_at": "2026-07-04T04:15:43.143311+00:00"
+      "reported_at": "2026-07-05T04:23:40.939227+00:00"
     },
     "analytics": {
       "status": "ok",
       "subscribers": 12,
-      "total_views": 2622,
-      "video_count": 56,
-      "watch_hours": 131.1,
+      "total_views": 2681,
+      "video_count": 58,
+      "watch_hours": 134.1,
       "top_video": "The Hidden Force Behind 95% Decisions",
-      "summary": "12 subs, 2,622 views, 56 videos",
+      "summary": "12 subs, 2,681 views, 58 videos",
       "errors": [],
       "agent": "analytics",
-      "reported_at": "2026-07-04T02:18:08.295678+00:00"
+      "reported_at": "2026-07-05T02:18:19.569350+00:00"
+    },
+    "revenue_tracker": {
+      "status": "ok",
+      "subscribers": 12,
+      "total_views": 2917,
+      "est_watch_hours": 170.2,
+      "earnings_mid_usd": 17.5,
+      "ypp_subs_pct": 1.2,
+      "ypp_watch_pct": 4.3,
+      "weeks_to_ypp": 485.8,
+      "summary": "12 subs (1% to YPP), $17.50 earned so far, ~486 weeks to monetization",
+      "errors": [],
+      "agent": "revenue_tracker",
+      "reported_at": "2026-07-05T05:50:56.241710+00:00"
     }
   },
   "agent_health_summary": {
     "total": 16,
-    "healthy": 16,
-    "failed": 0
+    "healthy": 15,
+    "failed": 1
   },
   "upload_stats": {
-    "total_uploaded": 14,
-    "regular_count": 6,
+    "total_uploaded": 15,
+    "regular_count": 7,
     "shorts_count": 8,
     "last_regular": {
-      "video_id": "7eNH1VAEmtM",
-      "title": "The Psychology Behind Why You Feel Invisible Explained",
-      "topic": "The Spotlight Effect — Nobody Is Watching You as Much as You Think",
+      "video_id": "4LX6_ILR8Aw",
+      "title": "If You Feel Busy Every Day, Read This",
+      "topic": "Why Your Brain Confuses Being Busy With Being Important",
       "type": "regular",
-      "url": "https://youtube.com/watch?v=7eNH1VAEmtM",
-      "uploaded_at": "2026-07-04T04:24:36.774000",
+      "url": "https://youtube.com/watch?v=4LX6_ILR8Aw",
+      "uploaded_at": "2026-07-05T04:34:16.780467",
       "poll_question": ""
     },
     "last_short": {
@@ -140,8 +165,8 @@
   },
   "channel_stats": {
     "subscribers": 12,
-    "total_views": 2676,
-    "video_count": 58,
+    "total_views": 2917,
+    "video_count": 60,
     "channel_title": "MindShift Productivity"
   },
   "video_stats": [
@@ -227,24 +252,24 @@
     },
     {
       "video_id": "e03iPBpq5ww",
-      "title": "Stop Procrastinating in 5 Minutes",
-      "views": 8,
+      "title": "Crush Procrastination Now — 5 Min Hack",
+      "views": 11,
       "likes": 1,
       "comments": 0,
       "url": "https://youtu.be/e03iPBpq5ww"
     },
     {
       "video_id": "xopaByxQGa4",
-      "title": "Why You Can't Stop Waiting For The Right Time #Shorts",
-      "views": 47,
-      "likes": 4,
+      "title": "Why Waiting Is Killing Your Dreams",
+      "views": 135,
+      "likes": 5,
       "comments": 0,
       "url": "https://youtu.be/xopaByxQGa4"
     },
     {
       "video_id": "7eNH1VAEmtM",
-      "title": "The Psychology Behind Why You Feel Invisible Explained",
-      "views": 1,
+      "title": "Do People Notice You? The Truth",
+      "views": 5,
       "likes": 0,
       "comments": 0,
       "url": "https://youtu.be/7eNH1VAEmtM"
@@ -252,50 +277,54 @@
     {
       "video_id": "rPWKuysk7ts",
       "title": "The Psychology Behind Why You Replay Arguments Explained #Shorts",
-      "views": 60,
-      "likes": 2,
+      "views": 144,
+      "likes": 1,
       "comments": 0,
       "url": "https://youtu.be/rPWKuysk7ts"
+    },
+    {
+      "video_id": "4LX6_ILR8Aw",
+      "title": "If You Feel Busy Every Day, Read This",
+      "views": 2,
+      "likes": 0,
+      "comments": 0,
+      "url": "https://youtu.be/4LX6_ILR8Aw"
     }
   ],
   "competitors": [],
   "analysis": {
     "channel_health_score": 6,
     "what_is_working": [
-      "Twitter agent is successfully posting content",
-      "Analytics agent is tracking channel performance",
-      "Video content is being uploaded daily"
+      "Twitter agent is successfully posting and engaging with the audience",
+      "SEO Optimizer has applied all 3 SEO updates without skipping any",
+      "Analytics agent is accurately tracking channel performance"
     ],
     "what_needs_improvement": [
-      "Lack of engagement on Instagram and Reddit",
-      "No competitor data available",
-      "Low subscriber growth rate"
+      "Video Reviewer agent has failed and is not providing any reports",
+      "Instagram, Reddit, and Quora agents have not reported any activity",
+      "Competitor Spy and Trend Scout agents have not provided any insights"
     ],
     "urgent_actions": [
-      "Instagram agent is missing report",
-      "Reddit agent is missing report",
-      "Quora agent is missing report"
+      "Fix Video Reviewer agent failure"
     ],
     "fix_instructions": {
-      "Instagram": "Instagram agent is missing report → go to Instagram Settings → ensure Instagram_ACCESS_TOKEN is correctly configured in GitHub Secrets",
-      "Reddit": "Reddit agent is missing report → check Reddit API credentials in GitHub Secrets and ensure they are correctly configured",
-      "Quora": "Quora agent is missing report → verify Quora API access token in GitHub Secrets and ensure it is correctly configured"
+      "Video Reviewer": "Check the Video Reviewer agent's configuration file for any syntax errors, ensure that the REVIEWER_API_KEY is set in the environment variables, and restart the agent"
     },
     "growth_tactics": [
-      "Collaborate with other psychology/motivation channels for cross-promotion",
-      "Optimize video titles and descriptions for better SEO",
-      "Utilize YouTube's community features to engage with viewers"
+      "Collaborate with other psychology and motivation channels to reach a broader audience",
+      "Optimize video titles and descriptions to better match user search queries",
+      "Utilize Twitter and other social media platforms to promote the channel and engage with potential subscribers"
     ],
     "next_video_topics": [
-      "The Science of Building Positive Habits",
-      "Overcoming Procrastination: Strategies for Success",
-      "The Power of Mindfulness in Achieving Goals"
+      "The Psychology of Goal Setting: How to Set and Achieve Your Goals",
+      "Overcoming Procrastination: Strategies for Boosting Productivity",
+      "The Power of Mindfulness: How to Reduce Stress and Increase Focus"
     ],
-    "view_drop_analysis": "Views look relatively healthy, but could be improved with better SEO optimization and more engaging video content",
+    "view_drop_analysis": "Views look relatively healthy, but could be improved by optimizing video titles and descriptions for better search visibility",
     "follower_growth_tips": [
-      "Utilize eye-catching thumbnails to increase click-through rates",
-      "Encourage viewers to subscribe by adding a call-to-action in video descriptions",
-      "Engage with viewers by responding to comments and creating a community around the channel"
+      "Offer exclusive content or discounts to encourage viewers to subscribe",
+      "Utilize eye-catching thumbnails and engaging video introductions to increase click-through rates",
+      "Consistently upload high-quality content to maintain viewer engagement and attract new subscribers"
     ]
   },
   "video_review": {}
