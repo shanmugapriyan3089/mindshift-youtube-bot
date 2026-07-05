@@ -31,6 +31,305 @@ def _make_gradient_bg(w: int, h: int, scene_type: int) -> "Image.Image":
         )
     return col.resize((w, h), Image.NEAREST)
 
+
+# ── Environment backgrounds (Trust Me Bro style — world matches narration) ────
+# Each scene gets a fully illustrated environment instead of a flat gradient.
+# The correct env is detected from narration keywords so the world around the
+# characters reflects what the narrator is saying at every moment.
+
+def _grad_band(draw, w, y1, y2, c1, c2):
+    """Fill a horizontal band with a linear gradient from c1 (top) to c2 (bottom)."""
+    for y in range(y1, y2):
+        t = (y - y1) / max(1, y2 - y1)
+        draw.line([(0, y), (w, y)], fill=(
+            int(c1[0] + (c2[0]-c1[0])*t),
+            int(c1[1] + (c2[1]-c1[1])*t),
+            int(c1[2] + (c2[2]-c1[2])*t),
+        ))
+
+
+def _cloud(draw, cx, cy, r):
+    """Fluffy white cloud cluster centred at (cx, cy) with approximate radius r."""
+    for dx, dy, cr in [(-int(r*.45), int(r*.15), int(r*.62)),
+                       (0, 0, r),
+                       (int(r*.45), int(r*.1), int(r*.68)),
+                       (-int(r*.2), -int(r*.3), int(r*.48)),
+                       (int(r*.2), -int(r*.25), int(r*.45))]:
+        draw.ellipse([cx+dx-cr, cy+dy-int(cr*.65), cx+dx+cr, cy+dy+int(cr*.65)],
+                     fill=(255, 255, 255))
+
+
+def _sine_hill(draw, w, h, y_frac, color, amp=0.04, phase=0.0):
+    """Rolling hill polygon using a sine curve."""
+    y0 = int(h * y_frac)
+    pts = [(0, h)]
+    for i in range(41):
+        x = int(w * i / 40)
+        y = y0 + int(h * amp * math.sin(math.pi * 2.1 * i / 40 + phase))
+        pts.append((x, y))
+    pts.append((w, h))
+    draw.polygon(pts, fill=color)
+
+
+def _env_sky_hills(draw, w, h):
+    """Default: sunny day with rolling green hills — positive/motivational content."""
+    _grad_band(draw, w, 0, int(h*.60), (168, 218, 245), (220, 240, 255))
+    _cloud(draw, int(w*.18), int(h*.10), int(w*.07))
+    _cloud(draw, int(w*.62), int(h*.07), int(w*.06))
+    _cloud(draw, int(w*.82), int(h*.15), int(w*.05))
+    _sine_hill(draw, w, h, .50, (145, 190, 145), .05, 0.0)
+    _sine_hill(draw, w, h, .60, (95, 170, 100),  .04, 1.2)
+    _grad_band(draw, w, int(h*.67), h, (85, 165, 90), (65, 140, 70))
+
+
+def _env_forest(draw, w, h):
+    """Forest/jungle clearing — for nature, outside, park, escape content."""
+    _grad_band(draw, w, 0, int(h*.38), (175, 220, 240), (205, 235, 248))
+    draw.rectangle([0, 0, w, int(h*.22)], fill=(55, 110, 55))
+    _grad_band(draw, w, int(h*.20), int(h*.45), (190, 230, 190), (215, 245, 205))
+    for frac in [.08, .20, .35, .65, .80, .93]:
+        tx = int(w * frac)
+        tw = max(18, int(w * .036))
+        for di in range(-tw, tw+1):
+            shade = max(0.0, 1.0 - (abs(di)/tw)**2 * .35)
+            draw.line([(tx+di, 0), (tx+di, int(h*.72))],
+                      fill=(int(185*shade), int(145*shade), int(90*shade)))
+    _grad_band(draw, w, int(h*.62), h, (145, 200, 115), (90, 155, 70))
+    for r_off, col in [(int(w*.22), (185, 225, 145)),
+                       (int(w*.14), (200, 235, 160)),
+                       (int(w*.08), (215, 242, 175))]:
+        draw.ellipse([w//2-r_off, int(h*.68), w//2+r_off, int(h*.80)], fill=col)
+    for bx, bw2 in [(int(w*.03), int(w*.14)), (int(w*.83), int(w*.16)), (int(w*.16), int(w*.10))]:
+        by = int(h*.70)
+        for dx, dy, br, col in [(0, 0, int(bw2*.5), (85, 165, 70)),
+                                 (-int(bw2*.3), int(bw2*.15), int(bw2*.4), (100, 178, 85)),
+                                 (int(bw2*.3), int(bw2*.1), int(bw2*.45), (75, 152, 62))]:
+            draw.ellipse([bx+dx-br, by+dy-br, bx+dx+br, by+dy+br], fill=col)
+
+
+def _env_night_room(draw, w, h):
+    """Dark bedroom / 3am thoughts — insomnia, anxiety at night content."""
+    _grad_band(draw, w, 0, h, (18, 22, 52), (28, 32, 72))
+    wx1, wy1, wx2, wy2 = int(w*.72), int(h*.08), int(w*.92), int(h*.32)
+    draw.rounded_rectangle([wx1, wy1, wx2, wy2], radius=4,
+                            fill=(28, 40, 80), outline=(80, 95, 130), width=3)
+    mx, my = (wx1+wx2)//2, wy1+int((wy2-wy1)*.35)
+    mr = int((wx2-wx1)*.22)
+    draw.ellipse([mx-mr, my-mr, mx+mr, my+mr], fill=(240, 235, 200))
+    for gr, gc in [(mr+10, (225, 220, 190)), (mr+20, (195, 190, 162)), (mr+34, (155, 150, 125))]:
+        draw.ellipse([mx-gr, my-gr, mx+gr, my+gr], outline=gc, width=2)
+    rng2 = random.Random(7)
+    for _ in range(22):
+        sx = rng2.randint(0, max(1, wx1-10))
+        sy = rng2.randint(0, int(h*.45))
+        sr = rng2.randint(1, 3)
+        br = rng2.randint(180, 240)
+        draw.ellipse([sx-sr, sy-sr, sx+sr, sy+sr], fill=(br, br, br))
+    _grad_band(draw, w, int(h*.80), h, (45, 32, 22), (35, 24, 15))
+    for lx in range(0, w, max(1, w//8)):
+        draw.line([(lx, int(h*.80)), (lx+w//16, h)], fill=(55, 40, 28), width=2)
+
+
+def _env_brain_neural(draw, w, h):
+    """Neural / brain space — dark purple with glowing network nodes.
+    Used for: neuroscience, dopamine, cortisol, psychology research content."""
+    _grad_band(draw, w, 0, h, (28, 18, 65), (42, 28, 95))
+    nodes = [(int(w*.12), int(h*.18)), (int(w*.85), int(h*.22)),
+             (int(w*.25), int(h*.45)), (int(w*.72), int(h*.38)),
+             (int(w*.15), int(h*.72)), (int(w*.80), int(h*.68)),
+             (int(w*.48), int(h*.15)), (int(w*.55), int(h*.80))]
+    for ni, nj in [(0,2),(1,3),(2,4),(3,5),(0,6),(1,6),(4,7),(5,7),(2,3),(6,3)]:
+        draw.line([nodes[ni], nodes[nj]], fill=(70, 50, 148), width=1)
+    for i, (nx, ny) in enumerate(nodes):
+        nr = max(7, int(min(w, h)*.020)) + (i%3)*3
+        for gd, gc in [(nr+14, (55, 35, 130)), (nr+7, (75, 50, 155))]:
+            draw.ellipse([nx-gd, ny-gd, nx+gd, ny+gd], outline=gc, width=2)
+        nc = [(130, 100, 220), (150, 120, 240), (110, 85, 200)][i%3]
+        draw.ellipse([nx-nr, ny-nr, nx+nr, ny+nr], fill=nc)
+        cr2 = max(2, nr//3)
+        draw.ellipse([nx-cr2, ny-cr2, nx+cr2, ny+cr2], fill=(200, 185, 255))
+    for gr, gc in [(int(w*.30), (85, 55, 185)), (int(w*.18), (105, 70, 205)), (int(w*.10), (125, 85, 230))]:
+        draw.ellipse([w//2-gr, int(h*.55), w//2+gr, int(h*.85)], outline=gc, width=3)
+
+
+def _env_warm_indoor(draw, w, h):
+    """Warm classroom / study room — teaching, learning, self-help content."""
+    _grad_band(draw, w, 0, int(h*.72), (245, 235, 215), (230, 220, 200))
+    _grad_band(draw, w, int(h*.72), h, (185, 145, 95), (165, 128, 80))
+    for lx in range(0, w, max(1, w//10)):
+        draw.line([(lx, int(h*.72)), (lx+w//16, h)], fill=(155, 118, 70), width=1)
+    draw.rectangle([0, int(h*.72), w, int(h*.745)], fill=(200, 175, 140))
+    wx1, wy1, wx2, wy2 = int(w*.05), int(h*.08), int(w*.25), int(h*.52)
+    draw.rounded_rectangle([wx1, wy1, wx2, wy2], radius=6,
+                            fill=(195, 225, 245), outline=(160, 145, 120), width=4)
+    draw.line([(wx1, (wy1+wy2)//2), (wx2, (wy1+wy2)//2)], fill=(160, 145, 120), width=3)
+    draw.line([(wx1+(wx2-wx1)//2, wy1), (wx1+(wx2-wx1)//2, wy2)], fill=(160, 145, 120), width=3)
+    bx1, by1, bx2, by2 = int(w*.62), int(h*.06), int(w*.97), int(h*.50)
+    draw.rounded_rectangle([bx1, by1, bx2, by2], radius=4,
+                            fill=(48, 72, 52), outline=(80, 60, 40), width=5)
+    for mk_y in [by1+int((by2-by1)*.3), by1+int((by2-by1)*.6)]:
+        draw.line([(bx1+int((bx2-bx1)*.1), mk_y), (bx1+int((bx2-bx1)*.9), mk_y)],
+                  fill=(190, 190, 185), width=max(1, int(h*.007)))
+
+
+def _env_storm(draw, w, h):
+    """Stormy dramatic sky — anxiety, fear, overwhelm, panic content."""
+    _grad_band(draw, w, 0, int(h*.70), (55, 62, 88), (82, 89, 115))
+    for cx_, cy_, cr_, col in [(int(w*.15), int(h*.12), int(w*.14), (72, 75, 95)),
+                                (int(w*.45), int(h*.08), int(w*.18), (65, 69, 89)),
+                                (int(w*.78), int(h*.14), int(w*.15), (70, 73, 93))]:
+        for dx, dy, cr2 in [(-int(cr_*.4), int(cr_*.15), int(cr_*.6)),
+                             (0, 0, cr_),
+                             (int(cr_*.4), int(cr_*.08), int(cr_*.65))]:
+            draw.ellipse([cx_+dx-cr2, cy_+dy-int(cr2*.6),
+                          cx_+dx+cr2, cy_+dy+int(cr2*.6)], fill=col)
+    _grad_band(draw, w, int(h*.68), h, (62, 67, 55), (48, 52, 42))
+    for px in [int(w*.20), int(w*.55), int(w*.80)]:
+        pw, ph = int(w*.11), int(h*.025)
+        draw.ellipse([px-pw, int(h*.78), px+pw, int(h*.78)+ph], fill=(75, 82, 108))
+    for ri in range(0, w, max(1, w//28)):
+        draw.line([(ri, 0), (ri-int(h*.025), int(h*.65))], fill=(115, 125, 155), width=1)
+
+
+def _env_desert(draw, w, h):
+    """Desert / open isolation — alone, empty, lonely, disconnected content."""
+    _grad_band(draw, w, 0, int(h*.52), (105, 185, 232), (162, 215, 245))
+    _cloud(draw, int(w*.75), int(h*.12), int(w*.07))
+    _grad_band(draw, w, int(h*.50), int(h*.54), (218, 208, 182), (192, 176, 140))
+    _grad_band(draw, w, int(h*.52), h, (192, 175, 135), (172, 155, 115))
+    _sine_hill(draw, w, h, .52, (185, 168, 130), .011, .5)
+
+
+_ENV_FNS = {
+    "sky_hills":    _env_sky_hills,
+    "forest":       _env_forest,
+    "night_room":   _env_night_room,
+    "brain_neural": _env_brain_neural,
+    "warm_indoor":  _env_warm_indoor,
+    "storm":        _env_storm,
+    "desert":       _env_desert,
+}
+
+
+def _detect_env(narration: str, scene_type: int) -> str:
+    """Map narration keywords to the correct illustrated environment."""
+    n = narration.lower()
+    if any(k in n for k in ("night", "3am", "2am", "sleep", "bed", "insomnia",
+                              "midnight", "awake", "lying", "restless", "can't sleep")):
+        return "night_room"
+    if any(k in n for k in ("forest", "jungle", "tree", "nature", "outside", "park",
+                              "garden", "woods", "fresh air")):
+        return "forest"
+    if any(k in n for k in ("brain", "neuron", "cortisol", "dopamine", "amygdala",
+                              "prefrontal", "neural", "neuroscience", "brain scan",
+                              "neurons fire", "brain chemistry")):
+        return "brain_neural"
+    if any(k in n for k in ("anxiety", "panic", "fear", "overwhelm", "catastroph",
+                              "spiral", "dread", "phobia", "terror", "worst case")):
+        return "storm"
+    if any(k in n for k in ("alone", "isolated", "empty", "hollow", "numb", "desert",
+                              "barren", "disconnected", "lonely", "invisible")):
+        return "desert"
+    if any(k in n for k in ("work", "office", "job", "boss", "deadline", "meeting",
+                              "teach", "learn", "class", "school", "explain", "student")):
+        return "warm_indoor"
+    return ("sky_hills", "brain_neural", "sky_hills", "sky_hills")[scene_type % 4]
+
+
+def _make_environment_bg(narration: str, w: int, h: int, scene_type: int) -> "Image.Image":
+    """Return a fully illustrated background whose world matches the narration.
+    Replaces the old flat gradient — the environment changes every scene."""
+    img = Image.new("RGB", (w, h), (200, 220, 240))
+    draw = ImageDraw.Draw(img)
+    _ENV_FNS.get(_detect_env(narration, scene_type), _env_sky_hills)(draw, w, h)
+    return img
+
+
+# ── Costume overlays (Trust Me Bro style: character outfit matches content) ───
+# Called AFTER _figure() so the costume draws on top of the stick figure.
+
+def _costume_explorer(draw, cx, cy, s):
+    """Pith / explorer helmet — for journey, discover, history content."""
+    hy = cy - int(s*125)
+    brim_w, brim_h = int(s*46), int(s*9)
+    draw.ellipse([cx-brim_w, hy-brim_h, cx+brim_w, hy+brim_h],
+                 fill=(195, 162, 95), outline=LINE, width=max(2, int(2.5*s)))
+    dome_w, dome_h = int(s*30), int(s*22)
+    draw.ellipse([cx-dome_w, hy-dome_h-brim_h+int(s*2), cx+dome_w, hy+brim_h-int(s*2)],
+                 fill=(210, 178, 108), outline=LINE, width=max(2, int(2.5*s)))
+    draw.arc([cx-dome_w+int(s*4), hy-dome_h+int(s*8), cx+dome_w-int(s*4), hy+int(s*5)],
+             200, 340, fill=(175, 145, 78), width=max(1, int(1.5*s)))
+
+
+def _costume_teacher(draw, cx, cy, s):
+    """Graduation mortarboard cap — for teaching, class, education content."""
+    hy = cy - int(s*125)
+    cap_w = int(s*36)
+    draw.polygon([(cx-cap_w, hy), (cx+cap_w, hy),
+                  (cx+int(cap_w*.82), hy-int(s*8)), (cx-int(cap_w*.82), hy-int(s*8))],
+                 fill=(28, 28, 28), outline=LINE, width=max(1, int(2*s)))
+    draw.rectangle([cx-int(s*13), hy-int(s*8)-int(s*14), cx+int(s*13), hy-int(s*8)],
+                   fill=(28, 28, 28), outline=LINE, width=max(1, int(2*s)))
+    draw.line([(cx+int(cap_w*.5), hy-int(s*4)), (cx+int(cap_w*.5)+int(s*8), hy+int(s*12))],
+              fill=(220, 180, 30), width=max(2, int(2*s)))
+
+
+def _costume_glasses(draw, cx, cy, s):
+    """Round scientist glasses over the figure's eyes."""
+    ey = cy - int(96*s)
+    r = int(10*s)
+    for ex in [cx-int(10*s), cx+int(10*s)]:
+        draw.ellipse([ex-r, ey-r, ex+r, ey+r], outline=(40, 40, 40), width=max(2, int(2*s)))
+    draw.line([(cx-int(10*s)+r, ey), (cx+int(10*s)-r, ey)],
+              fill=(40, 40, 40), width=max(1, int(1.5*s)))
+
+
+def _costume_suit(draw, cx, cy, s):
+    """Suit collar + tie — for work, office, career content."""
+    hb_y = cy - int(53*s)
+    cy_ = hb_y + int(s*8)
+    draw.polygon([(cx, cy_), (cx-int(s*12), cy_+int(s*10)), (cx, cy_+int(s*22))],
+                 fill=(240, 240, 240), outline=LINE, width=max(1, int(1.5*s)))
+    draw.polygon([(cx, cy_), (cx+int(s*12), cy_+int(s*10)), (cx, cy_+int(s*22))],
+                 fill=(240, 240, 240), outline=LINE, width=max(1, int(1.5*s)))
+    draw.polygon([(cx, cy_+int(s*15)), (cx-int(s*6), cy_+int(s*24)),
+                  (cx, cy+int(s*20)), (cx+int(s*6), cy_+int(s*24))],
+                 fill=RED, outline=LINE, width=max(1, int(1.5*s)))
+
+
+_COSTUME_FNS = {
+    "explorer": _costume_explorer,
+    "teacher":  _costume_teacher,
+    "glasses":  _costume_glasses,
+    "suit":     _costume_suit,
+}
+
+
+def _detect_costume(narration: str) -> str:
+    n = narration.lower()
+    if any(k in n for k in ("research", "study", "experiment", "psychologist",
+                              "scientist", "professor", "found that", "according to",
+                              "clinical", "data", "proven", "survey", "neuroscience")):
+        return "glasses"
+    if any(k in n for k in ("teach", "lesson", "learn", "school", "class",
+                              "education", "student", "explain", "understand", "knowledge")):
+        return "teacher"
+    if any(k in n for k in ("explore", "journey", "adventure", "discover",
+                              "ancient", "history", "origin", "seek", "path", "map")):
+        return "explorer"
+    if any(k in n for k in ("work", "office", "career", "professional", "business",
+                              "job", "boss", "corporate", "meeting", "deadline")):
+        return "suit"
+    return "default"
+
+
+def _apply_costume(draw, cx, cy, s, narration: str):
+    """Draw costume overlay on a figure at (cx, cy). Always call AFTER _figure()."""
+    fn = _COSTUME_FNS.get(_detect_costume(narration))
+    if fn:
+        fn(draw, cx, cy, s)
+
+
 # Varied B-figure reactions per scene type (hook/problem/solution/result)
 _REACTIONS = [
     ["Wait... seriously?!", "That's unreal!", "I had no idea!", "No way...", "Whoa, really?!"],
@@ -220,10 +519,10 @@ def _font_r(size):
 
 def _figure(draw, cx, cy, s, pose="idle", emotion="happy", flip=False, phase=0):
     """Draw one stick figure. phase=0/1 animates the active arm for talking motion."""
-    lw = max(3, int(5 * s))
-    hr = int(28 * s)
-    ht = cy - int(115 * s)
-    hb = cy - int(59  * s)
+    lw = max(4, int(6 * s))
+    hr = int(34 * s)   # bigger rounder head — Trust Me Bro style
+    ht = cy - int(121 * s)
+    hb = cy - int(53  * s)
     asway = int(14 * s * phase)  # active arm lifts by this on phase 1
 
     # Head
@@ -856,6 +1155,7 @@ def _create_frame_focus_a(text, narration, w, h, scene_idx, phase, slot, word_st
     if a_emotion == "thinking":
         _reflection_aura_rings(draw, cx, cy, s, phase)
     _figure(draw, cx, cy, s, pose=a_pose, emotion=a_emotion, phase=phase)
+    _apply_costume(draw, cx, cy, s, narration)
     if a_emotion == "thinking":
         _reflection_aura_front(draw, cx, cy, s, phase, w)
     _bubble(draw, cx, cy - int(100*s), bubble_text, int(w*0.55), bubble_fs,
@@ -950,6 +1250,7 @@ def _create_frame_focus_b(text, narration, w, h, scene_idx, phase, slot, word_st
         _reflection_aura_rings(draw, cx, cy, s, phase)
     _figure(draw, cx, cy, s, pose=b_pose, emotion=b_emotion,
             flip=True, phase=phase)
+    _apply_costume(draw, cx, cy, s, narration)
     if b_emotion == "thinking":
         _reflection_aura_front(draw, cx, cy, s, phase, w)
     bubble_fill = [(255,240,240), (240,240,255), (240,255,240), (255,255,220)]
@@ -1023,9 +1324,9 @@ def create_scene_video(text, bg_color, duration, output_path,
                 ("wide",       max(3, d - 20)),
             ]
 
-    # Clean gradient background — instant, no API, consistent professional look
+    # Illustrated environment background — world matches narration content (Trust Me Bro style)
     scene_type = scene_idx % 4
-    scene_bg = _make_gradient_bg(w, h, scene_type)
+    scene_bg = _make_environment_bg(narration, w, h, scene_type)
 
     sub_clips = []
     # 8-frame smooth cycle: arm rises and falls fluidly (0 → peak → 0)
