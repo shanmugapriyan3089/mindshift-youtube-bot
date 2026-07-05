@@ -1,14 +1,14 @@
 {
   "status": "ok",
-  "tweets_drafted": 3,
-  "content_format": "yesno",
+  "tweets_drafted": 1,
+  "content_format": "mythbuster",
   "short_posted_today": true,
   "regular_posted_today": true,
-  "short_video_id": "rPWKuysk7ts",
-  "promo_video_id": "7eNH1VAEmtM",
-  "tweet_count": 17,
-  "summary": "Format: YESNO | Short: \u2705 | Regular: \u2705 | Insight: \u2705 | Reply drops: 3",
+  "short_video_id": "",
+  "promo_video_id": "",
+  "tweet_count": 18,
+  "summary": "Format: MYTHBUSTER | Short: \u2705 | Regular: \u2705 | Insight: \u2705 | Reply drops: 3",
   "errors": [],
   "agent": "twitter",
-  "reported_at": "2026-07-05T04:23:40.939227+00:00"
+  "reported_at": "2026-07-05T09:08:28.097218+00:00"
 }
