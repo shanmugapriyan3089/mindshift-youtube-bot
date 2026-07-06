@@ -3,7 +3,7 @@ Agent 2: Competitor Spy (runs every Monday)
 Searches YouTube for top-performing videos in our niche → analyzes title/tag patterns with Groq
 → auto-updates WINNING_TAGS + TITLE_FORMULAS in config.py → sends summary email
 """
-import os, sys, re, json, pickle
+import os, sys, re, json, pickle, py_compile, tempfile
 from googleapiclient.discovery import build
 from google.auth.transport.requests import Request
 from groq import Groq
@@ -104,27 +104,63 @@ Analyze the actual video data above — be specific and data-driven."""
     return {}
 
 
+def _replace_list_var(content: str, var_name: str, new_repr: str) -> str:
+    """Replace a top-level list assignment in Python source, line by line.
+
+    The regex approach breaks when list items contain ] characters (e.g. "[Topic]").
+    This walks lines: when it finds `VAR = [`, it emits the new value and skips
+    all original lines until it finds the standalone closing `]`.
+    """
+    lines = content.splitlines(keepends=True)
+    result = []
+    skipping = False
+    replaced = False
+    for line in lines:
+        if not skipping and re.match(rf'\s*{re.escape(var_name)}\s*=\s*\[', line):
+            result.append(f'{var_name} = {new_repr}\n')
+            skipping = True
+            replaced = True
+        elif skipping:
+            stripped = line.strip()
+            # closing bracket alone on a line ends the old list
+            if stripped in (']', '],'):
+                skipping = False
+        else:
+            result.append(line)
+    if not replaced:
+        raise ValueError(f"{var_name} not found in config.py")
+    return ''.join(result)
+
+
 def _update_config_patterns(tags: list, title_formulas: list):
     """Auto-update WINNING_TAGS and TITLE_FORMULAS in config.py."""
     config_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "config.py")
-    with open(config_path, "r") as f:
-        content = f.read()
+    with open(config_path, "r", encoding="utf-8") as f:
+        original = f.read()
 
     tags_repr = "[\n" + "".join(f'    "{t}",\n' for t in tags[:12]) + "]"
-    content = re.sub(
-        r'WINNING_TAGS\s*=\s*\[.*?\]',
-        f'WINNING_TAGS = {tags_repr}',
-        content, flags=re.DOTALL
-    )
-
     formulas_repr = "[\n" + "".join(f'    "{f}",\n' for f in title_formulas[:5]) + "]"
-    content = re.sub(
-        r'TITLE_FORMULAS\s*=\s*\[.*?\]',
-        f'TITLE_FORMULAS = {formulas_repr}',
-        content, flags=re.DOTALL
-    )
 
-    with open(config_path, "w") as f:
+    content = _replace_list_var(original, "WINNING_TAGS", tags_repr)
+    content = _replace_list_var(content, "TITLE_FORMULAS", formulas_repr)
+
+    # Syntax-check before writing — never commit broken Python
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False,
+                                     encoding="utf-8") as tmp:
+        tmp.write(content)
+        tmp_path = tmp.name
+    try:
+        py_compile.compile(tmp_path, doraise=True)
+    except py_compile.PyCompileError as e:
+        os.unlink(tmp_path)
+        raise RuntimeError(f"config.py syntax check failed — NOT writing: {e}") from e
+    finally:
+        try:
+            os.unlink(tmp_path)
+        except OSError:
+            pass
+
+    with open(config_path, "w", encoding="utf-8") as f:
         f.write(content)
     print(f"  config.py updated: {len(tags[:12])} tags, {len(title_formulas[:5])} formulas")
 
