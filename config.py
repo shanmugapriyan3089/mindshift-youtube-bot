@@ -139,11 +139,6 @@ WINNING_TAGS = [
 
 TITLE_FORMULAS = [
     "X [Topic] to [Result] in X Minutes",
-    "The X [Topic] to [Result] in X Steps",
-    "X [Benefit] by [Topic] | [Result]",
-    "The [Topic] That Will Make You [Benefit]",
-    "X [Topic] Hacks to [Result] | [Benefit]",
-] to [Result] in X Minutes",
     "The [Adjective] [Topic] to [Result]",
     "X Ways to [Result] with [Topic]",
     "[Topic] Will Make You [Result]",
