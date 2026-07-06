@@ -239,8 +239,7 @@ def upload_video(
         description = _append_chapters(description)
 
     if _is_duplicate_title(title):
-        print(f"  [YouTube] SKIPPED duplicate title: {title}")
-        return ""
+        raise RuntimeError(f"Duplicate title detected — regenerate script before uploading: {title}")
 
     body = {
         "snippet": {

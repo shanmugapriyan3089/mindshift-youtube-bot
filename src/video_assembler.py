@@ -383,154 +383,203 @@ def _fetch_thumb_bg(title: str, w: int, h: int, tint: tuple) -> "Image.Image | N
         return None
 
 
+def _thumb_stroked_text(draw, x, y, text, font, fill, stroke_w, stroke_fill=(0, 0, 0)):
+    """Draw text with a thick solid outline — makes text pop on any background."""
+    for dx in range(-stroke_w, stroke_w + 1):
+        for dy in range(-stroke_w, stroke_w + 1):
+            if dx != 0 or dy != 0:
+                draw.text((x + dx, y + dy), text, fill=stroke_fill, font=font)
+    draw.text((x, y), text, fill=fill, font=font)
+
+
+def _thumb_accent_word(title: str) -> str:
+    """Pick one high-impact word from the title to highlight in accent colour."""
+    PRIORITY = ["3am", "secret", "hidden", "real", "truth", "actually", "never",
+                "always", "stop", "why", "brain", "proven", "science", "fix",
+                "trap", "hack", "warning", "shocking", "dark", "silent"]
+    lower = title.lower()
+    for kw in PRIORITY:
+        if kw in lower:
+            # Return the matching word from the original title (preserve case)
+            for w in title.split():
+                if w.lower().strip(".,!?:") == kw:
+                    return w.upper()
+    # Fall back to the shortest impactful word (3–6 chars) in title
+    for w in title.split():
+        if 3 <= len(w) <= 6 and w.lower() not in ("your", "this", "that", "with", "from", "have", "when", "what"):
+            return w.upper()
+    return ""
+
+
+def _thumb_split_lines(title: str, max_lines: int = 3) -> list:
+    """Split title into balanced lines — ALL words must appear, none dropped."""
+    words = title.upper().split()
+    n = len(words)
+    if n <= 3:
+        return [" ".join(words)]
+    if n <= 5 or max_lines == 2:
+        mid = (n + 1) // 2
+        return [" ".join(words[:mid]), " ".join(words[mid:])]
+    # 3 lines: split into thirds keeping all words
+    a = n // 3
+    b = (2 * n + 2) // 3
+    lines = [" ".join(words[:a]), " ".join(words[a:b]), " ".join(words[b:])]
+    return [l for l in lines if l]
+
+
 def generate_thumbnail(title: str, output_path: str, video_type: str = "regular") -> str:
-    """Generate eye-catching thumbnail.
-    60% dark background (stands out vs competitor white thumbnails in algorithm feed).
-    40% vivid split-panel (existing design).
-    Style is deterministic per title so the same video always gets the same look.
-    """
+    """Generate high-CTR thumbnail — large stroked text, expressive figure, vivid accent.
+    Research: thick text outline + single accent word + big figure = highest CTR on small screens."""
     try:
         from PIL import Image, ImageDraw
-        import hashlib
+        import hashlib, datetime
 
         w, h = (1280, 720) if video_type == "regular" else (1080, 1920)
+        is_short = video_type != "regular"
 
-        schemes = [
-            {"bg": (220,  50,  50)},   # red
-            {"bg": ( 41, 128, 185)},   # blue
-            {"bg": (142,  68, 173)},   # purple
-            {"bg": (230, 126,  34)},   # orange
-            {"bg": ( 39, 174,  96)},   # green
-            {"bg": ( 22,  86, 165)},   # deep blue
-            {"bg": (192,  57,  43)},   # dark red
-            {"bg": ( 22, 160, 133)},   # teal
-            {"bg": (211,  84,   0)},   # deep orange
-            {"bg": (155,  89, 182)},   # lavender
+        SCHEMES = [
+            (220,  50,  50),   # red
+            ( 41, 128, 185),   # blue
+            (142,  68, 173),   # purple
+            (230, 126,  34),   # orange
+            ( 39, 174,  96),   # green
+            ( 22,  86, 165),   # deep blue
+            (192,  57,  43),   # dark red
+            ( 22, 160, 133),   # teal
+            (211,  84,   0),   # deep orange
+            (155,  89, 182),   # lavender
         ]
-        # Salt with date so same topic on different days always looks different
-        import datetime
         date_salt = datetime.date.today().isoformat()
-        title_hash = int(hashlib.md5(f"{title}{date_salt}".encode()).hexdigest(), 16)
-        c = schemes[title_hash % len(schemes)]
-        panel_color = c["bg"]
-
-        pose_idx  = (title_hash >> 4) % 3   # 0=shocked, 1=pointing, 2=thinking
-        fig_left  = (title_hash >> 7) % 2 == 1  # alternate left/right (regular only)
-        use_dark  = (title_hash >> 10) % 10 < 6  # 60% dark, 40% split-panel
+        h_int = int(hashlib.md5(f"{title}{date_salt}".encode()).hexdigest(), 16)
+        panel_color = SCHEMES[h_int % len(SCHEMES)]
+        pose_idx  = (h_int >> 4) % 3
+        fig_left  = (h_int >> 7) % 2 == 1
+        use_dark  = (h_int >> 10) % 10 < 6   # 60% dark, 40% split
 
         figure_fns = [_draw_shocked_figure, _draw_pointing_figure, _draw_thinking_figure]
         fig_fn = figure_fns[pose_idx]
 
-        img = Image.new("RGB", (w, h), (12, 14, 30) if use_dark else (248, 245, 240))
-        draw = ImageDraw.Draw(img)
-
-        words = title.upper().split()
-        mid = max(1, len(words) // 2)
-        lines = [" ".join(words[:mid]), " ".join(words[mid:])]
-        lines = [l for l in lines if l][:2]
-
-        def _draw_text_block(lines, tx, ty, max_panel_w, max_fs, text_color):
-            ml = max(len(l) for l in lines)
-            fs = min(max_fs, int(max_panel_w / max(1, ml) * 1.52))
-            gap = int(fs * 1.24)
-            tf = _thumb_font(fs)
-            shadow = (0, 0, 0) if use_dark else (0, 0, 0)
-            for i, line in enumerate(lines):
-                y = ty + i * gap
-                draw.text((tx + 4, y + 4), line, fill=shadow, font=tf)
-                draw.text((tx, y), line, fill=text_color, font=tf)
+        accent_word = _thumb_accent_word(title)
+        n_words = len(title.split())
+        lines = _thumb_split_lines(title, max_lines=3 if n_words > 5 else 2)
 
         def _blend(c1, c2, t):
             return tuple(int(c1[j] + (c2[j] - c1[j]) * t) for j in range(3))
 
+        def _draw_block(lines, tx, ty, panel_w, max_fs, fill, accent_col=(255, 214, 0)):
+            """Draw text block with stroke + accent word highlighted. Font auto-fits panel width."""
+            # Binary-search for the largest font where every line fits inside panel_w
+            fs = max_fs
+            tf = _thumb_font(fs)
+            while fs > 28:
+                tf = _thumb_font(fs)
+                if all(draw.textbbox((0,0), l, font=tf)[2] <= int(panel_w * 0.97) for l in lines):
+                    break
+                fs = max(28, fs - 4)
+            sw = max(3, fs // 14)
+            gap = int(fs * 1.28)
+            tf = _thumb_font(fs)
+            for i, line in enumerate(lines):
+                y = ty + i * gap
+                # Check if this line contains the accent word — split and recolor
+                if accent_word and accent_word in line:
+                    parts = line.split(accent_word)
+                    cx_cur = tx
+                    for pi, part in enumerate(parts):
+                        if part:
+                            _thumb_stroked_text(draw, cx_cur, y, part, tf, fill, sw)
+                            bb = draw.textbbox((0, 0), part, font=tf)
+                            cx_cur += bb[2] - bb[0]
+                        if pi < len(parts) - 1:
+                            _thumb_stroked_text(draw, cx_cur, y, accent_word, tf, accent_col, sw)
+                            bb = draw.textbbox((0, 0), accent_word, font=tf)
+                            cx_cur += bb[2] - bb[0]
+                else:
+                    _thumb_stroked_text(draw, tx, y, line, tf, fill, sw)
+
         bg_dark = (12, 14, 30)
+        img = Image.new("RGB", (w, h), bg_dark if use_dark else (248, 245, 240))
+        draw = ImageDraw.Draw(img)
+
+        # Estimate text block height for vertical centering
+        n_lines = len(lines)
+        est_fs = max(36, int(min(w, h) * 0.11))
+        est_gap = int(est_fs * 1.28)
+        est_block_h = n_lines * est_gap
 
         if use_dark:
-            # ── DARK THUMBNAIL ───────────────────────────────────────────────
-            if video_type == "regular":
-                # fig_left flips figure to left side so consecutive videos look different
-                fx = int(w * 0.24) if fig_left else int(w * 0.76)
-                tx = int(w * 0.54) if fig_left else int(w * 0.04)
-                gx, gy, gr = fx, int(h * 0.55), int(h * 0.55)
+            # ── DARK IMPACT STYLE ────────────────────────────────────────────
+            if is_short:
+                gx, gy, gr = int(w*0.55), int(h*0.68), int(w*0.60)
+                fig_fn(draw, int(w*0.62), int(h*0.74), 4.2, outline_color=(255,255,255))
+                for rp, bt in [(1.0, 0.10), (0.72, 0.28), (0.48, 0.52), (0.28, 0.78)]:
+                    rr = int(gr * rp)
+                    draw.ellipse([gx-rr, gy-rr, gx+rr, gy+rr],
+                                 fill=_blend(bg_dark, panel_color, bt))
+                fig_fn(draw, int(w*0.62), int(h*0.74), 4.2, outline_color=(255,255,255))
+                _draw_block(lines, int(w*0.04), int(h*0.04),
+                            int(w*0.92), int(h*0.20), (255,255,255))
             else:
-                gx, gy, gr = int(w * 0.55), int(h * 0.68), int(w * 0.58)
+                fx = int(w*0.24) if fig_left else int(w*0.76)
+                tx = int(w*0.53) if fig_left else int(w*0.03)
+                gx, gy, gr = fx, int(h*0.68), int(h*0.62)
+                for rp, bt in [(1.0, 0.10), (0.72, 0.28), (0.48, 0.52), (0.28, 0.78)]:
+                    rr = int(gr * rp)
+                    draw.ellipse([gx-rr, gy-rr, gx+rr, gy+rr],
+                                 fill=_blend(bg_dark, panel_color, bt))
+                fig_fn(draw, fx, int(h*0.70), 3.5, outline_color=(255,255,255))
+                # Vertically center text in the text panel (top 80% to avoid watermark)
+                text_area_h = int(h * 0.80)
+                ty = max(int(h*0.05), (text_area_h - est_block_h) // 2)
+                _draw_block(lines, tx, ty, int(w*0.44), int(h*0.26), (255,255,255))
 
-            for ring_pct, blend_t in [(1.0, 0.12), (0.72, 0.30), (0.48, 0.55), (0.26, 0.80)]:
-                rr = int(gr * ring_pct)
-                draw.ellipse([gx - rr, gy - rr, gx + rr, gy + rr],
-                             fill=_blend(bg_dark, panel_color, blend_t))
-
-            if video_type == "regular":
-                fig_fn(draw, fx, int(h * 0.60), 2.5, outline_color=(255, 255, 255))
-                _draw_text_block(lines, tx, int(h * 0.12),
-                                 int(w * 0.44), int(h * 0.210), (255, 214, 0))
-                draw.text((tx, h - int(h * 0.09)),
-                          "@MindShiftProductivity", fill=(110, 120, 155),
-                          font=_thumb_font(int(h * 0.038)))
-            else:
-                fig_fn(draw, int(w * 0.58), int(h * 0.72), 3.8,
-                       outline_color=(255, 255, 255))
-                _draw_text_block(lines, int(w * 0.05), int(h * 0.05),
-                                 w * 0.90, int(h * 0.175), (255, 214, 0))
-                draw.text((int(w * 0.04), h - int(h * 0.04)),
-                          "@MindShiftProductivity", fill=(110, 120, 155),
-                          font=_thumb_font(int(w * 0.038)))
-
-            # Thin vivid border
-            bw = max(6, int(min(w, h) * 0.009))
-            draw.rectangle([0, 0, w - 1, h - 1], outline=panel_color, width=bw)
+            bw3 = max(6, int(min(w,h)*0.009))
+            draw.rectangle([0,0,w-1,h-1], outline=panel_color, width=bw3)
+            draw.text((int(w*0.03), h-int(h*0.06)),
+                      "@MindShiftProductivity", fill=(95,108,140),
+                      font=_thumb_font(int(h*0.034)))
 
         else:
-            # ── SPLIT-PANEL THUMBNAIL ────────────────────────────────────────
-            off_white = (248, 245, 240)
-            spot_color = tuple(min(255, v + 55) for v in off_white)
-
-            if video_type == "regular":
-                # fig_left: vivid panel on right side, figure on left
-                split_x = int(w * 0.50)
-                if fig_left:
-                    draw.rectangle([split_x, 0, w, h], fill=panel_color)
-                    scx, scy, sr = int(w * 0.25), int(h * 0.55), int(h * 0.40)
-                    draw.ellipse([scx - sr, scy - sr, scx + sr, scy + sr], fill=spot_color)
-                    fig_fn(draw, int(w * 0.24), int(h * 0.60), 2.5)
-                    _draw_text_block(lines, int(w * 0.54), int(h * 0.12),
-                                     split_x * 0.88, int(h * 0.210), (255, 255, 255))
-                    draw.text((int(w * 0.54), h - int(h * 0.10)),
-                              "@MindShiftProductivity", fill=(200, 215, 230),
-                              font=_thumb_font(int(h * 0.040)))
-                else:
-                    draw.rectangle([0, 0, split_x, h], fill=panel_color)
-                    scx, scy, sr = int(w * 0.75), int(h * 0.55), int(h * 0.40)
-                    draw.ellipse([scx - sr, scy - sr, scx + sr, scy + sr], fill=spot_color)
-                    fig_fn(draw, int(w * 0.76), int(h * 0.60), 2.5)
-                    _draw_text_block(lines, int(w * 0.04), int(h * 0.12),
-                                     split_x * 0.90, int(h * 0.210), (255, 255, 255))
-                    draw.text((int(w * 0.04), h - int(h * 0.10)),
-                              "@MindShiftProductivity", fill=(200, 215, 230),
-                              font=_thumb_font(int(h * 0.040)))
+            # ── SPLIT PANEL STYLE ────────────────────────────────────────────
+            spot = tuple(min(255, v+50) for v in (248,245,240))
+            if is_short:
+                split_y = int(h*0.40)
+                draw.rectangle([0,0,w,split_y], fill=panel_color)
+                sr = int(w*0.42)
+                draw.ellipse([w//2-sr, int(h*0.68)-sr, w//2+sr, int(h*0.68)+sr], fill=spot)
+                fig_fn(draw, int(w*0.58), int(h*0.73), 4.2)
+                ty = max(int(h*0.04), (split_y - est_block_h) // 2)
+                _draw_block(lines, int(w*0.04), ty,
+                            int(w*0.92), int(split_y*0.46), (255,255,255))
             else:
-                split_y = int(h * 0.42)
-                draw.rectangle([0, 0, w, split_y], fill=panel_color)
-                scx, scy, sr = int(w * 0.52), int(h * 0.70), int(w * 0.40)
-                draw.ellipse([scx - sr, scy - sr, scx + sr, scy + sr], fill=spot_color)
-                fig_fn(draw, int(w * 0.60), int(h * 0.73), 3.8)
-                _draw_text_block(lines, int(w * 0.05), int(h * 0.05),
-                                 w * 0.92, int(split_y * 0.44), (255, 255, 255))
-                draw.text((int(w * 0.04), h - int(h * 0.04)),
-                          "@MindShiftProductivity", fill=(160, 160, 160),
-                          font=_thumb_font(int(w * 0.040)))
+                split_x = int(w*0.48)
+                fx2 = int(w*0.23) if fig_left else int(w*0.75)
+                tx2 = int(w*0.52) if fig_left else int(w*0.03)
+                panel_side = (split_x, 0, w, h) if fig_left else (0, 0, split_x, h)
+                draw.rectangle(panel_side, fill=panel_color)
+                sr = int(h*0.44)
+                draw.ellipse([fx2-sr, int(h*0.60)-sr, fx2+sr, int(h*0.60)+sr], fill=spot)
+                fig_fn(draw, fx2, int(h*0.68), 3.5)
+                # Vertically center text in the color panel
+                text_panel_w = int(w*0.46)
+                text_area_h = int(h * 0.85)
+                ty2 = max(int(h*0.05), (text_area_h - est_block_h) // 2)
+                _draw_block(lines, tx2, ty2, text_panel_w, int(h*0.28), (255,255,255),
+                            accent_col=panel_color)
+                draw.text((tx2, h-int(h*0.07)),
+                          "@MindShiftProductivity", fill=(80,90,110),
+                          font=_thumb_font(int(h*0.036)))
 
-            bw = max(8, int(min(w, h) * 0.011))
-            draw.rectangle([0, 0, w - 1, h - 1], outline=panel_color, width=bw)
+            bw3 = max(8, int(min(w,h)*0.011))
+            draw.rectangle([0,0,w-1,h-1], outline=panel_color, width=bw3)
 
         img.save(output_path, quality=95)
-        pose_name = ["shocked", "pointing", "thinking"][pose_idx]
-        side_name = "left" if fig_left else "right"
         style = "dark" if use_dark else "split"
-        print(f"  [Thumbnail] Saved ({style}/{pose_name}/{side_name}): {output_path}")
+        pose_name = ["shocked","pointing","thinking"][pose_idx]
+        print(f"  [Thumbnail] {style}/{pose_name}: {output_path}")
 
     except Exception as e:
-        print(f"  [Thumbnail] Pillow failed ({e}), using FFmpeg fallback")
+        print(f"  [Thumbnail] Error ({e}), using FFmpeg fallback")
         _thumbnail_ffmpeg_fallback(title, output_path, video_type)
 
     return output_path

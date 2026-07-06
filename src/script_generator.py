@@ -154,14 +154,21 @@ SEARCH KEYWORD examples (pick whichever fits the topic — do NOT default to ove
   "imposter syndrome"             |  "decision fatigue"
   "why you people please"         |  "why you feel behind in life"
 
-TODAY'S REQUIRED TITLE FORMULA — use ONLY this format (do not use any other):
-  {formula_tag}: {formula_template}
+TODAY'S REQUIRED TITLE FORMULA — THIS IS MANDATORY, NOT OPTIONAL:
+  Formula code: {formula_tag}
+  Template:     {formula_template}
+
+You MUST use exactly this formula structure. Replace the placeholders ([Search Keyword], [X], [Benefit], etc.) with topic-specific words.
+VIOLATION EXAMPLES (wrong formula — will be rejected):
+  "Why You Can't Stop Overthinking..." when formula is SCIENCE → REJECTED
+  "7 Signs Your Brain Is..." when formula is TRUTH → REJECTED
+CORRECT: match the template above exactly, with topic-specific fill-ins.
 
 GOOD: "The Real Reason You Keep Losing Motivation (It's Not Laziness)" (searchable + curiosity)
 BAD:  "YOUR BRAIN IS LYING" (nobody searches this, no keyword anchor)
 BAD:  "The Shocking Truth About Your Mind" (too vague, zero search volume)
 {avoid_block}
-Title must be 52-68 characters. Lowercase except first word and proper nouns — sounds more human, less clickbait.
+Title must be 52-72 characters. Lowercase except first word and proper nouns — sounds more human, less clickbait.
 
 ═══ HOOK RULES — SCENARIO DROP (decides 70% of watch time) ═══
 Scene 1 MUST use the "scenario drop" technique — open MID-SCENE, with the viewer already IN the situation.
@@ -215,7 +222,7 @@ CRITICAL JSON RULE: Every string value in your JSON response must be on ONE LINE
 
 Respond ONLY with valid JSON, no markdown fences, no extra text:
 {{
-  "title": "viral title using one of the 7 formulas above, 50-65 chars",
+  "title": "viral title using ONLY today's required formula ({formula_tag}), 52-72 chars",
   "description": "SEO YouTube description, 200-220 words. Paragraph 1: open with the exact brutal pain statement from Scene 1 narration. Paragraph 2: 3-line bullet summary of what viewer will learn (use bullet • character). Paragraph 3: weave in these keywords naturally: psychology, self improvement, motivation, mindset, productivity, success, habits, brain, mental health, personal development. Final section (each item on its own line): a books line recommending Thinking Fast and Slow (Kahneman) and Atomic Habits (Clear) on Amazon, a BetterHelp therapy link at https://betterhelp.com/mindshiftproductivity, an Audible 30-day free trial link at https://audible.com/mt/mindshiftproductivity, a subscribe CTA, and the question: which part hit you hardest — comment below.",
   "tags": ["psychology", "motivation", "self improvement", "success mindset", "habits", "productivity", "mindset", "brain psychology", "life advice", "personal development", "how to focus", "stop procrastinating"],
   "thumbnail_text": "3-5 word ALL CAPS thumbnail text — most shocking phrase from the video",
@@ -232,19 +239,47 @@ Respond ONLY with valid JSON, no markdown fences, no extra text:
   ]
 }}"""
 
-    response = _client.chat.completions.create(
-        model=MODEL,
-        messages=[{"role": "user", "content": prompt}],
-        temperature=0.85,
-        max_tokens=4096,
-    )
+    def _call(temperature):
+        r = _client.chat.completions.create(
+            model=MODEL,
+            messages=[{"role": "user", "content": prompt}],
+            temperature=temperature,
+            max_tokens=4096,
+        )
+        return _parse_json(r.choices[0].message.content)
 
-    data = _parse_json(response.choices[0].message.content)
+    data = _call(0.85)
 
     required = ["title", "description", "tags", "scenes"]
     for key in required:
         if key not in data:
             raise ValueError(f"Missing key in response: {key}")
+
+    # Validate title formula — retry once if LLM ignored the required formula
+    _FORMULA_STARTERS = {
+        'WHY':      ('why you ',),
+        'TRUTH':    ('the real reason',),
+        'BRAIN':    ('your brain is',),
+        'SCIENCE':  ('the psychology behind',),
+        'IDENTITY': ('if you ',),
+        'NUMBER':   ('7 signs', '5 signs', '3 signs', '10 signs', '6 signs'),
+        'QUESTION': ('do you ',),
+    }
+    title_low = data.get("title", "").lower()
+    expected_starters = _FORMULA_STARTERS.get(formula_tag, ())
+    if expected_starters and not any(title_low.startswith(s) for s in expected_starters):
+        print(f"  [Script] Title '{data['title']}' doesn't match {formula_tag} formula — retrying...")
+        retry_prompt = prompt + f"\n\nWARNING: Your previous title did not follow the {formula_tag} formula. Try again. The title MUST start with one of: {expected_starters}"
+        # one retry at lower temperature for more precise instruction-following
+        r2 = _client.chat.completions.create(
+            model=MODEL,
+            messages=[{"role": "user", "content": retry_prompt}],
+            temperature=0.55,
+            max_tokens=4096,
+        )
+        data2 = _parse_json(r2.choices[0].message.content)
+        if all(k in data2 for k in required):
+            data = data2
 
     return data
 
