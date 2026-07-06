@@ -1,14 +1,14 @@
 {
   "status": "ok",
   "tweets_drafted": 1,
+  "content_format": "numbered",
   "short_posted_today": true,
   "regular_posted_today": true,
   "short_video_id": "",
   "promo_video_id": "",
-  "question_mode": false,
-  "tweet_count": 16,
-  "summary": "1 tweet(s) \u2014 Short: \u2705, Regular: \u2705, Insight: \u2705",
+  "tweet_count": 21,
+  "summary": "Format: NUMBERED | Short: \u2705 | Regular: \u2705 | Insight: \u2705 | Reply drops: 3",
   "errors": [],
   "agent": "twitter",
-  "reported_at": "2026-07-04T14:29:51.808677+00:00"
+  "reported_at": "2026-07-06T09:30:33.952800+00:00"
 }
