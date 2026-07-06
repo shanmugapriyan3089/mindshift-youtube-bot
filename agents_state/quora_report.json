@@ -1,0 +1,10 @@
+{
+  "status": "ok",
+  "questions_found": 5,
+  "answers_drafted": 5,
+  "source": "AI-generated questions based on latest video topic",
+  "summary": "5 Quora answer drafts sent to email (AI-generated questions based on latest video topic)",
+  "errors": [],
+  "agent": "quora",
+  "reported_at": "2026-07-06T10:33:49.728240+00:00"
+}
