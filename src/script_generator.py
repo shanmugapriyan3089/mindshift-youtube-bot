@@ -60,6 +60,17 @@ _TITLE_FORMULAS = [
     ('QUESTION', '"Do You [Search Keyword]? Here Is What Your Brain Is Actually Doing"'),
 ]
 
+# Shorter, punchier formulas for Shorts — max ~40 chars, no em-dash, no parentheses
+_SHORTS_TITLE_FORMULAS = [
+    ('STOP',   '"Stop [Doing This] — Your Brain Needs You To"'),
+    ('TRUTH',  '"The Real Reason You [Search Keyword]"'),
+    ('SECRET', '"Nobody Tells You This About [Topic]"'),
+    ('BRAIN',  '"Your Brain Does This Every [Time/Day] — Here\'s Why"'),
+    ('TRAP',   '"The [Topic] Trap Nobody Talks About"'),
+    ('HIDDEN', '"The Hidden Cost of [Painful Behavior]"'),
+    ('FIX',    '"How to Actually Fix [Painful Problem]"'),
+]
+
 def _get_recent_titles(n: int = 8) -> list[str]:
     """Load last N uploaded video titles to avoid repeating them."""
     import os, json
@@ -81,9 +92,12 @@ def generate_script(topic: str, video_type: str = "regular") -> dict:
     spec = REGULAR_VIDEO if video_type == "regular" else SHORTS_VIDEO
     num_scenes = spec["scenes"]
 
-    # Rotate title formula by day so consecutive videos never use the same one
+    # Rotate title formula by day — Shorts use a shorter punchier formula set
     day_of_year = datetime.date.today().timetuple().tm_yday
-    formula_tag, formula_template = _TITLE_FORMULAS[day_of_year % len(_TITLE_FORMULAS)]
+    if video_type == "shorts":
+        formula_tag, formula_template = _SHORTS_TITLE_FORMULAS[day_of_year % len(_SHORTS_TITLE_FORMULAS)]
+    else:
+        formula_tag, formula_template = _TITLE_FORMULAS[day_of_year % len(_TITLE_FORMULAS)]
 
     # Load recent titles so the prompt can avoid repeating them
     recent_titles = _get_recent_titles(8)
@@ -111,15 +125,27 @@ If your scene narration is under 55 words, add a concrete example, a statistic, 
 Speak like a smart, direct friend — not a robot or professor. Use "you" throughout.
 duration_seconds for each scene: 27"""
     else:
-        duration_label = "20-25 seconds"
-        scene_guide = f"""Exactly {num_scenes} scenes. ULTRA fast-paced. Scene 1 = hook that stops the scroll in 2 seconds.
-Each scene narration: EXACTLY 24-27 words. One punchy idea, single sentence or two short ones.
-This fills exactly 12 seconds at our voice pace (127 WPM, deliberate and authoritative).
-COUNT THE WORDS. Do NOT go below 24 or above 27 — too short leaves silence, too long gets cut off.
-Example (26 words): "You open your phone to check one thing. Forty minutes later you are still there. Your brain did not fail you. It was designed to do exactly this."
-Scene 1: shocking hook. Scene 2: the payoff / what to do.
-End scene 2 with: "The full breakdown is on the channel — search MindShiftProductivity right now."
-duration_seconds for each scene: 12
+        duration_label = "40-50 seconds"
+        scene_guide = f"""Exactly {num_scenes} scenes. ULTRA fast-paced. Total runtime ~45 seconds.
+Each scene narration: EXACTLY 36-40 words. Two to three punchy sentences. One idea per scene.
+This fills exactly 15 seconds at our voice pace (127 WPM, deliberate and authoritative).
+COUNT THE WORDS. Do NOT go below 36 or above 40 — too short leaves silence, too long gets cut off.
+Example (38 words): "You open your phone to check one thing. Forty minutes later you are still there. Your brain did not fail you. It was designed to keep you scrolling. That is the trap. And you can break it."
+
+Scene 1 (the HOOK — stops the scroll in 1 second):
+  Open mid-scene in the exact moment of pain. No setup. Pure sensation. Make them feel caught.
+  Start with one of: "You...", "Your brain...", "Right now...", "Every time you...", "That feeling when..."
+  End with a cliffhanger that makes scene 2 feel necessary.
+
+Scene 2 (the SCIENCE — the surprising reason):
+  One unexpected psychological fact that reframes the problem. Reference a real mechanism (dopamine, cortisol, amygdala, etc.).
+  End with: "And there is a way out."
+
+Scene 3 (the PAYOFF — what to actually do + CTA):
+  One specific, actionable thing they can do TODAY. Make it feel easy and immediate.
+  End with: "The full breakdown is on the channel — search MindShiftProductivity right now."
+
+duration_seconds for each scene: 15
 
 POLL QUESTION: Also write one interactive poll_question for the end card.
 Format: "Question? A: [option1] B: [option2]"
@@ -168,7 +194,7 @@ GOOD: "The Real Reason You Keep Losing Motivation (It's Not Laziness)" (searchab
 BAD:  "YOUR BRAIN IS LYING" (nobody searches this, no keyword anchor)
 BAD:  "The Shocking Truth About Your Mind" (too vague, zero search volume)
 {avoid_block}
-Title must be 52-72 characters. Lowercase except first word and proper nouns — sounds more human, less clickbait.
+{"Title must be 30-45 characters — SHORT AND PUNCHY. No em-dashes. No parentheses. No 'And How to Finally Fix It' padding. Lowercase except first word." if video_type == "shorts" else "Title must be 52-72 characters. Lowercase except first word and proper nouns — sounds more human, less clickbait."}
 
 ═══ HOOK RULES — SCENARIO DROP (decides 70% of watch time) ═══
 Scene 1 MUST use the "scenario drop" technique — open MID-SCENE, with the viewer already IN the situation.
@@ -222,8 +248,8 @@ CRITICAL JSON RULE: Every string value in your JSON response must be on ONE LINE
 
 Respond ONLY with valid JSON, no markdown fences, no extra text:
 {{
-  "title": "viral title using ONLY today's required formula ({formula_tag}), 52-72 chars",
-  "description": "SEO YouTube description, 200-220 words. Paragraph 1: open with the exact brutal pain statement from Scene 1 narration. Paragraph 2: 3-line bullet summary of what viewer will learn (use bullet • character). Paragraph 3: weave in these keywords naturally: psychology, self improvement, motivation, mindset, productivity, success, habits, brain, mental health, personal development. Final section (each item on its own line): a books line recommending Thinking Fast and Slow (Kahneman) and Atomic Habits (Clear) on Amazon, a BetterHelp therapy link at https://betterhelp.com/mindshiftproductivity, an Audible 30-day free trial link at https://audible.com/mt/mindshiftproductivity, a subscribe CTA, and the question: which part hit you hardest — comment below.",
+  "title": "{'SHORT punchy title using formula ' + formula_tag + ', MAX 40 chars, NO em-dashes, NO parentheses' if video_type == 'shorts' else 'viral title using ONLY formula ' + formula_tag + ', 52-72 chars'}",
+  "description": "{'50-80 word punchy Shorts description. One paragraph: brutal 1-sentence pain hook, then 2-3 bullet lines of what viewer learns. End with: #Shorts #psychology #selfimprovement #motivation #mindset #MindShiftProductivity' if video_type == 'shorts' else 'SEO YouTube description, 200-220 words. Paragraph 1: open with the exact brutal pain statement from Scene 1 narration. Paragraph 2: 3-line bullet summary of what viewer will learn (use bullet character). Paragraph 3: weave in these keywords naturally: psychology, self improvement, motivation, mindset, productivity, success, habits, brain, mental health, personal development. Final section: BetterHelp link at https://betterhelp.com/mindshiftproductivity, Audible link at https://audible.com/mt/mindshiftproductivity, subscribe CTA, and the question: which part hit you hardest — comment below.'}",
   "tags": ["psychology", "motivation", "self improvement", "success mindset", "habits", "productivity", "mindset", "brain psychology", "life advice", "personal development", "how to focus", "stop procrastinating"],
   "thumbnail_text": "3-5 word ALL CAPS thumbnail text — most shocking phrase from the video",
   "poll_question": "for Shorts only — Question? A: option1 B: option2 (leave empty string for regular videos)",
@@ -257,6 +283,7 @@ Respond ONLY with valid JSON, no markdown fences, no extra text:
 
     # Validate title formula — retry once if LLM ignored the required formula
     _FORMULA_STARTERS = {
+        # Regular formulas
         'WHY':      ('why you ',),
         'TRUTH':    ('the real reason',),
         'BRAIN':    ('your brain is',),
@@ -264,6 +291,12 @@ Respond ONLY with valid JSON, no markdown fences, no extra text:
         'IDENTITY': ('if you ',),
         'NUMBER':   ('7 signs', '5 signs', '3 signs', '10 signs', '6 signs'),
         'QUESTION': ('do you ',),
+        # Shorts formulas
+        'STOP':     ('stop ',),
+        'SECRET':   ('nobody tells you',),
+        'TRAP':     ('the ',),
+        'HIDDEN':   ('the hidden',),
+        'FIX':      ('how to actually', 'how to '),
     }
     title_low = data.get("title", "").lower()
     expected_starters = _FORMULA_STARTERS.get(formula_tag, ())

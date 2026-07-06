@@ -1286,11 +1286,91 @@ def _create_frame_focus_b(text, narration, w, h, scene_idx, phase, slot, word_st
     return img
 
 
+def _create_frame_shorts_hook(text, narration, w, h, scene_idx, phase, slot, word_start, wpf, bg=None):
+    """Shorts opening hook card — full-screen bold text on dark gradient. Stops the scroll."""
+    img = Image.new("RGB", (w, h), (12, 12, 28))
+    draw = ImageDraw.Draw(img)
+
+    # Dark-to-deep gradient background
+    for y in range(h):
+        t = y / h
+        r = int(12 + 18 * t)
+        g = int(12 + 8 * t)
+        b = int(28 + 32 * t)
+        draw.line([(0, y), (w, y)], fill=(r, g, b))
+
+    # Subtle accent line top + bottom
+    accent = (255, 80, 80)
+    draw.rectangle([0, 0, w, 8], fill=accent)
+    draw.rectangle([0, h - 8, w, h], fill=accent)
+
+    # Break narration into 3-4 word punchy lines for max impact
+    words = narration.split()[:20]  # first 20 words = the hook
+    lines, cur = [], []
+    for word in words:
+        cur.append(word)
+        if len(cur) >= 4:
+            lines.append(" ".join(cur))
+            cur = []
+    if cur:
+        lines.append(" ".join(cur))
+    lines = lines[:4]  # max 4 lines
+
+    # Font size: fill ~70% of width
+    from PIL import ImageFont
+    def _fit_font(line, max_px):
+        lo, hi = 28, 160
+        while lo < hi - 1:
+            mid = (lo + hi) // 2
+            try:
+                fnt = ImageFont.truetype("DejaVuSans-Bold.ttf", mid)
+            except OSError:
+                fnt = ImageFont.load_default()
+            bb = draw.textbbox((0, 0), line, font=fnt)
+            if bb[2] - bb[0] <= max_px:
+                lo = mid
+            else:
+                hi = mid
+        try:
+            return ImageFont.truetype("DejaVuSans-Bold.ttf", lo)
+        except OSError:
+            return ImageFont.load_default()
+
+    max_w = int(w * 0.88)
+    longest = max(lines, key=len) if lines else text
+    fnt = _fit_font(longest, max_w)
+    bb0 = draw.textbbox((0, 0), longest, font=fnt)
+    line_h = (bb0[3] - bb0[1]) + int(h * 0.025)
+    total_h = len(lines) * line_h
+    y0 = (h - total_h) // 2
+
+    for i, line in enumerate(lines):
+        bb = draw.textbbox((0, 0), line, font=fnt)
+        lw = bb[2] - bb[0]
+        x = (w - lw) // 2
+        y = y0 + i * line_h
+        # Shadow
+        draw.text((x + 3, y + 3), line, fill=(0, 0, 0), font=fnt)
+        # Main text — alternate white / accent for rhythm
+        col = (255, 255, 255) if i % 2 == 0 else (255, 220, 80)
+        draw.text((x, y), line, fill=col, font=fnt)
+
+    # Small watermark
+    try:
+        wm_fnt = ImageFont.truetype("DejaVuSans.ttf", max(18, w // 36))
+    except OSError:
+        wm_fnt = ImageFont.load_default()
+    draw.text((int(w * 0.04), int(h * 0.94)), "@MindShiftProductivity",
+              fill=(140, 140, 160), font=wm_fnt)
+    return img
+
+
 _SHOT_RENDERERS = {
-    "wide":       _create_frame_wide,
-    "focus_a":    _create_frame_focus_a,
-    "focus_prop": _create_frame_focus_prop,
-    "focus_b":    _create_frame_focus_b,
+    "wide":        _create_frame_wide,
+    "focus_a":     _create_frame_focus_a,
+    "focus_prop":  _create_frame_focus_prop,
+    "focus_b":     _create_frame_focus_b,
+    "shorts_hook": _create_frame_shorts_hook,
 }
 
 
@@ -1314,15 +1394,22 @@ def create_scene_video(text, bg_color, duration, output_path,
 
     # Shot sequence — genuine different compositions, not zoom tricks
     # Regular: wide → speaker solo → concept card → reactor solo → wide (27s total)
-    # Shorts:  wide → speaker solo → reactor solo → wide       (14s total)
-    if h > w:  # Shorts — 4 shots
-        q = max(3, d // 4)
-        shots = [
-            ("wide",    q),
-            ("focus_a", q),
-            ("focus_b", q),
-            ("wide",    d - 3 * q),
-        ]
+    # Shorts:  hook_card → focus_a → wide  (15s each, scene_idx=0 gets the bold hook card)
+    if h > w:  # Shorts — 3 shots per scene
+        q = max(4, d // 3)
+        if scene_idx == 0:
+            # First scene: bold text hook card to stop the scroll, then speaker close-up
+            shots = [
+                ("shorts_hook", q),
+                ("focus_a",     q),
+                ("wide",        d - 2 * q),
+            ]
+        else:
+            shots = [
+                ("wide",    q),
+                ("focus_a", q),
+                ("wide",    d - 2 * q),
+            ]
     else:  # Regular — first shot of chapter scenes = 2s title card + 3s wide
         if chapter_info:
             shots = [
