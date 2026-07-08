@@ -1,14 +1,14 @@
 {
   "status": "ok",
   "tweets_drafted": 3,
-  "content_format": "thread",
+  "content_format": "yesno",
   "short_posted_today": true,
   "regular_posted_today": true,
-  "short_video_id": "",
-  "promo_video_id": "",
-  "tweet_count": 25,
-  "summary": "Format: THREAD | Short: \u2705 | Regular: \u2705 | Insight: \u2705 | Reply drops: 3",
+  "short_video_id": "iyHwz_DhC94",
+  "promo_video_id": "js6RedoWlZs",
+  "tweet_count": 26,
+  "summary": "Format: YESNO | Short: \u2705 | Regular: \u2705 | Insight: \u2705 | Reply drops: 3",
   "errors": [],
   "agent": "twitter",
-  "reported_at": "2026-07-07T14:57:49.964234+00:00"
+  "reported_at": "2026-07-08T04:03:15.662772+00:00"
 }
