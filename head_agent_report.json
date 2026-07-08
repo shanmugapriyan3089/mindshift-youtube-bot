@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-07-07T08:08:40.381795+00:00",
+  "generated_at": "2026-07-08T07:49:31.326666+00:00",
   "agent_statuses": {
     "Regular Video (standard)": {
-      "last_run_at": "2026-07-07T04:25:20Z",
+      "last_run_at": "2026-07-08T04:06:33Z",
       "conclusion": "success",
-      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/28841451270"
+      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/28916704080"
     },
     "Regular Video (mixed)": {
       "last_run_at": "2026-06-20T12:08:27Z",
@@ -17,9 +17,9 @@
       "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/27898268584"
     },
     "Shorts (standard)": {
-      "last_run_at": "2026-07-07T05:51:44Z",
+      "last_run_at": "2026-07-08T05:33:17Z",
       "conclusion": "success",
-      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/28844751206"
+      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/28920024187"
     },
     "Shorts (mixed)": {
       "last_run_at": "2026-06-20T13:35:15Z",
@@ -32,19 +32,19 @@
       "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/27902267344"
     },
     "Twitter": {
-      "last_run_at": "2026-07-07T04:21:15Z",
+      "last_run_at": "2026-07-08T04:03:01Z",
       "conclusion": "success",
-      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/28841296226"
+      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/28916570251"
     },
     "Instagram": {
-      "last_run_at": "2026-07-07T06:48:20Z",
+      "last_run_at": "2026-07-08T06:20:45Z",
       "conclusion": "success",
-      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/28847240444"
+      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/28922067704"
     },
     "Reddit": {
-      "last_run_at": "2026-07-06T09:31:31Z",
-      "conclusion": "failure",
-      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/28781852559"
+      "last_run_at": "2026-07-07T09:15:40Z",
+      "conclusion": "success",
+      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/28855233355"
     },
     "Quora": {
       "last_run_at": "2026-07-06T10:33:31Z",
@@ -62,14 +62,14 @@
       "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/28769952900"
     },
     "SEO Optimizer": {
-      "last_run_at": "2026-07-06T11:35:11Z",
+      "last_run_at": "2026-07-07T11:04:44Z",
       "conclusion": "success",
-      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/28788592214"
+      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/28861387131"
     },
     "Analytics": {
-      "last_run_at": "2026-07-07T02:18:28Z",
+      "last_run_at": "2026-07-08T02:17:18Z",
       "conclusion": "success",
-      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/28836851038"
+      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/28912664855"
     },
     "Revenue Tracker": {
       "last_run_at": "2026-07-05T05:50:43Z",
@@ -92,7 +92,7 @@
       "summary": "3/3 SEO updates applied, 0 skipped",
       "errors": [],
       "agent": "seo_optimizer",
-      "reported_at": "2026-07-06T11:35:29.065163+00:00"
+      "reported_at": "2026-07-07T11:05:08.514101+00:00"
     },
     "twitter": {
       "status": "ok",
@@ -100,13 +100,13 @@
       "content_format": "yesno",
       "short_posted_today": true,
       "regular_posted_today": true,
-      "short_video_id": "NcIak1151Ns",
-      "promo_video_id": "67vcpZu7ySM",
-      "tweet_count": 23,
+      "short_video_id": "iyHwz_DhC94",
+      "promo_video_id": "js6RedoWlZs",
+      "tweet_count": 26,
       "summary": "Format: YESNO | Short: ✅ | Regular: ✅ | Insight: ✅ | Reply drops: 3",
       "errors": [],
       "agent": "twitter",
-      "reported_at": "2026-07-07T04:21:32.664398+00:00"
+      "reported_at": "2026-07-08T04:03:15.662772+00:00"
     },
     "quora": {
       "status": "ok",
@@ -121,14 +121,14 @@
     "analytics": {
       "status": "ok",
       "subscribers": 12,
-      "total_views": 3029,
-      "video_count": 62,
-      "watch_hours": 151.4,
+      "total_views": 3055,
+      "video_count": 64,
+      "watch_hours": 152.8,
       "top_video": "The Hidden Force Behind 95% Decisions",
-      "summary": "12 subs, 3,029 views, 62 videos",
+      "summary": "12 subs, 3,055 views, 64 videos",
       "errors": [],
       "agent": "analytics",
-      "reported_at": "2026-07-07T02:18:45.071890+00:00"
+      "reported_at": "2026-07-08T02:17:31.521669+00:00"
     },
     "revenue_tracker": {
       "status": "ok",
@@ -159,47 +159,39 @@
   },
   "agent_health_summary": {
     "total": 16,
-    "healthy": 14,
-    "failed": 2
+    "healthy": 15,
+    "failed": 1
   },
   "upload_stats": {
-    "total_uploaded": 19,
-    "regular_count": 9,
-    "shorts_count": 10,
+    "total_uploaded": 21,
+    "regular_count": 10,
+    "shorts_count": 11,
     "last_regular": {
-      "video_id": "js6RedoWlZs",
-      "title": "Do You Know Exactly What To Do But Still Can't Do It? Here Is What Your Brain Is Actually Doing",
-      "topic": "You Know Exactly What to Do and Still Cannot Make Yourself Do It",
+      "video_id": "Rw-LfdLbg3I",
+      "title": "Why You Reject Compliments — And What It Says About Your Brain",
+      "topic": "Why You Cannot Accept Compliments and What It Is Actually Costing You",
       "type": "regular",
-      "url": "https://youtube.com/watch?v=js6RedoWlZs",
-      "uploaded_at": "2026-07-07T04:32:11.602280",
+      "url": "https://youtube.com/watch?v=Rw-LfdLbg3I",
+      "uploaded_at": "2026-07-08T04:12:25.089242",
       "poll_question": ""
     },
     "last_short": {
-      "video_id": "iyHwz_DhC94",
-      "title": "How to Fix Being Stuck",
-      "topic": "You Are Not Lazy — Your Nervous System Is Stuck in Survival Mode",
+      "video_id": "KRClKNqrwSo",
+      "title": "Stop Sabotaging Success",
+      "topic": "The Exact Moment Your Brain Decides to Sabotage Your Own Success",
       "type": "shorts",
-      "url": "https://youtube.com/watch?v=iyHwz_DhC94",
-      "uploaded_at": "2026-07-07T05:54:31.891258",
-      "poll_question": "Are you stuck in survival mode? A: Yes, every day B: Only sometimes"
+      "url": "https://youtube.com/watch?v=KRClKNqrwSo",
+      "uploaded_at": "2026-07-08T05:36:50.963686",
+      "poll_question": "Does your brain sabotage your goals? A: Every day B: Only when stressed"
     }
   },
   "channel_stats": {
     "subscribers": 12,
-    "total_views": 3043,
-    "video_count": 64,
+    "total_views": 3209,
+    "video_count": 66,
     "channel_title": "MindShift Productivity"
   },
   "video_stats": [
-    {
-      "video_id": "Ty31DPAusYw",
-      "title": "Why You Can't Stop Overthinking At Night",
-      "views": 9,
-      "likes": 0,
-      "comments": 0,
-      "url": "https://youtu.be/Ty31DPAusYw"
-    },
     {
       "video_id": "71q0dfexuq4",
       "title": "The Shocking Truth Behind Addiction",
@@ -235,7 +227,7 @@
     {
       "video_id": "kojqm0W-uk8",
       "title": "Stop Overthinking, Start Living Today",
-      "views": 37,
+      "views": 39,
       "likes": 1,
       "comments": 0,
       "url": "https://youtu.be/kojqm0W-uk8"
@@ -251,7 +243,7 @@
     {
       "video_id": "FRgNqVz1wds",
       "title": "5 Brain Hacks to Rewire Now",
-      "views": 100,
+      "views": 101,
       "likes": 2,
       "comments": 0,
       "url": "https://youtu.be/FRgNqVz1wds"
@@ -275,7 +267,7 @@
     {
       "video_id": "e03iPBpq5ww",
       "title": "Crush Procrastination Now — 5 Min Hack",
-      "views": 17,
+      "views": 18,
       "likes": 1,
       "comments": 0,
       "url": "https://youtu.be/e03iPBpq5ww"
@@ -307,30 +299,30 @@
     {
       "video_id": "4LX6_ILR8Aw",
       "title": "Why Busyness Is Killing Your Productivity",
-      "views": 9,
+      "views": 10,
       "likes": 0,
       "comments": 0,
       "url": "https://youtu.be/4LX6_ILR8Aw"
     },
     {
       "video_id": "67vcpZu7ySM",
-      "title": "The 5 Secrets Your Brain Doesn't Want You to Know",
-      "views": 4,
+      "title": "Unlock Your Brain's Hidden Secrets",
+      "views": 5,
       "likes": 0,
       "comments": 0,
       "url": "https://youtu.be/67vcpZu7ySM"
     },
     {
       "video_id": "NcIak1151Ns",
-      "title": "5 Mental Traps That Stop Progress",
-      "views": 8,
-      "likes": 1,
+      "title": "Break Free: 5 Traps Holding You Back",
+      "views": 70,
+      "likes": 2,
       "comments": 0,
       "url": "https://youtu.be/NcIak1151Ns"
     },
     {
       "video_id": "js6RedoWlZs",
-      "title": "Do You Know Exactly What To Do But Still Can't Do It? Here Is What You",
+      "title": "The Hidden Reason You're Stuck",
       "views": 2,
       "likes": 1,
       "comments": 0,
@@ -339,10 +331,26 @@
     {
       "video_id": "iyHwz_DhC94",
       "title": "How to Fix Being Stuck #Shorts",
-      "views": 87,
+      "views": 91,
       "likes": 1,
       "comments": 0,
       "url": "https://youtu.be/iyHwz_DhC94"
+    },
+    {
+      "video_id": "Rw-LfdLbg3I",
+      "title": "Why You Reject Compliments — And What It Says About Your Brain",
+      "views": 0,
+      "likes": 0,
+      "comments": 0,
+      "url": "https://youtu.be/Rw-LfdLbg3I"
+    },
+    {
+      "video_id": "KRClKNqrwSo",
+      "title": "Stop Sabotaging Success #Shorts",
+      "views": 10,
+      "likes": 0,
+      "comments": 0,
+      "url": "https://youtu.be/KRClKNqrwSo"
     }
   ],
   "competitors": [],
@@ -351,38 +359,34 @@
     "what_is_working": [
       "Twitter agent is successfully posting and engaging with the audience",
       "Quora agent is generating relevant answer drafts based on latest video topics",
-      "SEO Optimizer agent is applying updates to improve video visibility"
+      "SEO Optimizer agent is applying necessary SEO updates to videos"
     ],
     "what_needs_improvement": [
-      "Instagram agent is not reporting, potentially missing access token or configuration",
-      "Reddit agent is failing, possibly due to incorrect credentials or posting strategy",
-      "Video Reviewer agent is not providing feedback, which could help improve content quality"
+      "Video Reviewer agent is not reporting, potentially affecting video quality control",
+      "Instagram and Reddit agents have no reports, indicating potential issues with social media integration",
+      "View counts are relatively low, indicating a need for more engaging content or better promotion"
     ],
     "urgent_actions": [
-      "Fix Instagram agent",
-      "Fix Reddit agent",
-      "Fix Video Reviewer agent"
+      "Fix Video Reviewer agent to ensure video quality control"
     ],
     "fix_instructions": {
-      "Instagram agent": "Instagram agent is missing INSTAGRAM_ACCESS_TOKEN in GitHub Secrets → go to Settings → Secrets → add it, and ensure Instagram business account is connected to the channel",
-      "Reddit agent": "Reddit agent is likely missing REDDIT_CLIENT_ID or REDDIT_CLIENT_SECRET in environment variables → add them in Settings → Environment variables, and verify Reddit account credentials",
-      "Video Reviewer agent": "Video Reviewer agent is not configured to receive video uploads → update the agent to fetch latest video uploads and provide feedback based on engagement metrics"
+      "Video Reviewer": "Check the Video Reviewer agent's configuration file for any syntax errors, then restart the agent. If issues persist, update the VIDEO_REVIEWER_API_KEY in GitHub Secrets → go to Settings → Secrets → add or update the key."
     },
     "growth_tactics": [
       "Collaborate with other psychology or motivation channels for cross-promotion",
       "Optimize video titles and descriptions with relevant keywords to improve discoverability",
-      "Utilize Twitter and Instagram to share engaging, bite-sized content that drives traffic to the YouTube channel"
+      "Utilize Twitter and other social media platforms to share engaging, bite-sized content that drives traffic to the YouTube channel"
     ],
     "next_video_topics": [
       "The Psychology of Procrastination: Understanding the Root Causes",
       "Building Resilience: Strategies for Overcoming Adversity",
-      "The Power of Mindfulness: How Meditation Can Improve Productivity"
+      "The Power of Mindfulness: How Meditation Can Improve Focus and Productivity"
     ],
-    "view_drop_analysis": "Views look relatively healthy, but could be improved by optimizing video titles, descriptions, and tags, as well as promoting the channel on other social media platforms",
+    "view_drop_analysis": "Views look relatively low, potentially due to a lack of engaging thumbnails or inadequate promotion. Consider A/B testing different thumbnail options and increasing social media promotion to drive more traffic to the channel.",
     "follower_growth_tips": [
+      "Offer exclusive content or discounts to encourage viewers to subscribe",
       "Engage with the audience by responding to comments and creating a community around the channel",
-      "Utilize eye-catching thumbnails and attention-grabbing titles to increase click-through rates",
-      "Offer exclusive content or resources to encourage viewers to subscribe and share the channel with others"
+      "Utilize YouTube's 'End Screens' and 'Cards' features to promote other videos and encourage viewers to subscribe"
     ]
   },
   "video_review": {}
