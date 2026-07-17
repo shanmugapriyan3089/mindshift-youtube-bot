@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-07-16T07:43:11.864040+00:00",
+  "generated_at": "2026-07-17T07:41:21.677104+00:00",
   "agent_statuses": {
     "Regular Video (standard)": {
-      "last_run_at": "2026-07-16T04:05:00Z",
+      "last_run_at": "2026-07-17T04:04:22Z",
       "conclusion": "failure",
-      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/29470486893"
+      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/29553938014"
     },
     "Regular Video (mixed)": {
       "last_run_at": "2026-06-20T12:08:27Z",
@@ -17,9 +17,9 @@
       "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/27898268584"
     },
     "Shorts (standard)": {
-      "last_run_at": "2026-07-16T05:26:23Z",
+      "last_run_at": "2026-07-17T05:27:59Z",
       "conclusion": "failure",
-      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/29473890594"
+      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/29557383852"
     },
     "Shorts (mixed)": {
       "last_run_at": "2026-06-20T13:35:15Z",
@@ -32,19 +32,19 @@
       "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/27902267344"
     },
     "Twitter": {
-      "last_run_at": "2026-07-16T04:01:14Z",
+      "last_run_at": "2026-07-17T04:00:51Z",
       "conclusion": "success",
-      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/29470330633"
+      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/29553785183"
     },
     "Instagram": {
-      "last_run_at": "2026-07-16T06:18:41Z",
+      "last_run_at": "2026-07-17T06:18:14Z",
       "conclusion": "success",
-      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/29476332714"
+      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/29559655186"
     },
     "Reddit": {
-      "last_run_at": "2026-07-15T08:53:24Z",
+      "last_run_at": "2026-07-16T08:53:32Z",
       "conclusion": "success",
-      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/29402425556"
+      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/29485103448"
     },
     "Quora": {
       "last_run_at": "2026-07-15T09:37:20Z",
@@ -62,14 +62,14 @@
       "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/29225731556"
     },
     "SEO Optimizer": {
-      "last_run_at": "2026-07-15T10:36:37Z",
+      "last_run_at": "2026-07-16T10:42:21Z",
       "conclusion": "failure",
-      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/29408725182"
+      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/29491771826"
     },
     "Analytics": {
-      "last_run_at": "2026-07-16T02:16:51Z",
+      "last_run_at": "2026-07-17T02:17:01Z",
       "conclusion": "failure",
-      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/29466203187"
+      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/29549548450"
     },
     "Revenue Tracker": {
       "last_run_at": "2026-07-12T05:39:01Z",
@@ -123,12 +123,12 @@
       "short_posted_today": true,
       "regular_posted_today": true,
       "short_video_id": "KRClKNqrwSo",
-      "promo_video_id": "4LX6_ILR8Aw",
-      "tweet_count": 50,
+      "promo_video_id": "67vcpZu7ySM",
+      "tweet_count": 53,
       "summary": "Format: YESNO | Short: ✅ | Regular: ✅ | Insight: ✅ | Reply drops: 3",
       "errors": [],
       "agent": "twitter",
-      "reported_at": "2026-07-16T04:01:28.233319+00:00"
+      "reported_at": "2026-07-17T04:01:11.587493+00:00"
     },
     "revenue_tracker": {
       "status": "ok",
@@ -196,39 +196,37 @@
       "Trend Scout agent is operational and ready to provide reports"
     ],
     "what_needs_improvement": [
-      "Analytics agent is reporting incorrect data",
-      "Competitor Spy agent is failing to provide accurate competitor analysis",
-      "SEO Optimizer agent is not effectively optimizing video SEO"
+      "Analytics and Revenue Tracker agents are reporting incorrect data",
+      "Competitor Spy and SEO Optimizer agents are failing to update correctly",
+      "Video Reviewer agent is not providing reports"
     ],
     "urgent_actions": [
-      "Fix Analytics agent",
-      "Fix Competitor Spy agent",
-      "Fix SEO Optimizer agent",
-      "Fix Revenue Tracker agent",
-      "Fix Video Reviewer agent"
+      "Fix Analytics agent to report correct subscriber and view counts",
+      "Fix Revenue Tracker agent to accurately track earnings",
+      "Fix Competitor Spy agent to analyze competitor videos correctly"
     ],
     "fix_instructions": {
-      "Analytics Agent": "Check API connection and credentials in GitHub Secrets → go to Settings → Secrets → verify ANALYTICS_API_KEY and ANALYTICS_API_SECRET",
-      "Competitor Spy Agent": "Update competitor video analysis script to handle latest API changes → go to GitHub → update competitor_spy.py",
-      "SEO Optimizer Agent": "Verify SEO update rules and apply missing updates → go to SEO settings → review and apply pending updates",
-      "Revenue Tracker Agent": "Verify YouTube API connection and credentials in GitHub Secrets → go to Settings → Secrets → verify YOUTUBE_API_KEY and YOUTUBE_API_SECRET",
-      "Video Reviewer Agent": "Initialize Video Reviewer agent by setting up video review criteria → go to Video Reviewer settings → set up review criteria"
+      "Analytics": "Check API connection and update API key in GitHub Secrets → go to Settings → Secrets → update YOUTUBE_ANALYTICS_API_KEY",
+      "Revenue Tracker": "Update revenue tracking formula to match YouTube's payment schedule → go to Revenue Tracker code and update the earnings calculation",
+      "Competitor Spy": "Update competitor video analysis script to handle latest YouTube API changes → go to Competitor Spy code and update the video analysis function",
+      "SEO Optimizer": "Check SEO update logs for errors and re-run updates → go to SEO Optimizer logs and re-run the last update",
+      "Video Reviewer": "Initialize Video Reviewer agent with correct video review criteria → go to Video Reviewer code and update the review criteria"
     },
     "growth_tactics": [
-      "Collaborate with other psychology/motivation channels for cross-promotion",
-      "Optimize video titles and descriptions for better search visibility",
-      "Utilize Instagram and Reddit agents for multi-platform promotion"
+      "Collaborate with other productivity channels to reach new audiences",
+      "Optimize video titles and descriptions with relevant keywords",
+      "Utilize Instagram and Reddit agents to promote channel content"
     ],
     "next_video_topics": [
-      "Productivity habits for remote workers",
-      "Overcoming procrastination using psychology-backed techniques",
-      "Building a morning routine for improved mental health"
+      "Productivity tips for students",
+      "Time management strategies for remote workers",
+      "Goal-setting techniques for achieving success"
     ],
-    "view_drop_analysis": "Views are currently at 0, which is expected for a new channel. Focus on promoting content and optimizing SEO for better visibility",
+    "view_drop_analysis": "Views are currently at 0, which is expected for a new channel. Focus on promoting content and optimizing videos for search to increase views",
     "follower_growth_tips": [
-      "Engage with audience by responding to comments and creating a community",
-      "Utilize Twitter and Instagram agents for consistent content posting and promotion",
-      "Offer exclusive content or incentives for subscribers to encourage growth"
+      "Engage with viewers by responding to comments and creating a community",
+      "Utilize Twitter and Instagram to promote channel content and attract new followers",
+      "Collaborate with other creators to reach new audiences and build relationships"
     ]
   },
   "video_review": {}
