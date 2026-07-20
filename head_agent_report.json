@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-07-19T07:44:33.193017+00:00",
+  "generated_at": "2026-07-20T08:02:51.002009+00:00",
   "agent_statuses": {
     "Regular Video (standard)": {
-      "last_run_at": "2026-07-19T04:12:32Z",
+      "last_run_at": "2026-07-20T04:20:19Z",
       "conclusion": "failure",
-      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/29672968604"
+      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/29716635012"
     },
     "Regular Video (mixed)": {
       "last_run_at": "2026-06-20T12:08:27Z",
@@ -17,9 +17,9 @@
       "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/27898268584"
     },
     "Shorts (standard)": {
-      "last_run_at": "2026-07-19T05:33:44Z",
+      "last_run_at": "2026-07-20T05:44:41Z",
       "conclusion": "failure",
-      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/29675039194"
+      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/29719839637"
     },
     "Shorts (mixed)": {
       "last_run_at": "2026-06-20T13:35:15Z",
@@ -32,19 +32,19 @@
       "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/27902267344"
     },
     "Twitter": {
-      "last_run_at": "2026-07-19T04:08:57Z",
+      "last_run_at": "2026-07-20T04:15:47Z",
       "conclusion": "success",
-      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/29672872585"
+      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/29716443770"
     },
     "Instagram": {
-      "last_run_at": "2026-07-19T06:21:05Z",
+      "last_run_at": "2026-07-20T06:33:09Z",
       "conclusion": "success",
-      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/29676301267"
+      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/29722012213"
     },
     "Reddit": {
-      "last_run_at": "2026-07-18T08:39:38Z",
+      "last_run_at": "2026-07-19T08:52:24Z",
       "conclusion": "success",
-      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/29637828124"
+      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/29680567383"
     },
     "Quora": {
       "last_run_at": "2026-07-17T09:34:31Z",
@@ -52,24 +52,24 @@
       "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/29570455217"
     },
     "Trend Scout": {
-      "last_run_at": "2026-07-13T04:39:25Z",
+      "last_run_at": "2026-07-20T04:42:10Z",
       "conclusion": "success",
-      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/29224474440"
+      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/29717497366"
     },
     "Competitor Spy": {
-      "last_run_at": "2026-07-13T05:12:18Z",
+      "last_run_at": "2026-07-20T05:15:41Z",
       "conclusion": "failure",
-      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/29225731556"
+      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/29718733553"
     },
     "SEO Optimizer": {
-      "last_run_at": "2026-07-18T10:31:07Z",
+      "last_run_at": "2026-07-19T10:32:39Z",
       "conclusion": "failure",
-      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/29640972863"
+      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/29683524725"
     },
     "Analytics": {
-      "last_run_at": "2026-07-19T02:17:04Z",
+      "last_run_at": "2026-07-20T02:18:00Z",
       "conclusion": "failure",
-      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/29669956213"
+      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/29712329997"
     },
     "Revenue Tracker": {
       "last_run_at": "2026-07-19T05:34:54Z",
@@ -123,12 +123,12 @@
       "short_posted_today": true,
       "regular_posted_today": true,
       "short_video_id": "KRClKNqrwSo",
-      "promo_video_id": "Rw-LfdLbg3I",
-      "tweet_count": 59,
+      "promo_video_id": "qwaU7A7zrCk",
+      "tweet_count": 62,
       "summary": "Format: YESNO | Short: ✅ | Regular: ✅ | Insight: ✅ | Reply drops: 3",
       "errors": [],
       "agent": "twitter",
-      "reported_at": "2026-07-19T04:09:17.149106+00:00"
+      "reported_at": "2026-07-20T04:16:45.059972+00:00"
     },
     "revenue_tracker": {
       "status": "ok",
@@ -193,40 +193,42 @@
     "what_is_working": [
       "Twitter agent is successfully posting content",
       "Quora agent is generating answer drafts based on latest video topics",
-      "Trend Scout agent is functioning without errors"
+      "Trend Scout agent is operational and ready to provide insights"
     ],
     "what_needs_improvement": [
-      "Analytics agent is reporting incorrect data",
-      "Revenue Tracker agent is predicting an unrealistic time to monetization",
-      "Competitor Spy and SEO Optimizer agents are failing to update correctly"
+      "Analytics agent is reporting incorrect data, which may be affecting decision-making",
+      "Competitor Spy agent is failing to provide accurate competitor analysis",
+      "SEO Optimizer agent is not effectively optimizing video SEO"
     ],
     "urgent_actions": [
       "Fix Analytics agent",
-      "Investigate Revenue Tracker agent's predictions",
-      "Resolve Competitor Spy and SEO Optimizer agent failures"
+      "Fix Competitor Spy agent",
+      "Fix SEO Optimizer agent",
+      "Fix Revenue Tracker agent",
+      "Fix Video Reviewer agent"
     ],
     "fix_instructions": {
-      "Analytics": "Check Google Analytics API connection and ensure correct view ID is being used. Verify that API credentials are up-to-date and properly configured in the agent's settings.",
-      "Revenue Tracker": "Review YouTube Partner Program (YPP) requirements and adjust predictions based on actual earnings and subscriber growth. Ensure accurate calculation of required watch hours and subscribers.",
-      "Competitor Spy": "Update competitor video analysis API to handle changes in video metadata",
-      "SEO Optimizer": "Review SEO updates applied and investigate why they are not being effective. Check for any changes in YouTube's algorithm that may require adjustments to SEO strategies.",
-      "Instagram": "Instagram agent is missing INSTAGRAM_ACCESS_TOKEN in GitHub Secrets → go to Settings → Secrets → add it"
+      "Analytics": "Check API connection and update API key in settings, ensure correct video and subscriber tracking codes are installed",
+      "Competitor Spy": "Update competitor list and ensure correct API credentials are in place, re-run analysis with updated parameters",
+      "SEO Optimizer": "Review and update keyword research, ensure all videos have relevant and accurate metadata",
+      "Revenue Tracker": "Verify YouTube Partner Program (YPP) application status and ensure correct monetization settings",
+      "Video Reviewer": "Configure video review settings and ensure correct API credentials are in place, run initial video review analysis"
     },
     "growth_tactics": [
-      "Collaborate with other psychology/motivation channels to reach new audiences",
-      "Optimize video titles, descriptions, and tags to improve discoverability",
-      "Utilize Instagram and Reddit to promote channel content and engage with potential subscribers"
+      "Collaborate with other psychology/motivation channels for cross-promotion",
+      "Optimize video titles, descriptions, and tags for better discoverability",
+      "Utilize Instagram and Reddit agents to expand reach and drive traffic to the YouTube channel"
     ],
     "next_video_topics": [
-      "Productivity habits for students",
+      "Productivity habits for remote workers",
       "Overcoming procrastination using the Pomodoro Technique",
       "Building a morning routine for increased motivation"
     ],
-    "view_drop_analysis": "Views are currently at 0, which is expected for a new channel. Focus on promoting content and optimizing for discoverability to increase views.",
+    "view_drop_analysis": "Views are currently at 0, which is expected for a new channel. Focus on creating high-quality content, optimizing video metadata, and promoting the channel through social media and collaborations to increase views",
     "follower_growth_tips": [
       "Engage with viewers by responding to comments and creating a community around the channel",
-      "Utilize Twitter and Instagram to promote channel content and interact with potential subscribers",
-      "Offer exclusive content or incentives to encourage viewers to subscribe"
+      "Utilize eye-catching thumbnails and attention-grabbing titles to increase click-through rates",
+      "Consistency is key: maintain a daily upload schedule to keep viewers engaged and coming back for more"
     ]
   },
   "video_review": {}
