@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-07-23T07:50:31.200838+00:00",
+  "generated_at": "2026-07-24T07:49:47.301362+00:00",
   "agent_statuses": {
     "Regular Video (standard)": {
-      "last_run_at": "2026-07-23T04:06:37Z",
+      "last_run_at": "2026-07-24T04:06:06Z",
       "conclusion": "failure",
-      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/29978701087"
+      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/30065906422"
     },
     "Regular Video (mixed)": {
       "last_run_at": "2026-06-20T12:08:27Z",
@@ -17,9 +17,9 @@
       "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/27898268584"
     },
     "Shorts (standard)": {
-      "last_run_at": "2026-07-23T05:35:38Z",
+      "last_run_at": "2026-07-24T05:32:30Z",
       "conclusion": "failure",
-      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/29982571819"
+      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/30069704204"
     },
     "Shorts (mixed)": {
       "last_run_at": "2026-06-20T13:35:15Z",
@@ -32,19 +32,19 @@
       "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/27902267344"
     },
     "Twitter": {
-      "last_run_at": "2026-07-23T04:02:52Z",
+      "last_run_at": "2026-07-24T04:02:42Z",
       "conclusion": "success",
-      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/29978536097"
+      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/30065753256"
     },
     "Instagram": {
-      "last_run_at": "2026-07-23T06:21:20Z",
+      "last_run_at": "2026-07-24T06:19:55Z",
       "conclusion": "success",
-      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/29984780039"
+      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/30071952729"
     },
     "Reddit": {
-      "last_run_at": "2026-07-22T08:59:42Z",
+      "last_run_at": "2026-07-23T09:00:05Z",
       "conclusion": "success",
-      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/29906173315"
+      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/29993440643"
     },
     "Quora": {
       "last_run_at": "2026-07-22T09:49:08Z",
@@ -62,14 +62,14 @@
       "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/29718733553"
     },
     "SEO Optimizer": {
-      "last_run_at": "2026-07-22T10:46:12Z",
+      "last_run_at": "2026-07-23T10:46:57Z",
       "conclusion": "failure",
-      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/29913171951"
+      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/30000596462"
     },
     "Analytics": {
-      "last_run_at": "2026-07-23T02:17:10Z",
+      "last_run_at": "2026-07-24T02:17:14Z",
       "conclusion": "failure",
-      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/29974006524"
+      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/30061232268"
     },
     "Revenue Tracker": {
       "last_run_at": "2026-07-19T05:34:54Z",
@@ -83,6 +83,28 @@
     }
   },
   "agent_reports": {
+    "quora": {
+      "status": "ok",
+      "questions_found": 5,
+      "answers_drafted": 5,
+      "source": "AI-generated questions based on latest video topic",
+      "summary": "5 Quora answer drafts sent to email (AI-generated questions based on latest video topic)",
+      "errors": [],
+      "agent": "quora",
+      "reported_at": "2026-07-22T09:49:20.036661+00:00"
+    },
+    "competitor_spy": {
+      "status": "ok",
+      "videos_analyzed": 24,
+      "tags_updated": 11,
+      "formulas_updated": 5,
+      "top_video": "Simon Sinek's Advice Will Leave You SPEECHLESS 2.0 (MUST WAT",
+      "market_gap": "mental health and wellness for entrepreneurs and high-achievers",
+      "summary": "24 competitor videos analyzed, 11 tags + 5 formulas updated",
+      "errors": [],
+      "agent": "competitor_spy",
+      "reported_at": "2026-07-06T05:29:28.809883+00:00"
+    },
     "analytics": {
       "status": "ok",
       "subscribers": 12,
@@ -94,41 +116,6 @@
       "errors": [],
       "agent": "analytics",
       "reported_at": "2026-07-08T02:17:31.521669+00:00"
-    },
-    "seo_optimizer": {
-      "status": "ok",
-      "videos_found": 5,
-      "seo_applied": 3,
-      "seo_failed": 0,
-      "skipped": 0,
-      "summary": "3/3 SEO updates applied, 0 skipped",
-      "errors": [],
-      "agent": "seo_optimizer",
-      "reported_at": "2026-07-08T10:44:48.983868+00:00"
-    },
-    "quora": {
-      "status": "ok",
-      "questions_found": 5,
-      "answers_drafted": 5,
-      "source": "AI-generated questions based on latest video topic",
-      "summary": "5 Quora answer drafts sent to email (AI-generated questions based on latest video topic)",
-      "errors": [],
-      "agent": "quora",
-      "reported_at": "2026-07-22T09:49:20.036661+00:00"
-    },
-    "twitter": {
-      "status": "ok",
-      "tweets_drafted": 3,
-      "content_format": "yesno",
-      "short_posted_today": true,
-      "regular_posted_today": true,
-      "short_video_id": "KRClKNqrwSo",
-      "promo_video_id": "Ty31DPAusYw",
-      "tweet_count": 71,
-      "summary": "Format: YESNO | Short: ✅ | Regular: ✅ | Insight: ✅ | Reply drops: 3",
-      "errors": [],
-      "agent": "twitter",
-      "reported_at": "2026-07-23T04:03:09.067817+00:00"
     },
     "revenue_tracker": {
       "status": "ok",
@@ -144,17 +131,30 @@
       "agent": "revenue_tracker",
       "reported_at": "2026-07-05T05:50:56.241710+00:00"
     },
-    "competitor_spy": {
+    "seo_optimizer": {
       "status": "ok",
-      "videos_analyzed": 24,
-      "tags_updated": 11,
-      "formulas_updated": 5,
-      "top_video": "Simon Sinek's Advice Will Leave You SPEECHLESS 2.0 (MUST WAT",
-      "market_gap": "mental health and wellness for entrepreneurs and high-achievers",
-      "summary": "24 competitor videos analyzed, 11 tags + 5 formulas updated",
+      "videos_found": 5,
+      "seo_applied": 3,
+      "seo_failed": 0,
+      "skipped": 0,
+      "summary": "3/3 SEO updates applied, 0 skipped",
       "errors": [],
-      "agent": "competitor_spy",
-      "reported_at": "2026-07-06T05:29:28.809883+00:00"
+      "agent": "seo_optimizer",
+      "reported_at": "2026-07-08T10:44:48.983868+00:00"
+    },
+    "twitter": {
+      "status": "ok",
+      "tweets_drafted": 3,
+      "content_format": "yesno",
+      "short_posted_today": true,
+      "regular_posted_today": true,
+      "short_video_id": "KRClKNqrwSo",
+      "promo_video_id": "e03iPBpq5ww",
+      "tweet_count": 74,
+      "summary": "Format: YESNO | Short: ✅ | Regular: ✅ | Insight: ✅ | Reply drops: 3",
+      "errors": [],
+      "agent": "twitter",
+      "reported_at": "2026-07-24T04:03:01.494318+00:00"
     }
   },
   "agent_health_summary": {
@@ -193,40 +193,41 @@
     "what_is_working": [
       "Twitter agent is successfully posting content",
       "Quora agent is generating answer drafts based on latest video topics",
-      "Trend Scout agent is operational and ready to provide reports"
+      "Trend Scout agent is operational and ready to provide insights"
     ],
     "what_needs_improvement": [
-      "Analytics and Revenue Tracker agents are reporting incorrect data",
-      "Competitor Spy and SEO Optimizer agents are failing to update correctly",
-      "Video Reviewer agent is not providing reports"
+      "Analytics agent is reporting incorrect data, which may be affecting decision-making",
+      "Competitor Spy agent is failing to provide accurate competitor analysis",
+      "SEO Optimizer agent is not effectively optimizing video SEO"
     ],
     "urgent_actions": [
-      "Fix Analytics agent to report correct subscriber and view counts",
-      "Investigate and resolve Revenue Tracker agent issues",
-      "Resolve Competitor Spy and SEO Optimizer agent failures"
+      "Fix Analytics agent error",
+      "Resolve Competitor Spy agent failure",
+      "Address SEO Optimizer agent issues"
     ],
     "fix_instructions": {
-      "Analytics": "Check Google Analytics API connection and ensure correct property ID is being used",
-      "Revenue Tracker": "Verify YouTube API connection and ensure correct channel ID is being used",
-      "Competitor Spy": "Update competitor video analysis script to handle latest API changes",
-      "SEO Optimizer": "Check SEO update logs for errors and verify API connections",
-      "Video Reviewer": "Initialize Video Reviewer agent with correct video analysis parameters"
+      "Analytics": "Check Google Analytics API connection and ensure correct view ID is being used. Verify that API credentials are up-to-date and properly configured in the agent's settings.",
+      "Competitor Spy": "Update competitor video analysis script to handle changes in competitor video metadata. Ensure that the script is correctly parsing video titles, descriptions, and tags.",
+      "SEO Optimizer": "Review and update SEO optimization rules to ensure they are aligned with current best practices. Check for any errors in the agent's log files and verify that the agent has the necessary permissions to update video metadata.",
+      "Instagram": "Instagram agent is missing INSTAGRAM_ACCESS_TOKEN in GitHub Secrets → go to Settings → Secrets → add it",
+      "Revenue Tracker": "Verify that YouTube API credentials are correct and that the agent has the necessary permissions to access revenue data. Check for any errors in the agent's log files.",
+      "Video Reviewer": "Configure Video Reviewer agent to analyze video performance and provide insights on engagement and audience retention. Ensure that the agent has access to video metrics and is properly configured to provide actionable recommendations."
     },
     "growth_tactics": [
-      "Collaborate with other psychology/motivation channels for cross-promotion",
-      "Optimize video titles and descriptions with relevant keywords",
-      "Engage with audience on social media platforms to increase brand awareness"
+      "Collaborate with other psychology and motivation channels to reach new audiences",
+      "Optimize video titles, descriptions, and tags to improve discoverability on YouTube",
+      "Utilize Twitter and Instagram to promote new video content and engage with potential subscribers"
     ],
     "next_video_topics": [
       "Productivity habits for remote workers",
-      "Overcoming procrastination using the Pomodoro Technique",
-      "Building a morning routine for increased motivation"
+      "Overcoming procrastination and staying motivated",
+      "Building a morning routine for success"
     ],
-    "view_drop_analysis": "Views are currently at 0, indicating a need to promote the channel and increase visibility",
+    "view_drop_analysis": "Views may be low due to lack of effective SEO optimization and insufficient promotion on social media platforms. To improve views, focus on optimizing video metadata, utilizing relevant keywords, and promoting content on Twitter, Instagram, and other platforms.",
     "follower_growth_tips": [
-      "Offer exclusive content or discounts to encourage subscriptions",
-      "Utilize eye-catching thumbnails and engaging video titles",
-      "Leverage social media platforms to promote the channel and increase brand awareness"
+      "Engage with viewers by responding to comments and creating a community around the channel",
+      "Utilize eye-catching thumbnails and attention-grabbing titles to increase click-through rates",
+      "Offer exclusive content or resources to encourage viewers to subscribe to the channel"
     ]
   },
   "video_review": {}
