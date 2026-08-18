@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-08-17T07:51:19.696175+00:00",
+  "generated_at": "2026-08-18T07:36:21.623008+00:00",
   "agent_statuses": {
     "Regular Video (standard)": {
-      "last_run_at": "2026-08-17T03:53:10Z",
-      "conclusion": "failure",
-      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/31992583527"
+      "last_run_at": "2026-08-18T03:48:30Z",
+      "conclusion": "cancelled",
+      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/32096806167"
     },
     "Regular Video (mixed)": {
       "last_run_at": "2026-06-20T12:08:27Z",
@@ -17,9 +17,9 @@
       "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/27898268584"
     },
     "Shorts (standard)": {
-      "last_run_at": "2026-08-17T05:05:54Z",
+      "last_run_at": "2026-08-18T05:00:24Z",
       "conclusion": "failure",
-      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/31996689098"
+      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/32101220868"
     },
     "Shorts (mixed)": {
       "last_run_at": "2026-06-20T13:35:15Z",
@@ -32,24 +32,24 @@
       "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/27902267344"
     },
     "Twitter": {
-      "last_run_at": "2026-08-17T03:42:45Z",
+      "last_run_at": "2026-08-18T03:37:36Z",
       "conclusion": "success",
-      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/31992027039"
+      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/32096156981"
     },
     "Instagram": {
-      "last_run_at": "2026-08-17T06:01:16Z",
+      "last_run_at": "2026-08-18T05:55:47Z",
       "conclusion": "success",
-      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/31999968100"
+      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/32104796750"
     },
     "Reddit": {
-      "last_run_at": "2026-08-16T08:36:12Z",
-      "conclusion": "success",
-      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/31936867786"
+      "last_run_at": "2026-08-17T08:50:47Z",
+      "conclusion": "failure",
+      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/32012290833"
     },
     "Quora": {
-      "last_run_at": "2026-08-14T09:54:38Z",
-      "conclusion": "success",
-      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/31790044743"
+      "last_run_at": "2026-08-17T09:34:50Z",
+      "conclusion": "failure",
+      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/32015950054"
     },
     "Trend Scout": {
       "last_run_at": "2026-08-17T04:07:45Z",
@@ -62,14 +62,14 @@
       "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/31995278841"
     },
     "SEO Optimizer": {
-      "last_run_at": "2026-08-16T10:24:48Z",
+      "last_run_at": "2026-08-17T10:33:25Z",
       "conclusion": "failure",
-      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/31941594552"
+      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/32020717365"
     },
     "Analytics": {
-      "last_run_at": "2026-08-17T02:38:39Z",
+      "last_run_at": "2026-08-18T02:34:08Z",
       "conclusion": "failure",
-      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/31988620504"
+      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/32092308626"
     },
     "Revenue Tracker": {
       "last_run_at": "2026-08-16T05:01:00Z",
@@ -90,12 +90,12 @@
       "short_posted_today": true,
       "regular_posted_today": true,
       "short_video_id": "KRClKNqrwSo",
-      "promo_video_id": "js6RedoWlZs",
-      "tweet_count": 145,
+      "promo_video_id": "Rw-LfdLbg3I",
+      "tweet_count": 148,
       "summary": "Format: THREAD | Short: ✅ | Regular: ✅ | Insight: ✅ | Reply drops: 3",
       "errors": [],
       "agent": "twitter",
-      "reported_at": "2026-08-17T03:43:03.696094+00:00"
+      "reported_at": "2026-08-18T03:37:52.675928+00:00"
     },
     "quora": {
       "status": "ok",
@@ -159,8 +159,8 @@
   },
   "agent_health_summary": {
     "total": 16,
-    "healthy": 9,
-    "failed": 7
+    "healthy": 7,
+    "failed": 8
   },
   "upload_stats": {
     "total_uploaded": 21,
@@ -189,44 +189,39 @@
   "video_stats": [],
   "competitors": [],
   "analysis": {
-    "channel_health_score": 4,
+    "channel_health_score": 5,
     "what_is_working": [
-      "Twitter agent is successfully posting threads, shorts, and regular updates",
-      "Quora agent is generating answer drafts based on latest video topics",
-      "Trend Scout agent is operational and ready to provide reports"
+      "Content pipeline active"
     ],
     "what_needs_improvement": [
-      "Analytics agent is reporting incorrect data, which may be affecting decision-making",
-      "Competitor Spy agent is failing to provide useful competitor data",
-      "SEO Optimizer agent is not effectively improving video search rankings"
+      "Need more data"
     ],
     "urgent_actions": [
-      "Fix Analytics agent error",
-      "Resolve Competitor Spy agent failure",
-      "Address SEO Optimizer agent issues"
+      "Fix failed: Shorts (standard), Reddit, Quora, Competitor Spy, SEO Optimizer, Analytics, Revenue Tracker, Video Reviewer"
     ],
     "fix_instructions": {
-      "Analytics": "Check Google Analytics API connection and ensure correct view ID is being used. Go to Google Cloud Console → API Library → Google Analytics API → enable API and create credentials",
-      "Competitor Spy": "Update competitor list and ensure correct API keys are being used. Go to Settings → Competitor Spy → update competitor list and API keys",
-      "SEO Optimizer": "Review and update SEO keyword research and ensure correct meta tags are being used. Go to Settings → SEO Optimizer → update keyword research and meta tags",
-      "Instagram": "Instagram agent is missing INSTAGRAM_ACCESS_TOKEN in GitHub Secrets → go to Settings → Secrets → add it",
-      "Revenue Tracker": "Update Revenue Tracker with correct YouTube Partner Program (YPP) requirements and earnings data. Go to Settings → Revenue Tracker → update YPP requirements and earnings data"
+      "Shorts (standard)": "Check GitHub Actions logs",
+      "Reddit": "Check GitHub Actions logs",
+      "Quora": "Check GitHub Actions logs",
+      "Competitor Spy": "Check GitHub Actions logs",
+      "SEO Optimizer": "Check GitHub Actions logs",
+      "Analytics": "Check GitHub Actions logs",
+      "Revenue Tracker": "Check GitHub Actions logs",
+      "Video Reviewer": "Check GitHub Actions logs"
     },
     "growth_tactics": [
-      "Collaborate with other psychology/motivation channels to reach new audiences",
-      "Optimize video titles, descriptions, and tags for better search visibility",
-      "Utilize Twitter threads to drive traffic to YouTube channel and increase engagement"
+      "Post consistently",
+      "Engage with comments",
+      "SEO titles"
     ],
     "next_video_topics": [
-      "Productivity habits for remote workers",
-      "Overcoming procrastination using the Pomodoro Technique",
-      "Building a morning routine for increased motivation"
+      "Check video_review_report.json for suggestions"
     ],
-    "view_drop_analysis": "Views are currently at 0, which is expected for a new channel. Focus on creating high-quality content and promoting the channel through social media and collaborations to increase views",
+    "view_drop_analysis": "Not enough data yet.",
     "follower_growth_tips": [
-      "Engage with viewers by responding to comments and creating a community around the channel",
-      "Utilize eye-catching thumbnails and attention-grabbing titles to increase click-through rates",
-      "Consistency is key: maintain a regular upload schedule to keep viewers engaged and coming back for more"
+      "Reply to every comment",
+      "Post Shorts daily",
+      "Share on WhatsApp"
     ]
   },
   "video_review": {}
