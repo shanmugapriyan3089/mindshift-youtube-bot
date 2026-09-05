@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-09-04T11:58:08.831654+00:00",
+  "generated_at": "2026-09-05T11:07:51.080182+00:00",
   "agent_statuses": {
     "Regular Video (standard)": {
-      "last_run_at": "2026-09-04T07:50:34Z",
+      "last_run_at": "2026-09-05T07:31:42Z",
       "conclusion": "failure",
-      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/33850583974"
+      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/33952805066"
     },
     "Regular Video (mixed)": {
       "last_run_at": "2026-06-20T12:08:27Z",
@@ -17,9 +17,9 @@
       "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/27898268584"
     },
     "Shorts (standard)": {
-      "last_run_at": "2026-09-04T08:56:51Z",
+      "last_run_at": "2026-09-05T08:27:32Z",
       "conclusion": "failure",
-      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/33855900813"
+      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/33955310610"
     },
     "Shorts (mixed)": {
       "last_run_at": "2026-06-20T13:35:15Z",
@@ -32,24 +32,24 @@
       "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/27902267344"
     },
     "Twitter": {
-      "last_run_at": "2026-09-04T07:35:10Z",
+      "last_run_at": "2026-09-05T07:16:15Z",
       "conclusion": "success",
-      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/33849406973"
+      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/33952081859"
     },
     "Instagram": {
-      "last_run_at": "2026-09-04T09:52:02Z",
+      "last_run_at": "2026-09-05T09:14:31Z",
       "conclusion": "success",
-      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/33860444057"
+      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/33957442059"
     },
     "Reddit": {
-      "last_run_at": "2026-09-03T12:44:01Z",
+      "last_run_at": "2026-09-04T12:37:52Z",
       "conclusion": "failure",
-      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/33756897033"
+      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/33873748210"
     },
     "Quora": {
-      "last_run_at": "2026-09-02T13:09:54Z",
+      "last_run_at": "2026-09-04T13:05:01Z",
       "conclusion": "failure",
-      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/33634092276"
+      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/33876102860"
     },
     "Trend Scout": {
       "last_run_at": "2026-08-31T09:55:40Z",
@@ -62,14 +62,14 @@
       "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/33382978672"
     },
     "SEO Optimizer": {
-      "last_run_at": "2026-09-03T14:12:47Z",
+      "last_run_at": "2026-09-04T14:03:34Z",
       "conclusion": "failure",
-      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/33765520950"
+      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/33881536441"
     },
     "Analytics": {
-      "last_run_at": "2026-09-04T06:13:22Z",
+      "last_run_at": "2026-09-05T06:01:48Z",
       "conclusion": "failure",
-      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/33843474866"
+      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/33948713400"
     },
     "Revenue Tracker": {
       "last_run_at": "2026-08-30T10:03:50Z",
@@ -83,19 +83,17 @@
     }
   },
   "agent_reports": {
-    "twitter": {
+    "competitor_spy": {
       "status": "ok",
-      "tweets_drafted": 5,
-      "content_format": "thread",
-      "short_posted_today": true,
-      "regular_posted_today": true,
-      "short_video_id": "KRClKNqrwSo",
-      "promo_video_id": "4LX6_ILR8Aw",
-      "tweet_count": 199,
-      "summary": "Format: THREAD | Short: ✅ | Regular: ✅ | Insight: ✅ | Reply drops: 3",
+      "videos_analyzed": 24,
+      "tags_updated": 11,
+      "formulas_updated": 5,
+      "top_video": "Simon Sinek's Advice Will Leave You SPEECHLESS 2.0 (MUST WAT",
+      "market_gap": "mental health and wellness for entrepreneurs and high-achievers",
+      "summary": "24 competitor videos analyzed, 11 tags + 5 formulas updated",
       "errors": [],
-      "agent": "twitter",
-      "reported_at": "2026-09-04T07:35:27.758081+00:00"
+      "agent": "competitor_spy",
+      "reported_at": "2026-07-06T05:29:28.809883+00:00"
     },
     "quora": {
       "status": "ok",
@@ -119,6 +117,20 @@
       "agent": "analytics",
       "reported_at": "2026-07-08T02:17:31.521669+00:00"
     },
+    "twitter": {
+      "status": "ok",
+      "tweets_drafted": 5,
+      "content_format": "thread",
+      "short_posted_today": true,
+      "regular_posted_today": true,
+      "short_video_id": "KRClKNqrwSo",
+      "promo_video_id": "67vcpZu7ySM",
+      "tweet_count": 202,
+      "summary": "Format: THREAD | Short: ✅ | Regular: ✅ | Insight: ✅ | Reply drops: 3",
+      "errors": [],
+      "agent": "twitter",
+      "reported_at": "2026-09-05T07:16:34.653042+00:00"
+    },
     "seo_optimizer": {
       "status": "ok",
       "videos_found": 5,
@@ -129,18 +141,6 @@
       "errors": [],
       "agent": "seo_optimizer",
       "reported_at": "2026-07-08T10:44:48.983868+00:00"
-    },
-    "competitor_spy": {
-      "status": "ok",
-      "videos_analyzed": 24,
-      "tags_updated": 11,
-      "formulas_updated": 5,
-      "top_video": "Simon Sinek's Advice Will Leave You SPEECHLESS 2.0 (MUST WAT",
-      "market_gap": "mental health and wellness for entrepreneurs and high-achievers",
-      "summary": "24 competitor videos analyzed, 11 tags + 5 formulas updated",
-      "errors": [],
-      "agent": "competitor_spy",
-      "reported_at": "2026-07-06T05:29:28.809883+00:00"
     },
     "revenue_tracker": {
       "status": "ok",
