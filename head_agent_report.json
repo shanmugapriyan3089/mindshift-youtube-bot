@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-10-05T15:32:55.027488+00:00",
+  "generated_at": "2026-10-06T13:54:57.738103+00:00",
   "agent_statuses": {
     "Regular Video (standard)": {
-      "last_run_at": "2026-10-05T10:11:40Z",
+      "last_run_at": "2026-10-06T09:56:33Z",
       "conclusion": "failure",
-      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/37294994812"
+      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/37446413682"
     },
     "Regular Video (mixed)": {
       "last_run_at": "2026-06-20T12:08:27Z",
@@ -17,9 +17,9 @@
       "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/27898268584"
     },
     "Shorts (standard)": {
-      "last_run_at": "2026-10-05T11:42:45Z",
+      "last_run_at": "2026-10-06T11:24:29Z",
       "conclusion": "failure",
-      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/37304688730"
+      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/37456189763"
     },
     "Shorts (mixed)": {
       "last_run_at": "2026-06-20T13:35:15Z",
@@ -32,24 +32,24 @@
       "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/27902267344"
     },
     "Twitter": {
-      "last_run_at": "2026-10-05T09:52:27Z",
+      "last_run_at": "2026-10-06T09:39:42Z",
       "conclusion": "success",
-      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/37292887251"
+      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/37444497056"
     },
     "Instagram": {
-      "last_run_at": "2026-10-05T12:31:38Z",
+      "last_run_at": "2026-10-06T12:10:17Z",
       "conclusion": "success",
-      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/37310140670"
+      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/37461360025"
     },
     "Reddit": {
-      "last_run_at": "2026-10-04T13:51:35Z",
+      "last_run_at": "2026-10-05T17:01:11Z",
       "conclusion": "failure",
-      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/37207122992"
+      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/37345260554"
     },
     "Quora": {
-      "last_run_at": "2026-10-02T15:16:13Z",
+      "last_run_at": "2026-10-05T17:44:34Z",
       "conclusion": "failure",
-      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/37025773006"
+      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/37350691247"
     },
     "Trend Scout": {
       "last_run_at": "2026-10-05T10:40:17Z",
@@ -62,14 +62,14 @@
       "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/37301319273"
     },
     "SEO Optimizer": {
-      "last_run_at": "2026-10-04T15:11:58Z",
+      "last_run_at": "2026-10-05T19:06:29Z",
       "conclusion": "failure",
-      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/37212102305"
+      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/37360994665"
     },
     "Analytics": {
-      "last_run_at": "2026-10-05T07:22:24Z",
+      "last_run_at": "2026-10-06T07:48:52Z",
       "conclusion": "failure",
-      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/37277371925"
+      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/37432017534"
     },
     "Revenue Tracker": {
       "last_run_at": "2026-10-04T10:42:36Z",
@@ -138,12 +138,12 @@
       "short_posted_today": true,
       "regular_posted_today": true,
       "short_video_id": "KRClKNqrwSo",
-      "promo_video_id": "67vcpZu7ySM",
-      "tweet_count": 292,
+      "promo_video_id": "js6RedoWlZs",
+      "tweet_count": 295,
       "summary": "Format: THREAD | Short: ✅ | Regular: ✅ | Insight: ✅ | Reply drops: 3",
       "errors": [],
       "agent": "twitter",
-      "reported_at": "2026-10-05T09:52:44.942631+00:00"
+      "reported_at": "2026-10-06T09:40:01.059674+00:00"
     },
     "seo_optimizer": {
       "status": "ok",
