@@ -1,14 +1,14 @@
 {
   "status": "ok",
   "tweets_drafted": 1,
-  "content_format": "yesno",
+  "content_format": "numbered",
   "short_posted_today": true,
   "regular_posted_today": true,
   "short_video_id": "",
   "promo_video_id": "",
-  "tweet_count": 296,
-  "summary": "Format: YESNO | Short: \u2705 | Regular: \u2705 | Insight: \u2705 | Reply drops: 3",
+  "tweet_count": 297,
+  "summary": "Format: NUMBERED | Short: \u2705 | Regular: \u2705 | Insight: \u2705 | Reply drops: 3",
   "errors": [],
   "agent": "twitter",
-  "reported_at": "2026-10-06T14:55:07.932635+00:00"
+  "reported_at": "2026-10-06T19:11:17.590127+00:00"
 }
