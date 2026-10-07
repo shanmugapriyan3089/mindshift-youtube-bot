@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-10-06T13:54:57.738103+00:00",
+  "generated_at": "2026-10-07T14:12:22.891998+00:00",
   "agent_statuses": {
     "Regular Video (standard)": {
-      "last_run_at": "2026-10-06T09:56:33Z",
+      "last_run_at": "2026-10-07T10:01:45Z",
       "conclusion": "failure",
-      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/37446413682"
+      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/37604633537"
     },
     "Regular Video (mixed)": {
       "last_run_at": "2026-06-20T12:08:27Z",
@@ -17,9 +17,9 @@
       "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/27898268584"
     },
     "Shorts (standard)": {
-      "last_run_at": "2026-10-06T11:24:29Z",
+      "last_run_at": "2026-10-07T11:12:37Z",
       "conclusion": "failure",
-      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/37456189763"
+      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/37612532495"
     },
     "Shorts (mixed)": {
       "last_run_at": "2026-06-20T13:35:15Z",
@@ -32,19 +32,19 @@
       "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/27902267344"
     },
     "Twitter": {
-      "last_run_at": "2026-10-06T09:39:42Z",
+      "last_run_at": "2026-10-07T09:37:09Z",
       "conclusion": "success",
-      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/37444497056"
+      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/37601857428"
     },
     "Instagram": {
-      "last_run_at": "2026-10-06T12:10:17Z",
+      "last_run_at": "2026-10-07T11:56:02Z",
       "conclusion": "success",
-      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/37461360025"
+      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/37617450061"
     },
     "Reddit": {
-      "last_run_at": "2026-10-05T17:01:11Z",
+      "last_run_at": "2026-10-06T14:56:47Z",
       "conclusion": "failure",
-      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/37345260554"
+      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/37483210458"
     },
     "Quora": {
       "last_run_at": "2026-10-05T17:44:34Z",
@@ -62,14 +62,14 @@
       "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/37301319273"
     },
     "SEO Optimizer": {
-      "last_run_at": "2026-10-05T19:06:29Z",
+      "last_run_at": "2026-10-06T16:32:58Z",
       "conclusion": "failure",
-      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/37360994665"
+      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/37496571481"
     },
     "Analytics": {
-      "last_run_at": "2026-10-06T07:48:52Z",
+      "last_run_at": "2026-10-07T07:28:18Z",
       "conclusion": "failure",
-      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/37432017534"
+      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/37587514988"
     },
     "Revenue Tracker": {
       "last_run_at": "2026-10-04T10:42:36Z",
@@ -138,12 +138,12 @@
       "short_posted_today": true,
       "regular_posted_today": true,
       "short_video_id": "KRClKNqrwSo",
-      "promo_video_id": "js6RedoWlZs",
-      "tweet_count": 295,
+      "promo_video_id": "Rw-LfdLbg3I",
+      "tweet_count": 298,
       "summary": "Format: THREAD | Short: ✅ | Regular: ✅ | Insight: ✅ | Reply drops: 3",
       "errors": [],
       "agent": "twitter",
-      "reported_at": "2026-10-06T09:40:01.059674+00:00"
+      "reported_at": "2026-10-07T09:37:23.453577+00:00"
     },
     "seo_optimizer": {
       "status": "ok",
