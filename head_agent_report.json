@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-10-26T13:53:00.897749+00:00",
+  "generated_at": "2026-10-27T12:58:22.797862+00:00",
   "agent_statuses": {
     "Regular Video (standard)": {
-      "last_run_at": "2026-10-26T08:41:02Z",
+      "last_run_at": "2026-10-27T08:47:11Z",
       "conclusion": "failure",
-      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/40293969703"
+      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/40475945173"
     },
     "Regular Video (mixed)": {
       "last_run_at": "2026-06-20T12:08:27Z",
@@ -17,9 +17,9 @@
       "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/27898268584"
     },
     "Shorts (standard)": {
-      "last_run_at": "2026-10-26T10:21:17Z",
-      "conclusion": "cancelled",
-      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/40306751069"
+      "last_run_at": "2026-10-27T09:55:49Z",
+      "conclusion": "failure",
+      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/40484534551"
     },
     "Shorts (mixed)": {
       "last_run_at": "2026-06-20T13:35:15Z",
@@ -32,24 +32,24 @@
       "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/27902267344"
     },
     "Twitter": {
-      "last_run_at": "2026-10-26T08:20:59Z",
+      "last_run_at": "2026-10-27T08:32:29Z",
       "conclusion": "success",
-      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/40291640480"
+      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/40474217791"
     },
     "Instagram": {
-      "last_run_at": "2026-10-26T11:25:29Z",
+      "last_run_at": "2026-10-27T10:49:10Z",
       "conclusion": "success",
-      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/40314964507"
+      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/40491411421"
     },
     "Reddit": {
-      "last_run_at": "2026-10-25T13:06:22Z",
+      "last_run_at": "2026-10-26T15:02:38Z",
       "conclusion": "failure",
-      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/40196096985"
+      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/40345401034"
     },
     "Quora": {
-      "last_run_at": "2026-10-23T14:00:33Z",
+      "last_run_at": "2026-10-26T15:44:57Z",
       "conclusion": "failure",
-      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/39965962903"
+      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/40352362728"
     },
     "Trend Scout": {
       "last_run_at": "2026-10-26T09:09:52Z",
@@ -62,14 +62,14 @@
       "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/40301823213"
     },
     "SEO Optimizer": {
-      "last_run_at": "2026-10-25T14:08:31Z",
+      "last_run_at": "2026-10-26T16:36:35Z",
       "conclusion": "failure",
-      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/40200840214"
+      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/40360754584"
     },
     "Analytics": {
-      "last_run_at": "2026-10-26T06:39:03Z",
+      "last_run_at": "2026-10-27T06:33:25Z",
       "conclusion": "failure",
-      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/40281065100"
+      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/40461807634"
     },
     "Revenue Tracker": {
       "last_run_at": "2026-10-25T09:18:18Z",
@@ -83,18 +83,6 @@
     }
   },
   "agent_reports": {
-    "analytics": {
-      "status": "ok",
-      "subscribers": 12,
-      "total_views": 3055,
-      "video_count": 64,
-      "watch_hours": 152.8,
-      "top_video": "The Hidden Force Behind 95% Decisions",
-      "summary": "12 subs, 3,055 views, 64 videos",
-      "errors": [],
-      "agent": "analytics",
-      "reported_at": "2026-07-08T02:17:31.521669+00:00"
-    },
     "competitor_spy": {
       "status": "ok",
       "videos_analyzed": 24,
@@ -138,12 +126,24 @@
       "short_posted_today": true,
       "regular_posted_today": true,
       "short_video_id": "KRClKNqrwSo",
-      "promo_video_id": "js6RedoWlZs",
-      "tweet_count": 355,
+      "promo_video_id": "Rw-LfdLbg3I",
+      "tweet_count": 358,
       "summary": "Format: THREAD | Short: ✅ | Regular: ✅ | Insight: ✅ | Reply drops: 3",
       "errors": [],
       "agent": "twitter",
-      "reported_at": "2026-10-26T08:21:11.907698+00:00"
+      "reported_at": "2026-10-27T08:32:42.208705+00:00"
+    },
+    "analytics": {
+      "status": "ok",
+      "subscribers": 12,
+      "total_views": 3055,
+      "video_count": 64,
+      "watch_hours": 152.8,
+      "top_video": "The Hidden Force Behind 95% Decisions",
+      "summary": "12 subs, 3,055 views, 64 videos",
+      "errors": [],
+      "agent": "analytics",
+      "reported_at": "2026-07-08T02:17:31.521669+00:00"
     },
     "seo_optimizer": {
       "status": "ok",
@@ -160,7 +160,7 @@
   "agent_health_summary": {
     "total": 16,
     "healthy": 7,
-    "failed": 8
+    "failed": 9
   },
   "upload_stats": {
     "total_uploaded": 21,
@@ -197,10 +197,11 @@
       "Need more data"
     ],
     "urgent_actions": [
-      "Fix failed: Regular Video (standard), Reddit, Quora, Competitor Spy, SEO Optimizer, Analytics, Revenue Tracker, Video Reviewer"
+      "Fix failed: Regular Video (standard), Shorts (standard), Reddit, Quora, Competitor Spy, SEO Optimizer, Analytics, Revenue Tracker, Video Reviewer"
     ],
     "fix_instructions": {
       "Regular Video (standard)": "Check GitHub Actions logs",
+      "Shorts (standard)": "Check GitHub Actions logs",
       "Reddit": "Check GitHub Actions logs",
       "Quora": "Check GitHub Actions logs",
       "Competitor Spy": "Check GitHub Actions logs",
