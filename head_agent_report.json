@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-11-02T16:49:21.694916+00:00",
+  "generated_at": "2026-11-03T14:51:05.377765+00:00",
   "agent_statuses": {
     "Regular Video (standard)": {
-      "last_run_at": "2026-11-02T10:45:09Z",
+      "last_run_at": "2026-11-03T10:37:45Z",
       "conclusion": "failure",
-      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/41431300536"
+      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/41620855393"
     },
     "Regular Video (mixed)": {
       "last_run_at": "2026-06-20T12:08:27Z",
@@ -17,9 +17,9 @@
       "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/27898268584"
     },
     "Shorts (standard)": {
-      "last_run_at": "2026-11-02T12:43:23Z",
+      "last_run_at": "2026-11-03T12:09:28Z",
       "conclusion": "failure",
-      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/41447006183"
+      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/41633341528"
     },
     "Shorts (mixed)": {
       "last_run_at": "2026-06-20T13:35:15Z",
@@ -32,24 +32,24 @@
       "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/27902267344"
     },
     "Twitter": {
-      "last_run_at": "2026-11-02T10:23:35Z",
+      "last_run_at": "2026-11-03T10:21:43Z",
       "conclusion": "success",
-      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/41428437086"
+      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/41618620710"
     },
     "Instagram": {
-      "last_run_at": "2026-11-02T13:45:15Z",
+      "last_run_at": "2026-11-03T12:57:05Z",
       "conclusion": "success",
-      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/41455692421"
+      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/41640025901"
     },
     "Reddit": {
-      "last_run_at": "2026-11-01T14:53:13Z",
+      "last_run_at": "2026-11-02T18:05:34Z",
       "conclusion": "failure",
-      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/41318395259"
+      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/41497250600"
     },
     "Quora": {
-      "last_run_at": "2026-10-30T15:28:34Z",
+      "last_run_at": "2026-11-02T19:03:11Z",
       "conclusion": "failure",
-      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/41081048158"
+      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/41506311215"
     },
     "Trend Scout": {
       "last_run_at": "2026-11-02T11:28:28Z",
@@ -62,14 +62,14 @@
       "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/41441103354"
     },
     "SEO Optimizer": {
-      "last_run_at": "2026-11-01T16:36:54Z",
+      "last_run_at": "2026-11-02T20:01:10Z",
       "conclusion": "failure",
-      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/41327236237"
+      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/41515297011"
     },
     "Analytics": {
-      "last_run_at": "2026-11-02T07:54:40Z",
+      "last_run_at": "2026-11-03T08:14:24Z",
       "conclusion": "failure",
-      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/41409325623"
+      "run_url": "https://github.com/shanmugapriyan3089/mindshift-youtube-bot/actions/runs/41601799397"
     },
     "Revenue Tracker": {
       "last_run_at": "2026-11-01T11:26:05Z",
@@ -83,27 +83,28 @@
     }
   },
   "agent_reports": {
-    "competitor_spy": {
+    "seo_optimizer": {
       "status": "ok",
-      "videos_analyzed": 24,
-      "tags_updated": 11,
-      "formulas_updated": 5,
-      "top_video": "Simon Sinek's Advice Will Leave You SPEECHLESS 2.0 (MUST WAT",
-      "market_gap": "mental health and wellness for entrepreneurs and high-achievers",
-      "summary": "24 competitor videos analyzed, 11 tags + 5 formulas updated",
+      "videos_found": 5,
+      "seo_applied": 3,
+      "seo_failed": 0,
+      "skipped": 0,
+      "summary": "3/3 SEO updates applied, 0 skipped",
       "errors": [],
-      "agent": "competitor_spy",
-      "reported_at": "2026-07-06T05:29:28.809883+00:00"
+      "agent": "seo_optimizer",
+      "reported_at": "2026-07-08T10:44:48.983868+00:00"
     },
-    "quora": {
+    "analytics": {
       "status": "ok",
-      "questions_found": 5,
-      "answers_drafted": 5,
-      "source": "AI-generated questions based on latest video topic",
-      "summary": "5 Quora answer drafts sent to email (AI-generated questions based on latest video topic)",
+      "subscribers": 12,
+      "total_views": 3055,
+      "video_count": 64,
+      "watch_hours": 152.8,
+      "top_video": "The Hidden Force Behind 95% Decisions",
+      "summary": "12 subs, 3,055 views, 64 videos",
       "errors": [],
-      "agent": "quora",
-      "reported_at": "2026-08-14T09:54:52.859833+00:00"
+      "agent": "analytics",
+      "reported_at": "2026-07-08T02:17:31.521669+00:00"
     },
     "revenue_tracker": {
       "status": "ok",
@@ -119,6 +120,16 @@
       "agent": "revenue_tracker",
       "reported_at": "2026-07-05T05:50:56.241710+00:00"
     },
+    "quora": {
+      "status": "ok",
+      "questions_found": 5,
+      "answers_drafted": 5,
+      "source": "AI-generated questions based on latest video topic",
+      "summary": "5 Quora answer drafts sent to email (AI-generated questions based on latest video topic)",
+      "errors": [],
+      "agent": "quora",
+      "reported_at": "2026-08-14T09:54:52.859833+00:00"
+    },
     "twitter": {
       "status": "ok",
       "tweets_drafted": 5,
@@ -126,35 +137,24 @@
       "short_posted_today": true,
       "regular_posted_today": true,
       "short_video_id": "KRClKNqrwSo",
-      "promo_video_id": "7eNH1VAEmtM",
-      "tweet_count": 376,
+      "promo_video_id": "4LX6_ILR8Aw",
+      "tweet_count": 379,
       "summary": "Format: THREAD | Short: ✅ | Regular: ✅ | Insight: ✅ | Reply drops: 3",
       "errors": [],
       "agent": "twitter",
-      "reported_at": "2026-11-02T10:23:59.782159+00:00"
+      "reported_at": "2026-11-03T10:21:58.246568+00:00"
     },
-    "analytics": {
+    "competitor_spy": {
       "status": "ok",
-      "subscribers": 12,
-      "total_views": 3055,
-      "video_count": 64,
-      "watch_hours": 152.8,
-      "top_video": "The Hidden Force Behind 95% Decisions",
-      "summary": "12 subs, 3,055 views, 64 videos",
+      "videos_analyzed": 24,
+      "tags_updated": 11,
+      "formulas_updated": 5,
+      "top_video": "Simon Sinek's Advice Will Leave You SPEECHLESS 2.0 (MUST WAT",
+      "market_gap": "mental health and wellness for entrepreneurs and high-achievers",
+      "summary": "24 competitor videos analyzed, 11 tags + 5 formulas updated",
       "errors": [],
-      "agent": "analytics",
-      "reported_at": "2026-07-08T02:17:31.521669+00:00"
-    },
-    "seo_optimizer": {
-      "status": "ok",
-      "videos_found": 5,
-      "seo_applied": 3,
-      "seo_failed": 0,
-      "skipped": 0,
-      "summary": "3/3 SEO updates applied, 0 skipped",
-      "errors": [],
-      "agent": "seo_optimizer",
-      "reported_at": "2026-07-08T10:44:48.983868+00:00"
+      "agent": "competitor_spy",
+      "reported_at": "2026-07-06T05:29:28.809883+00:00"
     }
   },
   "agent_health_summary": {
