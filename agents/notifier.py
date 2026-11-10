@@ -1,6 +1,6 @@
 """
-Notification helper — tries Gmail first, falls back to Telegram when available.
-Gmail setup: add NOTIFY_EMAIL + GMAIL_APP_PASSWORD to GitHub Secrets.
+Notification helper — Telegram only (email disabled to stop inbox spam).
+Telegram setup: add TELEGRAM_BOT_TOKEN + TELEGRAM_CHAT_ID to GitHub Secrets.
 """
 import os
 import smtplib
@@ -54,11 +54,9 @@ def _send_telegram(message: str) -> bool:
 
 
 def send(message: str, subject: str = "MindShift Bot Update"):
-    """Send notification — Gmail first, Telegram as fallback."""
-    sent = _send_email(subject, message)
-    _send_telegram(message)
-    if not sent:
-        print(f"[Notifier] No notification method configured.\n{message}")
+    """Send notification — Telegram only. Email disabled (too many agent emails)."""
+    if not _send_telegram(message):
+        print(f"[Notifier] Telegram not configured — logged only.\n{message}")
 
 
 def write_agent_report(agent_name: str, data: dict):

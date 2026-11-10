@@ -10,3 +10,4 @@ __pycache__/
 .DS_Store
 used_topics.json
 used_titles.json
+youtube_token_b64.txt

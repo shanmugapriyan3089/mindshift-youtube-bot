@@ -1,10 +1,11 @@
 name: Agent 8 — Twitter Auto-Post
 
 on:
-  schedule:
-    - cron: "0 3 * * *"    # 3:00 UTC  = 8:30 AM IST  — morning commute peak
-    - cron: "0 8 * * *"    # 8:00 UTC  = 1:30 PM IST  — afternoon break
-    - cron: "0 14 * * *"   # 14:00 UTC = 7:30 PM IST  — evening prime time
+  # DISABLED — Twitter agent stopped (only produced draft emails, no channel growth)
+  # schedule:
+  #   - cron: "0 3 * * *"    # 3:00 UTC  = 8:30 AM IST  — morning commute peak
+  #   - cron: "0 8 * * *"    # 8:00 UTC  = 1:30 PM IST  — afternoon break
+  #   - cron: "0 14 * * *"   # 14:00 UTC = 7:30 PM IST  — evening prime time
   workflow_dispatch:        # Manual trigger
 
 jobs:

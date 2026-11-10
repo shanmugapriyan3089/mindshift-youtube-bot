@@ -10,6 +10,7 @@ from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
+from google.auth.exceptions import RefreshError
 from config import YOUTUBE_CLIENT_SECRETS_PATH, MADE_FOR_KIDS
 
 SCOPES = ["https://www.googleapis.com/auth/youtube"]
@@ -23,21 +24,26 @@ def _get_credentials():
             creds = pickle.load(f)
 
     if not creds or not creds.valid:
+        refreshed = False
         if creds and creds.expired and creds.refresh_token:
-            creds.refresh(Request())
-        else:
+            try:
+                creds.refresh(Request())
+                refreshed = True
+            except RefreshError as e:
+                print(f"[YouTube] Token refresh failed: {e}")
+        if not refreshed:
+            # CI can't do a browser login — fail loudly with the fix instead
+            if os.getenv("GITHUB_ACTIONS"):
+                raise RuntimeError(
+                    "YOUTUBE_TOKEN is expired or revoked. On your PC run "
+                    "`python reauth_youtube.py`, then update the YOUTUBE_TOKEN secret. "
+                    "If this happens every 7 days, the OAuth app is still in 'Testing' — "
+                    "publish it in Google Cloud Console > Google Auth Platform > Audience."
+                )
             flow = InstalledAppFlow.from_client_secrets_file(
                 YOUTUBE_CLIENT_SECRETS_PATH, SCOPES
             )
-            # In GitHub Actions: use run_local_server=False and provide auth_code via env
-            if os.getenv("GITHUB_ACTIONS"):
-                auth_url, _ = flow.authorization_url(prompt="consent")
-                print(f"[YouTube] Visit this URL to authorize:\n{auth_url}")
-                code = os.getenv("YOUTUBE_AUTH_CODE", "")
-                flow.fetch_token(code=code)
-                creds = flow.credentials
-            else:
-                creds = flow.run_local_server(port=0)
+            creds = flow.run_local_server(port=0)
 
         with open(TOKEN_FILE, "wb") as f:
             pickle.dump(creds, f)
