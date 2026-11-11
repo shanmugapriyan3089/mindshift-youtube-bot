@@ -2,9 +2,10 @@ name: Agent 10 — Instagram Reels
 
 # Runs 30 minutes after daily Shorts pipeline to give YouTube time to process
 on:
-  schedule:
-    - cron: "30 5 * * *"    # 05:30 UTC daily (30 min after Shorts pipeline at 05:00)
-    - cron: "30 11 * * *"   # 11:30 UTC daily
+  # PAUSED (Nov 2026) — not needed by the story-Shorts system
+  # schedule:
+  #   - cron: "30 5 * * *"    # 05:30 UTC daily (30 min after Shorts pipeline at 05:00)
+  #   - cron: "30 11 * * *"   # 11:30 UTC daily
   workflow_dispatch:         # Manual trigger
 
 jobs:
