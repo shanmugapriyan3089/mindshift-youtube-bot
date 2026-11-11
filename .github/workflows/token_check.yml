@@ -1,0 +1,32 @@
+name: YouTube token check
+
+# Read-only: confirms the YOUTUBE_TOKEN secret can refresh and reach the channel.
+on:
+  push:
+    paths: [.github/workflows/token_check.yml]
+  schedule:
+    - cron: '0 2 * * 1'   # every Monday — fails early (one email) if the token ever stops working
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Install dependencies
+        run: pip install google-auth google-api-python-client
+
+      - name: Restore YouTube token
+        run: echo "${{ secrets.YOUTUBE_TOKEN }}" | base64 -d > youtube_token.pickle
+
+      - name: Refresh token and read channel
+        run: |
+          python - <<'EOF'
+          import pickle
+          from google.auth.transport.requests import Request
+          from googleapiclient.discovery import build
+          creds = pickle.load(open("youtube_token.pickle", "rb"))
+          creds.refresh(Request())
+          ch = build("youtube", "v3", credentials=creds).channels().list(part="snippet", mine=True).execute()
+          print("TOKEN OK - channel:", ch["items"][0]["snippet"]["title"])
+          EOF

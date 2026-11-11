@@ -1,8 +1,9 @@
 name: Daily Regular Video
 
 on:
-  schedule:
-    - cron: '0 3 * * *'   # 8:30 AM IST (3:00 AM UTC)
+  # PAUSED — old stick-figure pipeline; replaced by the sketchbook story Shorts (prototype/)
+  # schedule:
+  #   - cron: '0 3 * * *'   # 8:30 AM IST (3:00 AM UTC)
   workflow_dispatch:
 
 jobs:
