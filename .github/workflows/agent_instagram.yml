@@ -1,59 +1,51 @@
-name: Agent 10 — Instagram Reels
+name: Instagram Reels — cross-post story Shorts
 
-# Runs 30 minutes after daily Shorts pipeline to give YouTube time to process
+# After a story Short goes public on YouTube (Mon/Wed/Fri 19:00 IST), post it as an Instagram Reel.
+# The video comes from the GitHub Release "short-<slug>" that story_shorts.yml creates.
 on:
-  # PAUSED (Nov 2026) — not needed by the story-Shorts system
-  # schedule:
-  #   - cron: "30 5 * * *"    # 05:30 UTC daily (30 min after Shorts pipeline at 05:00)
-  #   - cron: "30 11 * * *"   # 11:30 UTC daily
-  workflow_dispatch:         # Manual trigger
+  schedule:
+    - cron: '40 13 * * *'       # daily 19:10 IST — 10 min after the YouTube publish slot
+  push:
+    paths: ['.github/workflows/agent_instagram.yml', 'prototype/post_instagram.py']
+  workflow_dispatch:
+
+concurrency:
+  group: instagram
+  cancel-in-progress: false
 
 jobs:
-  post-to-instagram:
+  post:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 20
     permissions:
       contents: write
-
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: '3.11'
 
-      - name: Install dependencies
-        run: |
-          pip install requests yt-dlp
-          pip install google-auth google-auth-oauthlib google-api-python-client
-          pip install groq python-dotenv
+      - run: pip install -q requests
 
-      - name: Restore YouTube token
-        run: |
-          echo "$YOUTUBE_TOKEN" | base64 -d > youtube_token.pickle
+      - name: Check Instagram access
         env:
-          YOUTUBE_TOKEN: ${{ secrets.YOUTUBE_TOKEN }}
-
-      - name: Run Instagram agent
-        run: python -m agents.instagram_agent
-        env:
-          INSTAGRAM_ACCOUNT_ID:   ${{ secrets.INSTAGRAM_ACCOUNT_ID }}
+          INSTAGRAM_ACCOUNT_ID: ${{ secrets.INSTAGRAM_ACCOUNT_ID }}
           INSTAGRAM_ACCESS_TOKEN: ${{ secrets.INSTAGRAM_ACCESS_TOKEN }}
-          YOUTUBE_COOKIES:        ${{ secrets.YOUTUBE_COOKIES }}
-          NOTIFY_EMAIL:           ${{ secrets.NOTIFY_EMAIL }}
-          GMAIL_APP_PASSWORD:     ${{ secrets.GMAIL_APP_PASSWORD }}
-          TELEGRAM_BOT_TOKEN:     ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          TELEGRAM_CHAT_ID:       ${{ secrets.TELEGRAM_CHAT_ID }}
-          GROQ_API_KEY:           ${{ secrets.GROQ_API_KEY }}
+        run: python prototype/post_instagram.py --check
 
-      - name: Save Instagram log
-        if: always()
+      - name: Post the next public Short as a Reel
+        if: github.event_name != 'push'
+        env:
+          INSTAGRAM_ACCOUNT_ID: ${{ secrets.INSTAGRAM_ACCOUNT_ID }}
+          INSTAGRAM_ACCESS_TOKEN: ${{ secrets.INSTAGRAM_ACCESS_TOKEN }}
+        run: python prototype/post_instagram.py
+
+      - name: Commit Instagram records
+        if: github.event_name != 'push'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git pull --rebase origin main || true
-          git add instagram_log.json agents_state/ || true
-          git diff --cached --quiet || git commit -m "chore: update instagram log [skip ci]"
-          git push || true
+          git add prototype/sketch_*/instagram.json || true
+          git diff --cached --quiet || git commit -m "chore: Short cross-posted to Instagram [skip ci]"
+          for i in 1 2 3; do git pull --rebase origin main && git push && break || sleep $((i*5)); done || true

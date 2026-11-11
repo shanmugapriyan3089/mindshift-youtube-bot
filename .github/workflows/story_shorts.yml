@@ -74,6 +74,17 @@ jobs:
           HF_HUB_DISABLE_SYMLINKS_WARNING: '1'
         run: python -u prototype/run_pending.py
 
+      - name: Publish the video as a GitHub Release (source for Instagram)
+        if: success() && steps.pending.outputs.count != '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          for up in $(git status --porcelain -- 'prototype/sketch_*/upload.json' | awk '{print $2}'); do
+            slug=$(basename "$(dirname "$up")"); slug=${slug#sketch_}
+            cp "prototype/SHORT_sketch_${slug}.mp4" "${slug}.mp4"
+            gh release create "short-${slug}" "${slug}.mp4" --title "Short: ${slug}" --notes "Rendered story Short (source for Instagram cross-posting)." || true
+          done
+
       - name: Keep the rendered video as an artifact
         if: always() && steps.pending.outputs.count != '0'
         uses: actions/upload-artifact@v4
