@@ -1,8 +1,9 @@
 name: Agent 7 — SEO Optimizer (Daily)
 
 on:
-  schedule:
-    - cron: '0 10 * * *'  # Every day 3:30 PM IST (10:00 AM UTC)
+  # PAUSED (Nov 2026) — old growth agent; replaced by the story-Shorts pipeline
+  # schedule:
+  #   - cron: '0 10 * * *'  # Every day 3:30 PM IST (10:00 AM UTC)
   workflow_dispatch:
 
 jobs:

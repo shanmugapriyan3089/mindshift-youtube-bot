@@ -1,8 +1,9 @@
 name: Agent 11 — Video Reviewer + Competitor Intel (Weekly)
 
 on:
-  schedule:
-    - cron: '0 5 * * 0'   # Every Sunday 10:30 AM IST (5:00 AM UTC)
+  # PAUSED (Nov 2026) — old growth agent; replaced by the story-Shorts pipeline
+  # schedule:
+  #   - cron: '0 5 * * 0'   # Every Sunday 10:30 AM IST (5:00 AM UTC)
   workflow_dispatch:        # Manual trigger anytime
 
 jobs:
