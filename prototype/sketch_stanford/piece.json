@@ -1,0 +1,31 @@
+{
+  "name": "sketch-stanford",
+  "title": "Prisoner 8612 (sketchbook)",
+  "format": {
+    "width": 1080,
+    "height": 1920,
+    "fps": 24,
+    "bpm": 120,
+    "duration": 77.0,
+    "frames": 1848
+  },
+  "storyFormat": "fixed-hero journey (9 eras, hard cuts, voice-led)",
+  "style": "sketchbook",
+  "voice": {
+    "file": "voice/voice.wav",
+    "music": -26,
+    "gain": 0
+  },
+  "review": {
+    "safe": {
+      "top": 240,
+      "bottom": 420,
+      "right": 140
+    },
+    "refs": {}
+  },
+  "scenes": [
+    "../sketch_kit/people.js",
+    "src/scenes.js"
+  ]
+}

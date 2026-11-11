@@ -1,0 +1,31 @@
+{
+  "name": "sketch-milgram",
+  "title": "The Shock Machine (sketchbook)",
+  "format": {
+    "width": 1080,
+    "height": 1920,
+    "fps": 24,
+    "bpm": 120,
+    "duration": 75.0,
+    "frames": 1800
+  },
+  "storyFormat": "fixed-hero journey (9 eras, hard cuts, voice-led)",
+  "style": "sketchbook",
+  "voice": {
+    "file": "voice/voice.wav",
+    "music": -26,
+    "gain": 0
+  },
+  "review": {
+    "safe": {
+      "top": 240,
+      "bottom": 420,
+      "right": 140
+    },
+    "refs": {}
+  },
+  "scenes": [
+    "../sketch_kit/people.js",
+    "src/scenes.js"
+  ]
+}

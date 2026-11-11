@@ -11,3 +11,15 @@ __pycache__/
 used_topics.json
 used_titles.json
 youtube_token_b64.txt
+prototype/out_*/
+
+# prototype: keep source, skip generated media
+prototype/**/*.mp4
+prototype/**/*.wav
+prototype/**/*.png
+prototype/**/renders/
+prototype/**/index.html
+prototype/**/.hyperframes/
+prototype/**/node_modules/
+prototype/sketch_*/frames/
+prototype/**/review/

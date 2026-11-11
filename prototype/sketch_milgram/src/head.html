@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Shock Machine</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #1d1a17; overflow: hidden; }
+  body { display: flex; align-items: center; justify-content: center; }
+  canvas { height: min(100vh, calc(100vw * 16 / 9)); width: auto; aspect-ratio: 9 / 16; display: block; cursor: pointer; }
+</style>
+</head>
+<body>
+<canvas id="c" width="1080" height="1920"></canvas>
+<script>
+"use strict";
+// =====================================================================
+//  THE SHOCK MACHINE — 9:16, 75s @ 24fps, sketchbook style, voice-led. Milgram 1961, told to "you", the teacher.
+// =====================================================================
+const FPS = 24, W = 1080, H = 1920;
+const BPM = 120, BEAT = 60 / BPM, E8 = BEAT / 2, E16 = BEAT / 4;
+const DURATION = 75.0;
+const NFRAMES = Math.round(DURATION * FPS);
+const LOOP_T = NFRAMES / FPS;
+const SAFE = { top: 240, bottom: 420, right: 140 };
+const HAND = '"Ink Free", "Segoe Print", "Bradley Hand", "Comic Sans MS", "Chalkboard SE", cursive';
+const CX = 540;
+
+// scene starts = narration sentence starts (voice is the clock)
+const S = [0.0, 10.11, 17.94, 26.69, 32.64, 40.95, 46.98, 54.37, 62.92, 75.0];
+// spoken-word cues (faster-whisper word times)
+const CUE = {};
+
+const ERA_LIST = [
+  [S[0], S[1], () => SCENES[0]()],
+  [S[1], S[2], () => SCENES[1]()],
+  [S[2], S[3], () => SCENES[2]()],
+  [S[3], S[4], () => SCENES[3]()],
+  [S[4], S[5], () => SCENES[4]()],
+  [S[5], S[6], () => SCENES[5]()],
+  [S[6], S[7], () => SCENES[6]()],
+  [S[7], S[8], () => SCENES[7]()],
+  [S[8], S[9], () => SCENES[8]()],
+];
+const SHOT_NAMES = ['ad', 'roles', 'machine', '150v', 'continue', '65pct', 'fake', 'refuse', 'first'];
+const SHOTS = ERA_LIST.map(([t0, t1], i) => [SHOT_NAMES[i], i, t0, t1, SHOT_NAMES[i]]);
+const TIMELINE = {
+  width: W, height: H, fps: FPS, bpm: BPM, duration: DURATION, frames: NFRAMES, loop: LOOP_T, safe: SAFE,
+  format: 'voice-led',
+  shots: SHOTS.map(([key, era, t0, t1, title], i) => ({ id: i + 1, key, era, t0, t1, title })),
+  cuts: S.slice(1, -1),
+  morphs: [],
+  cues: CUE,
+  acts: [
+    { name: '1 Setup', role: 'build', t0: 0, t1: S[3] },
+    { name: '2 Prison', role: 'journey', t0: S[3], t1: S[6] },
+    { name: '3 Twist', role: 'peak', t0: S[6], t1: S[8] },
+    { name: '4 You', role: 'gift', t0: S[8], t1: DURATION },
+  ],
+  board: SHOT_NAMES.map((n, i) => ({ t: (S[i] + S[i + 1]) / 2, title: n, sound: '', next: '' })),
+  narration: [],
+};
+window.TIMELINE = TIMELINE;
