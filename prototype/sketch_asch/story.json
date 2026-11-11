@@ -1,0 +1,25 @@
+{
+  "title": "The Line Test (Asch, 1951)",
+  "youtube": {
+    "title": "Everyone Gave the Wrong Answer. Would You? #Shorts",
+    "description": "1951. A simple vision test: which line matches? The answer is obvious. Then everyone at the table says the wrong one.\n\nThis is Solomon Asch's conformity experiment, told from the inside. Alone, people almost never got it wrong. In the group, three out of four went along with the wrong answer at least once.\n\nWhat would YOU have said? Tell me in the comments.\n\nSources:\n- Asch, S. E. (1951). Effects of group pressure upon the modification and distortion of judgments.\n- Asch, S. E. (1956). Studies of independence and conformity. Psychological Monographs, 70(9).\n\n#psychology #asch #conformity #shorts #mindset",
+    "tags": ["asch experiment", "conformity", "psychology", "social psychology", "peer pressure", "psychology experiment", "solomon asch", "group pressure", "human behavior", "mindshift productivity"]
+  },
+  "sources": [
+    "Asch (1951/1956): groups of 7-9 with one real participant; control error rate under 1%.",
+    "About 75% of participants conformed to the wrong majority at least once (Asch 1956).",
+    "Variation with written (private) answers: conformity fell sharply (about 12.5%)."
+  ],
+  "shots": ["test", "task", "obvious", "the-others", "your-turn", "result", "actors", "private", "say"],
+  "lines": [
+    "Nineteen fifty-one. You sign up for a simple vision test. Seven other students sit at the table with you.",
+    "The task: look at one line. Then say which of three lines is the same length.",
+    "The answer is obvious. It's line C. A child could see it.",
+    "But the first student says: line A. So does the second. And the third. Every single one.",
+    "Now it's your turn. Every face at the table turns to you.",
+    "Alone, people got this wrong less than one percent of the time. In the group, three out of four went along with the wrong answer at least once.",
+    "The other seven were actors. The only thing being tested was you.",
+    "But when people could write their answer in private, far fewer went along.",
+    "So the group didn't change what you saw. It changed what you were willing to say out loud. What would you have said?"
+  ]
+}

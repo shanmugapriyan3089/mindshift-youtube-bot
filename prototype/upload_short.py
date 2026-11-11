@@ -32,6 +32,34 @@ def srt_from_words(words, max_words=6):
     return "\n".join(out)
 
 
+PLAYLIST = "Psychology Stories (Animated)"
+PLAYLIST_DESC = ("Famous psychology experiments and real cases, told from the inside — hand-drawn. "
+                 "Milgram, Asch, the Stanford Prison Experiment and more. Every story cites its study.")
+
+
+def add_to_playlist(yt, vid):
+    """Add the video to the channel's story playlist, creating the playlist the first time."""
+    pid = None
+    for item in yt.playlists().list(part="snippet", mine=True, maxResults=50).execute().get("items", []):
+        if item["snippet"]["title"] == PLAYLIST:
+            pid = item["id"]
+    if not pid:
+        pid = yt.playlists().insert(part="snippet,status", body={
+            "snippet": {"title": PLAYLIST, "description": PLAYLIST_DESC, "defaultLanguage": "en"},
+            "status": {"privacyStatus": "public"}}).execute()["id"]
+        print(f"  playlist created: {PLAYLIST}")
+    try:   # a just-created playlist can 404 for a few seconds
+        existing = [i["contentDetails"]["videoId"] for i in
+                    yt.playlistItems().list(part="contentDetails", playlistId=pid, maxResults=50).execute().get("items", [])]
+    except Exception:
+        existing = []
+    if vid not in existing:
+        yt.playlistItems().insert(part="snippet", body={"snippet": {"playlistId": pid,
+                                  "resourceId": {"kind": "youtube#video", "videoId": vid}}}).execute()
+    print(f"  in playlist: {PLAYLIST} (https://youtube.com/playlist?list={pid})")
+    return pid
+
+
 def main(piece, publish_at):
     story = json.load(open(os.path.join(piece, "story.json"), encoding="utf-8"))
     meta = story["youtube"]
@@ -65,6 +93,7 @@ def main(piece, publish_at):
         print(f"  captions skipped ({str(e)[:80]})")
     os.unlink(srt)
 
+    add_to_playlist(yt, vid)
     check = yt.videos().list(part="status,snippet", id=vid).execute()["items"][0]
     rec = {"video_id": vid, "url": f"https://youtube.com/shorts/{vid}", "title": check["snippet"]["title"],
            "privacy": check["status"]["privacyStatus"], "publish_at": check["status"].get("publishAt")}
