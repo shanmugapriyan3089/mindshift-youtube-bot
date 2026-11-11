@@ -22,7 +22,7 @@ load_dotenv()
 KEY = os.getenv("GEMINI_API_KEY")
 API = "https://generativelanguage.googleapis.com/v1beta/models"
 IMAGE_MODEL = "gemini-3.1-flash-image"
-TTS_MODEL = os.getenv("STORY_TTS_MODEL", "gemini-3.8-flash-lite-tts")  # free tier: 10 req/day/model
+TTS_MODEL = os.getenv("STORY_TTS_MODEL", "gemini-3.1-flash-tts-preview")  # channel voice; free tier: 10 req/day
 VOICE = "Charon"
 # Free image backend (used when set): Cloudflare Workers AI
 CF_ACCOUNT = os.getenv("CLOUDFLARE_ACCOUNT_ID")

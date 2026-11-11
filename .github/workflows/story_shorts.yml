@@ -1,0 +1,95 @@
+name: Story Shorts — make + schedule
+
+# Fully automatic: renders the next pending story (prototype/sketch_*/ without upload.json),
+# runs the checks and uploads it into the next Mon/Wed/Fri 19:00 IST slot.
+# Windows runner: the sketchbook style's hand-lettering fonts (Ink Free, Segoe Print) ship with Windows.
+on:
+  schedule:
+    - cron: '0 5 * * *'          # daily 10:30 IST — one story per day (free TTS quota)
+  push:
+    paths: ['prototype/sketch_*/src/scenes.js', 'prototype/sketch_*/story.json']
+  workflow_dispatch:
+
+concurrency:
+  group: story-shorts
+  cancel-in-progress: false
+
+jobs:
+  make:
+    runs-on: windows-latest
+    timeout-minutes: 75
+    permissions:
+      contents: write
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Check for pending stories
+        id: pending
+        run: |
+          python - <<'EOF' >> "$GITHUB_OUTPUT"
+          import sys; sys.path.insert(0, 'prototype')
+          from run_pending import pending
+          print('count=' + str(len(pending())))
+          EOF
+
+      - name: Install tools
+        if: steps.pending.outputs.count != '0'
+        run: |
+          choco install ffmpeg -y --no-progress > /dev/null
+          pip install -q requests python-dotenv google-api-python-client google-auth google-auth-oauthlib faster-whisper numpy pillow
+          npm ci --prefix tools/animate --no-audit --no-fund
+          cd tools/animate && npx playwright install chromium
+
+      - name: Check hand-lettering fonts
+        if: steps.pending.outputs.count != '0'
+        shell: pwsh
+        run: |
+          $fonts = (Get-ChildItem C:\Windows\Fonts).Name
+          foreach ($f in 'Inkfree.ttf', 'segoepr.ttf', 'segoeprb.ttf') { if ($fonts -contains $f) { "font OK: $f" } else { "::warning::font missing: $f" } }
+
+      - name: Restore credentials
+        if: steps.pending.outputs.count != '0'
+        run: |
+          echo "${{ secrets.YOUTUBE_TOKEN }}" | base64 -d > youtube_token.pickle
+          echo '${{ secrets.YOUTUBE_CLIENT_SECRETS }}' > client_secrets.json
+
+      - name: Make and schedule the next Short
+        if: steps.pending.outputs.count != '0'
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          YOUTUBE_CLIENT_SECRETS_PATH: client_secrets.json
+          PYTHONIOENCODING: utf-8
+          PYTHONUNBUFFERED: '1'
+          HF_HUB_DISABLE_SYMLINKS_WARNING: '1'
+        run: python -u prototype/run_pending.py
+
+      - name: Keep the rendered video as an artifact
+        if: always() && steps.pending.outputs.count != '0'
+        uses: actions/upload-artifact@v4
+        with:
+          name: shorts
+          path: |
+            prototype/SHORT_*.mp4
+            prototype/sketch_*/look.png
+          if-no-files-found: ignore
+          retention-days: 14
+
+      - name: Commit timing + upload records
+        if: always() && steps.pending.outputs.count != '0'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add prototype/sketch_*/timing.json prototype/sketch_*/src/timing.js prototype/sketch_*/piece.json prototype/sketch_*/upload.json prototype/sketch_*/failed.json || true
+          git diff --cached --quiet || git commit -m "chore: story short made + scheduled [skip ci]"
+          for i in 1 2 3; do git pull --rebase origin main && git push && break || sleep $((i*5)); done || true

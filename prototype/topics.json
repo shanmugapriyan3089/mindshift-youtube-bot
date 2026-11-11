@@ -1,0 +1,119 @@
+{
+  "_about": "Queue for the weekly story writer. Take topics from the top whose slug has no prototype/sketch_<slug>/ folder yet. Facts listed here were checked; anything you add must be verified with a web search and cited in story.json sources. Prefer the hedged wording given here.",
+  "queue": [
+    {
+      "slug": "bystander",
+      "title": "The Bystander Effect (Darley & Latane, 1968)",
+      "angle": "You hear someone having a seizure over an intercom. Do you go?",
+      "facts": [
+        "1964, New York: the murder of Kitty Genovese; the New York Times reported 38 witnesses who did nothing.",
+        "Later reporting (incl. the NYT itself, 2016) found the 38-witnesses story was exaggerated: fewer saw the attack, and some did call or help.",
+        "Darley & Latane (1968): students talked over an intercom; one (an actor, on tape) seemed to have a seizure.",
+        "When participants thought they were the only listener, about 85% went for help before the seizure ended; with four others listening, about 31%.",
+        "Lesson: the more people present, the less responsible each one feels (diffusion of responsibility)."
+      ],
+      "twist": "The famous 38 witnesses were exaggerated, but the lab result held: a crowd makes each person less likely to act.",
+      "ending_question": "If you're one of many, will you be the one who moves?",
+      "sources": ["Darley, J. M., & Latane, B. (1968). Bystander intervention in emergencies. JPSP 8(4).", "New York Times editor's note on the Genovese story (2016)."]
+    },
+    {
+      "slug": "little-albert",
+      "title": "Little Albert (Watson & Rayner, 1920)",
+      "angle": "You are a 9-month-old baby who loves a white rat. Then a loud bang starts every time you touch it.",
+      "facts": [
+        "1920, Johns Hopkins: John B. Watson and Rosalie Rayner studied a 9-month-old boy called 'Albert B.'",
+        "At first Albert showed no fear of a white rat, a rabbit, a dog, masks or cotton wool.",
+        "Whenever he reached for the rat, they struck a steel bar with a hammer behind his head; he startled and cried.",
+        "After repeated pairings he cried at the rat alone, and the fear spread to similar things: a rabbit, a dog, a fur coat, a Santa Claus mask.",
+        "He left the study before any attempt to remove the fear; who he was later is still debated."
+      ],
+      "twist": "Fear can be learned in days, and the researchers never undid it. Today this study is a lesson in research ethics.",
+      "ending_question": "Which of your fears did you learn, and could you unlearn it?",
+      "sources": ["Watson, J. B., & Rayner, R. (1920). Conditioned emotional reactions. J Experimental Psychology 3(1)."]
+    },
+    {
+      "slug": "marshmallow",
+      "title": "The Marshmallow Test (Mischel, 1960s-70s)",
+      "angle": "You are four. One marshmallow now, or two if you can wait alone in a room.",
+      "facts": [
+        "Walter Mischel's studies at Stanford's Bing Nursery School: a child could eat one treat now, or get two by waiting (up to about 15-20 minutes) alone.",
+        "Some children waited by distracting themselves: covering their eyes, singing, turning away.",
+        "Follow-ups years later linked longer waiting to better outcomes such as higher SAT scores.",
+        "A larger 2018 replication (Watts, Duncan & Quan) found the link was much smaller, and mostly explained by family background and early ability."
+      ],
+      "twist": "Waiting wasn't pure willpower: it was also about trust and circumstances. Kids who had reason to trust the adult waited longer (Kidd et al., 2013).",
+      "ending_question": "Is it willpower, or do you just not trust that the second marshmallow will come?",
+      "sources": ["Mischel, W., Shoda, Y., & Rodriguez, M. L. (1989). Delay of gratification in children. Science 244.", "Watts, T. W., Duncan, G. J., & Quan, H. (2018). Psychological Science 29(7).", "Kidd, C., Palmeri, H., & Aslin, R. N. (2013). Rational snacking. Cognition 126(1)."]
+    },
+    {
+      "slug": "robbers-cave",
+      "title": "Robbers Cave (Sherif, 1954)",
+      "angle": "You're 11, at a summer camp. You don't know there's another group of boys across the woods.",
+      "facts": [
+        "1954, Robbers Cave State Park, Oklahoma: Muzafer Sherif's study with 22 eleven- and twelve-year-old boys split into two groups.",
+        "The groups named themselves the Eagles and the Rattlers.",
+        "Competitions (tug-of-war, games with prizes) quickly turned into name-calling, flag burning and cabin raids.",
+        "Shared problems that needed both groups (a broken water supply, a stuck truck) brought them back together."
+      ],
+      "twist": "Contact alone didn't fix the hate. Working together on a shared goal did.",
+      "ending_question": "Who is your 'other group', and what goal could you share?",
+      "sources": ["Sherif, M., Harvey, O. J., White, B. J., Hood, W. R., & Sherif, C. W. (1961). Intergroup Conflict and Cooperation: The Robbers Cave Experiment."]
+    },
+    {
+      "slug": "phineas-gage",
+      "title": "Phineas Gage (1848)",
+      "angle": "You're a railroad foreman. An iron rod is about to go through your head, and you'll survive.",
+      "facts": [
+        "1848, Vermont: railroad foreman Phineas Gage was packing explosive powder with an iron rod when it went off.",
+        "The rod, over a metre long, shot up through his left cheek and out the top of his skull, damaging the front of his brain.",
+        "He survived, could talk and walk; his doctor, John Harlow, later wrote that friends said he was 'no longer Gage'.",
+        "Later he worked for years, including as a stagecoach driver in Chile, suggesting he partly recovered."
+      ],
+      "twist": "The famous 'he became a monster' story grew over time. His later life suggests the brain can adapt.",
+      "ending_question": "If your personality can change with your brain, who is the real you?",
+      "sources": ["Harlow, J. M. (1868). Recovery from the passage of an iron bar through the head.", "Macmillan, M. (2000). An Odd Kind of Fame: Stories of Phineas Gage."]
+    },
+    {
+      "slug": "patient-hm",
+      "title": "Patient H.M. (1953)",
+      "angle": "You wake up after surgery. From now on, every new person you meet is a stranger, forever.",
+      "facts": [
+        "1953: Henry Molaison had surgery removing parts of both medial temporal lobes (including much of the hippocampus) to stop severe epilepsy.",
+        "Afterwards he could not form new long-term memories of events and facts.",
+        "Psychologist Brenda Milner studied him for decades; he met her many times but did not remember her.",
+        "Yet he got better at a mirror-drawing task day after day, without remembering ever doing it."
+      ],
+      "twist": "Memory isn't one thing: his hands learned what his mind could not remember.",
+      "ending_question": "What do you remember with your body that your mind has forgotten?",
+      "sources": ["Scoville, W. B., & Milner, B. (1957). Loss of recent memory after bilateral hippocampal lesions.", "Corkin, S. (2013). Permanent Present Tense."]
+    },
+    {
+      "slug": "bobo-doll",
+      "title": "The Bobo Doll (Bandura, 1961)",
+      "angle": "You're a small child watching an adult hit a big inflatable clown. Then they leave you alone with it.",
+      "facts": [
+        "1961, Stanford: Albert Bandura's study with children aged about 3 to 6.",
+        "Some children watched an adult punch, kick and shout at an inflatable Bobo doll; others watched a calm adult.",
+        "Left alone with toys, children who saw aggression copied it, often the exact moves and words.",
+        "Children who watched the calm adult were much less aggressive."
+      ],
+      "twist": "Nobody told them to hit. They learned it just by watching.",
+      "ending_question": "Who is watching you, and what are they learning?",
+      "sources": ["Bandura, A., Ross, D., & Ross, S. A. (1961). Transmission of aggression through imitation of aggressive models. J Abnormal & Social Psychology 63(3)."]
+    },
+    {
+      "slug": "pygmalion",
+      "title": "The Pygmalion Effect (Rosenthal & Jacobson, 1968)",
+      "angle": "Your teacher has just been told you're about to 'bloom'. You have no idea.",
+      "facts": [
+        "1960s, a California elementary school: researchers gave students a test and told teachers some children were about to 'bloom' intellectually.",
+        "Those children were actually picked at random.",
+        "By the end of the year, the 'bloomers' in the youngest grades showed bigger IQ gains than their classmates.",
+        "Later research found the effect is real but usually smaller than the original study suggested."
+      ],
+      "twist": "Nothing changed in the children: only in what the teacher expected.",
+      "ending_question": "Whose expectations are you living up to, or down to?",
+      "sources": ["Rosenthal, R., & Jacobson, L. (1968). Pygmalion in the Classroom.", "Jussim, L., & Harber, K. D. (2005). Teacher expectations and self-fulfilling prophecies. PSPR 9(2)."]
+    }
+  ]
+}
