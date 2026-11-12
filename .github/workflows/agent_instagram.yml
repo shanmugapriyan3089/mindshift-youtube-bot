@@ -46,6 +46,6 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add prototype/sketch_*/instagram.json || true
+          git add prototype/
           git diff --cached --quiet || git commit -m "chore: Short cross-posted to Instagram [skip ci]"
           for i in 1 2 3; do git pull --rebase origin main && git push && break || sleep $((i*5)); done || true
