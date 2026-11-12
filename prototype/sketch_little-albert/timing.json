@@ -1,0 +1,951 @@
+{
+ "S": [
+  0.0,
+  8.07,
+  18.98,
+  27.29,
+  34.96,
+  44.67,
+  54.78,
+  63.85,
+  72.76,
+  80.03
+ ],
+ "words": [
+  {
+   "text": "You're",
+   "start": 0.0,
+   "end": 0.6
+  },
+  {
+   "text": "nine",
+   "start": 0.6,
+   "end": 0.92
+  },
+  {
+   "text": "months",
+   "start": 0.92,
+   "end": 1.26
+  },
+  {
+   "text": "old.",
+   "start": 1.26,
+   "end": 1.66
+  },
+  {
+   "text": "They",
+   "start": 2.16,
+   "end": 2.3
+  },
+  {
+   "text": "put",
+   "start": 2.3,
+   "end": 2.48
+  },
+  {
+   "text": "a",
+   "start": 2.48,
+   "end": 2.62
+  },
+  {
+   "text": "soft",
+   "start": 2.62,
+   "end": 3.1
+  },
+  {
+   "text": "white",
+   "start": 3.1,
+   "end": 3.5
+  },
+  {
+   "text": "rat",
+   "start": 3.5,
+   "end": 3.92
+  },
+  {
+   "text": "in",
+   "start": 3.92,
+   "end": 4.18
+  },
+  {
+   "text": "front",
+   "start": 4.18,
+   "end": 4.36
+  },
+  {
+   "text": "of",
+   "start": 4.36,
+   "end": 4.5
+  },
+  {
+   "text": "you.",
+   "start": 4.5,
+   "end": 4.7
+  },
+  {
+   "text": "You",
+   "start": 5.1,
+   "end": 5.24
+  },
+  {
+   "text": "love",
+   "start": 5.24,
+   "end": 5.56
+  },
+  {
+   "text": "it.",
+   "start": 5.56,
+   "end": 5.76
+  },
+  {
+   "text": "You",
+   "start": 6.22,
+   "end": 6.34
+  },
+  {
+   "text": "reach",
+   "start": 6.34,
+   "end": 6.58
+  },
+  {
+   "text": "out",
+   "start": 6.58,
+   "end": 6.82
+  },
+  {
+   "text": "to",
+   "start": 6.82,
+   "end": 7.02
+  },
+  {
+   "text": "touch",
+   "start": 7.02,
+   "end": 7.24
+  },
+  {
+   "text": "it.",
+   "start": 7.24,
+   "end": 7.56
+  },
+  {
+   "text": "1920,",
+   "start": 9.16,
+   "end": 9.16
+  },
+  {
+   "text": "Johns",
+   "start": 9.86,
+   "end": 9.98
+  },
+  {
+   "text": "Hopkins.",
+   "start": 9.98,
+   "end": 10.42
+  },
+  {
+   "text": "Psychologist",
+   "start": 11.16,
+   "end": 11.64
+  },
+  {
+   "text": "John",
+   "start": 11.64,
+   "end": 12.08
+  },
+  {
+   "text": "Watson",
+   "start": 12.08,
+   "end": 12.5
+  },
+  {
+   "text": "shows",
+   "start": 12.5,
+   "end": 12.88
+  },
+  {
+   "text": "you",
+   "start": 12.88,
+   "end": 13.06
+  },
+  {
+   "text": "a",
+   "start": 13.06,
+   "end": 13.22
+  },
+  {
+   "text": "rabbit,",
+   "start": 13.22,
+   "end": 13.5
+  },
+  {
+   "text": "a",
+   "start": 13.9,
+   "end": 14.02
+  },
+  {
+   "text": "dog,",
+   "start": 14.02,
+   "end": 14.42
+  },
+  {
+   "text": "a",
+   "start": 14.72,
+   "end": 14.86
+  },
+  {
+   "text": "mask,",
+   "start": 14.86,
+   "end": 15.32
+  },
+  {
+   "text": "cotton",
+   "start": 15.66,
+   "end": 15.94
+  },
+  {
+   "text": "wool.",
+   "start": 15.94,
+   "end": 16.3
+  },
+  {
+   "text": "You're",
+   "start": 16.86,
+   "end": 17.12
+  },
+  {
+   "text": "not",
+   "start": 17.12,
+   "end": 17.26
+  },
+  {
+   "text": "afraid",
+   "start": 17.26,
+   "end": 17.54
+  },
+  {
+   "text": "of",
+   "start": 17.54,
+   "end": 17.72
+  },
+  {
+   "text": "anything.",
+   "start": 17.72,
+   "end": 18.22
+  },
+  {
+   "text": "Then,",
+   "start": 19.4,
+   "end": 19.64
+  },
+  {
+   "text": "every",
+   "start": 19.96,
+   "end": 20.46
+  },
+  {
+   "text": "time",
+   "start": 20.46,
+   "end": 20.76
+  },
+  {
+   "text": "you",
+   "start": 20.76,
+   "end": 21.02
+  },
+  {
+   "text": "touch",
+   "start": 21.02,
+   "end": 21.32
+  },
+  {
+   "text": "the",
+   "start": 21.32,
+   "end": 21.6
+  },
+  {
+   "text": "rat,",
+   "start": 21.6,
+   "end": 21.84
+  },
+  {
+   "text": "a",
+   "start": 22.26,
+   "end": 22.36
+  },
+  {
+   "text": "man",
+   "start": 22.36,
+   "end": 22.72
+  },
+  {
+   "text": "hits",
+   "start": 22.72,
+   "end": 23.06
+  },
+  {
+   "text": "a",
+   "start": 23.06,
+   "end": 23.28
+  },
+  {
+   "text": "steel",
+   "start": 23.28,
+   "end": 23.72
+  },
+  {
+   "text": "bar",
+   "start": 23.72,
+   "end": 24.12
+  },
+  {
+   "text": "with",
+   "start": 24.12,
+   "end": 24.38
+  },
+  {
+   "text": "a",
+   "start": 24.38,
+   "end": 24.54
+  },
+  {
+   "text": "hammer",
+   "start": 24.54,
+   "end": 24.96
+  },
+  {
+   "text": "right",
+   "start": 24.96,
+   "end": 25.62
+  },
+  {
+   "text": "behind",
+   "start": 25.62,
+   "end": 26.02
+  },
+  {
+   "text": "your",
+   "start": 26.02,
+   "end": 26.24
+  },
+  {
+   "text": "head.",
+   "start": 26.24,
+   "end": 26.5
+  },
+  {
+   "text": "Bang.",
+   "start": 27.18,
+   "end": 27.82
+  },
+  {
+   "text": "You",
+   "start": 28.5,
+   "end": 28.6
+  },
+  {
+   "text": "jump.",
+   "start": 28.6,
+   "end": 28.96
+  },
+  {
+   "text": "You",
+   "start": 29.54,
+   "end": 29.58
+  },
+  {
+   "text": "fall",
+   "start": 29.58,
+   "end": 29.88
+  },
+  {
+   "text": "forward.",
+   "start": 29.88,
+   "end": 30.36
+  },
+  {
+   "text": "You",
+   "start": 30.86,
+   "end": 30.96
+  },
+  {
+   "text": "start",
+   "start": 30.96,
+   "end": 31.16
+  },
+  {
+   "text": "to",
+   "start": 31.16,
+   "end": 31.34
+  },
+  {
+   "text": "cry.",
+   "start": 31.34,
+   "end": 31.68
+  },
+  {
+   "text": "They",
+   "start": 32.54,
+   "end": 32.66
+  },
+  {
+   "text": "do",
+   "start": 32.66,
+   "end": 32.82
+  },
+  {
+   "text": "it",
+   "start": 32.82,
+   "end": 32.92
+  },
+  {
+   "text": "again",
+   "start": 32.92,
+   "end": 33.32
+  },
+  {
+   "text": "and",
+   "start": 33.32,
+   "end": 33.76
+  },
+  {
+   "text": "again.",
+   "start": 33.76,
+   "end": 34.18
+  },
+  {
+   "text": "After",
+   "start": 35.36,
+   "end": 35.54
+  },
+  {
+   "text": "just",
+   "start": 35.54,
+   "end": 35.92
+  },
+  {
+   "text": "seven",
+   "start": 35.92,
+   "end": 36.56
+  },
+  {
+   "text": "bangs,",
+   "start": 36.56,
+   "end": 37.22
+  },
+  {
+   "text": "they",
+   "start": 37.4,
+   "end": 37.56
+  },
+  {
+   "text": "show",
+   "start": 37.56,
+   "end": 37.74
+  },
+  {
+   "text": "you",
+   "start": 37.74,
+   "end": 37.9
+  },
+  {
+   "text": "the",
+   "start": 37.9,
+   "end": 38.06
+  },
+  {
+   "text": "rat",
+   "start": 38.06,
+   "end": 38.34
+  },
+  {
+   "text": "alone.",
+   "start": 38.34,
+   "end": 38.82
+  },
+  {
+   "text": "No",
+   "start": 39.36,
+   "end": 39.52
+  },
+  {
+   "text": "noise",
+   "start": 39.52,
+   "end": 39.82
+  },
+  {
+   "text": "at",
+   "start": 39.82,
+   "end": 39.96
+  },
+  {
+   "text": "all.",
+   "start": 39.96,
+   "end": 40.24
+  },
+  {
+   "text": "You",
+   "start": 40.7,
+   "end": 40.84
+  },
+  {
+   "text": "scream",
+   "start": 40.84,
+   "end": 41.5
+  },
+  {
+   "text": "and",
+   "start": 41.5,
+   "end": 41.9
+  },
+  {
+   "text": "crawl",
+   "start": 41.9,
+   "end": 42.34
+  },
+  {
+   "text": "away",
+   "start": 42.34,
+   "end": 42.7
+  },
+  {
+   "text": "as",
+   "start": 42.7,
+   "end": 42.88
+  },
+  {
+   "text": "fast",
+   "start": 42.88,
+   "end": 43.24
+  },
+  {
+   "text": "as",
+   "start": 43.24,
+   "end": 43.46
+  },
+  {
+   "text": "you",
+   "start": 43.46,
+   "end": 43.58
+  },
+  {
+   "text": "can.",
+   "start": 43.58,
+   "end": 43.9
+  },
+  {
+   "text": "Days",
+   "start": 45.06,
+   "end": 45.24
+  },
+  {
+   "text": "later,",
+   "start": 45.24,
+   "end": 45.72
+  },
+  {
+   "text": "the",
+   "start": 46.04,
+   "end": 46.16
+  },
+  {
+   "text": "fear",
+   "start": 46.16,
+   "end": 46.58
+  },
+  {
+   "text": "has",
+   "start": 46.58,
+   "end": 46.82
+  },
+  {
+   "text": "spread.",
+   "start": 46.82,
+   "end": 47.3
+  },
+  {
+   "text": "A",
+   "start": 47.92,
+   "end": 48.08
+  },
+  {
+   "text": "rabbit,",
+   "start": 48.08,
+   "end": 48.38
+  },
+  {
+   "text": "a",
+   "start": 48.86,
+   "end": 48.98
+  },
+  {
+   "text": "dog,",
+   "start": 48.98,
+   "end": 49.4
+  },
+  {
+   "text": "a",
+   "start": 49.72,
+   "end": 49.88
+  },
+  {
+   "text": "fur",
+   "start": 49.88,
+   "end": 50.16
+  },
+  {
+   "text": "coat,",
+   "start": 50.16,
+   "end": 50.5
+  },
+  {
+   "text": "even",
+   "start": 51.18,
+   "end": 51.42
+  },
+  {
+   "text": "a",
+   "start": 51.42,
+   "end": 51.68
+  },
+  {
+   "text": "Santa",
+   "start": 51.68,
+   "end": 52.16
+  },
+  {
+   "text": "Claus",
+   "start": 52.16,
+   "end": 52.48
+  },
+  {
+   "text": "mask",
+   "start": 52.48,
+   "end": 52.96
+  },
+  {
+   "text": "now",
+   "start": 52.96,
+   "end": 53.22
+  },
+  {
+   "text": "make",
+   "start": 53.22,
+   "end": 53.42
+  },
+  {
+   "text": "you",
+   "start": 53.42,
+   "end": 53.62
+  },
+  {
+   "text": "cry.",
+   "start": 53.62,
+   "end": 54.0
+  },
+  {
+   "text": "Then,",
+   "start": 54.76,
+   "end": 55.36
+  },
+  {
+   "text": "you",
+   "start": 55.5,
+   "end": 55.72
+  },
+  {
+   "text": "leave",
+   "start": 55.72,
+   "end": 56.0
+  },
+  {
+   "text": "the",
+   "start": 56.0,
+   "end": 56.22
+  },
+  {
+   "text": "study.",
+   "start": 56.22,
+   "end": 56.54
+  },
+  {
+   "text": "Nobody",
+   "start": 57.26,
+   "end": 57.52
+  },
+  {
+   "text": "ever",
+   "start": 57.52,
+   "end": 58.16
+  },
+  {
+   "text": "tries",
+   "start": 58.16,
+   "end": 58.56
+  },
+  {
+   "text": "to",
+   "start": 58.56,
+   "end": 58.86
+  },
+  {
+   "text": "undo",
+   "start": 58.86,
+   "end": 59.32
+  },
+  {
+   "text": "the",
+   "start": 59.32,
+   "end": 59.58
+  },
+  {
+   "text": "fear.",
+   "start": 59.58,
+   "end": 59.88
+  },
+  {
+   "text": "Who",
+   "start": 60.54,
+   "end": 60.84
+  },
+  {
+   "text": "you",
+   "start": 60.84,
+   "end": 61.08
+  },
+  {
+   "text": "grew",
+   "start": 61.08,
+   "end": 61.26
+  },
+  {
+   "text": "up",
+   "start": 61.26,
+   "end": 61.44
+  },
+  {
+   "text": "to",
+   "start": 61.44,
+   "end": 61.6
+  },
+  {
+   "text": "be",
+   "start": 61.6,
+   "end": 61.9
+  },
+  {
+   "text": "is",
+   "start": 61.9,
+   "end": 62.34
+  },
+  {
+   "text": "still",
+   "start": 62.34,
+   "end": 62.66
+  },
+  {
+   "text": "debated.",
+   "start": 62.66,
+   "end": 63.02
+  },
+  {
+   "text": "Today,",
+   "start": 64.16,
+   "end": 64.44
+  },
+  {
+   "text": "it's",
+   "start": 64.7,
+   "end": 64.98
+  },
+  {
+   "text": "taught",
+   "start": 64.98,
+   "end": 65.2
+  },
+  {
+   "text": "as",
+   "start": 65.2,
+   "end": 65.46
+  },
+  {
+   "text": "a",
+   "start": 65.46,
+   "end": 65.6
+  },
+  {
+   "text": "lesson",
+   "start": 65.6,
+   "end": 65.86
+  },
+  {
+   "text": "in",
+   "start": 65.86,
+   "end": 66.16
+  },
+  {
+   "text": "ethics,",
+   "start": 66.16,
+   "end": 66.6
+  },
+  {
+   "text": "but",
+   "start": 67.1,
+   "end": 67.32
+  },
+  {
+   "text": "it",
+   "start": 67.32,
+   "end": 67.44
+  },
+  {
+   "text": "showed",
+   "start": 67.44,
+   "end": 67.68
+  },
+  {
+   "text": "something",
+   "start": 67.68,
+   "end": 68.08
+  },
+  {
+   "text": "unsettling.",
+   "start": 68.08,
+   "end": 68.74
+  },
+  {
+   "text": "A",
+   "start": 69.58,
+   "end": 69.64
+  },
+  {
+   "text": "fear",
+   "start": 69.64,
+   "end": 70.02
+  },
+  {
+   "text": "can",
+   "start": 70.02,
+   "end": 70.5
+  },
+  {
+   "text": "be",
+   "start": 70.5,
+   "end": 70.64
+  },
+  {
+   "text": "learned",
+   "start": 70.64,
+   "end": 70.98
+  },
+  {
+   "text": "in",
+   "start": 70.98,
+   "end": 71.24
+  },
+  {
+   "text": "about",
+   "start": 71.24,
+   "end": 71.48
+  },
+  {
+   "text": "a",
+   "start": 71.48,
+   "end": 71.64
+  },
+  {
+   "text": "week.",
+   "start": 71.64,
+   "end": 71.96
+  },
+  {
+   "text": "Some",
+   "start": 73.24,
+   "end": 73.36
+  },
+  {
+   "text": "of",
+   "start": 73.36,
+   "end": 73.5
+  },
+  {
+   "text": "your",
+   "start": 73.5,
+   "end": 73.62
+  },
+  {
+   "text": "fears",
+   "start": 73.62,
+   "end": 73.98
+  },
+  {
+   "text": "were",
+   "start": 73.98,
+   "end": 74.42
+  },
+  {
+   "text": "never",
+   "start": 74.42,
+   "end": 74.72
+  },
+  {
+   "text": "really",
+   "start": 74.72,
+   "end": 75.1
+  },
+  {
+   "text": "yours.",
+   "start": 75.1,
+   "end": 75.38
+  },
+  {
+   "text": "They",
+   "start": 76.0,
+   "end": 76.08
+  },
+  {
+   "text": "were",
+   "start": 76.08,
+   "end": 76.2
+  },
+  {
+   "text": "learned.",
+   "start": 76.2,
+   "end": 76.64
+  },
+  {
+   "text": "So",
+   "start": 77.36,
+   "end": 77.38
+  },
+  {
+   "text": "which",
+   "start": 77.38,
+   "end": 77.58
+  },
+  {
+   "text": "of",
+   "start": 77.58,
+   "end": 77.78
+  },
+  {
+   "text": "yours",
+   "start": 77.78,
+   "end": 78.1
+  },
+  {
+   "text": "could",
+   "start": 78.1,
+   "end": 78.5
+  },
+  {
+   "text": "you",
+   "start": 78.5,
+   "end": 78.68
+  },
+  {
+   "text": "unlearn?",
+   "start": 78.68,
+   "end": 79.24
+  }
+ ]
+}

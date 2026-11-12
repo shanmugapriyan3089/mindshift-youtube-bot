@@ -1,0 +1,42 @@
+{
+  "name": "sketch_little-albert",
+  "title": "Little Albert (Watson & Rayner, 1920)",
+  "format": {
+    "width": 1080,
+    "height": 1920,
+    "fps": 24,
+    "bpm": 120,
+    "duration": 82.63,
+    "frames": 1983
+  },
+  "storyFormat": "fixed-hero journey (hard cuts, voice-led)",
+  "style": "sketchbook",
+  "voice": {
+    "file": "voice/voice.wav",
+    "music": -26,
+    "gain": 0
+  },
+  "review": {
+    "safe": {
+      "top": 240,
+      "bottom": 420,
+      "right": 140
+    },
+    "refs": {}
+  },
+  "build": [
+    "../sketch_kit/head.html",
+    "src/timing.js",
+    "../sketch_kit/timeline.js",
+    "kit/core.js",
+    "style",
+    "../sketch_kit/people.js",
+    "src/scenes.js",
+    "../sketch_kit/bridges.js",
+    "kit/morph.js",
+    "kit/board.js",
+    "kit/score-head.js",
+    "../sketch_kit/score.js",
+    "kit/score-tail.js"
+  ]
+}
