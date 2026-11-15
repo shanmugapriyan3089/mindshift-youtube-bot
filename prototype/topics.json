@@ -114,6 +114,69 @@
       "twist": "Nothing changed in the children: only in what the teacher expected.",
       "ending_question": "Whose expectations are you living up to, or down to?",
       "sources": ["Rosenthal, R., & Jacobson, L. (1968). Pygmalion in the Classroom.", "Jussim, L., & Harber, K. D. (2005). Teacher expectations and self-fulfilling prophecies. PSPR 9(2)."]
+    },
+    {
+      "slug": "car-crash-memory",
+      "title": "The Car Crash Questions (Loftus & Palmer, 1974)",
+      "angle": "You watch a short film of two cars colliding. Then someone asks you one question, and changes one word.",
+      "facts": [
+        "1974: Elizabeth Loftus and John Palmer showed students short films of car accidents, then asked how fast the cars were going.",
+        "Only the verb changed: 'smashed', 'collided', 'bumped', 'hit' or 'contacted'.",
+        "With 'smashed' the average estimate was about 41 mph; with 'contacted' about 32 mph.",
+        "A week later, about 32% of the 'smashed' group said they had seen broken glass, versus about 14% of the 'hit' group and 12% of a control group. There was no broken glass in the film."
+      ],
+      "twist": "One word didn't just change the answer: it changed the memory itself, a week later.",
+      "ending_question": "How many of your clearest memories were edited by the way someone asked?",
+      "sources": [
+        "Loftus, E. F., & Palmer, J. C. (1974). Reconstruction of automobile destruction. Journal of Verbal Learning and Verbal Behavior, 13(5), 585-589."
+      ]
+    },
+    {
+      "slug": "good-samaritan",
+      "title": "The Good Samaritan in a Hurry (Darley & Batson, 1973)",
+      "angle": "You're a trainee priest on your way to give a talk about helping strangers. A man is slumped in a doorway.",
+      "facts": [
+        "1973, Princeton Theological Seminary: John Darley and Daniel Batson asked seminary students to give a short talk in another building.",
+        "Some were told to talk about the parable of the Good Samaritan; others about jobs.",
+        "Some were told they were already late, others that they had a few minutes.",
+        "On the way they passed a man slumped and groaning in an alley (an actor). About 63% of those with time to spare helped; only about 10% of those in a big hurry did.",
+        "The topic of the talk made no significant difference."
+      ],
+      "twist": "Some students literally stepped over the man on their way to talk about helping strangers.",
+      "ending_question": "Who did you walk past today because you were in a hurry?",
+      "sources": [
+        "Darley, J. M., & Batson, C. D. (1973). 'From Jerusalem to Jericho': A study of situational and dispositional variables in helping behavior. JPSP 27(1), 100-108."
+      ]
+    },
+    {
+      "slug": "invisible-gorilla",
+      "title": "The Invisible Gorilla (Simons & Chabris, 1999)",
+      "angle": "You're asked to count basketball passes in a short video. Easy. Then someone asks: did you see the gorilla?",
+      "facts": [
+        "1999, Harvard: Daniel Simons and Christopher Chabris showed people a short video of two teams passing basketballs and asked them to count one team's passes.",
+        "Partway through, a person in a gorilla suit walks into the middle, thumps their chest, and walks off, on screen for several seconds.",
+        "Across conditions, about half the viewers (46% in the paper) did not notice the gorilla at all."
+      ],
+      "twist": "Most people are sure they would have seen it. Focusing hard on one thing can make you blind to everything else.",
+      "ending_question": "What gorilla are you missing right now because you're busy counting passes?",
+      "sources": [
+        "Simons, D. J., & Chabris, C. F. (1999). Gorillas in our midst: Sustained inattentional blindness for dynamic events. Perception, 28(9), 1059-1074."
+      ]
+    },
+    {
+      "slug": "one-dollar-lie",
+      "title": "The One Dollar Lie (Festinger & Carlsmith, 1959)",
+      "angle": "You spend an hour turning pegs on a board. It's the most boring hour of your life. Then they pay you to say it was fun.",
+      "facts": [
+        "1959, Stanford: Leon Festinger and James Carlsmith had students do an hour of dull tasks, like refilling a tray of spools and turning pegs.",
+        "Afterwards each student was paid either one dollar or twenty dollars to tell the next participant the tasks were interesting.",
+        "Later, the students paid only one dollar rated the boring tasks as more enjoyable than those paid twenty dollars."
+      ],
+      "twist": "Twenty dollars was a good reason to lie. One dollar wasn't, so people changed their minds to match what they had said.",
+      "ending_question": "What have you talked yourself into liking, just because you already said you did?",
+      "sources": [
+        "Festinger, L., & Carlsmith, J. M. (1959). Cognitive consequences of forced compliance. Journal of Abnormal and Social Psychology, 58(2), 203-210."
+      ]
     }
   ]
 }
