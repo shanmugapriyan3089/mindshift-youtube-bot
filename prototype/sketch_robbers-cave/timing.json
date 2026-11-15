@@ -1,0 +1,906 @@
+{
+ "S": [
+  0.0,
+  9.11,
+  20.06,
+  29.17,
+  38.84,
+  47.67,
+  58.1,
+  67.57,
+  77.0,
+  82.23
+ ],
+ "words": [
+  {
+   "text": "You're",
+   "start": 0.0,
+   "end": 0.68
+  },
+  {
+   "text": "11.",
+   "start": 0.68,
+   "end": 1.18
+  },
+  {
+   "text": "At",
+   "start": 1.72,
+   "end": 1.8
+  },
+  {
+   "text": "a",
+   "start": 1.8,
+   "end": 1.96
+  },
+  {
+   "text": "summer",
+   "start": 1.96,
+   "end": 2.22
+  },
+  {
+   "text": "camp",
+   "start": 2.22,
+   "end": 2.5
+  },
+  {
+   "text": "in",
+   "start": 2.5,
+   "end": 2.78
+  },
+  {
+   "text": "Oklahoma,",
+   "start": 2.78,
+   "end": 3.34
+  },
+  {
+   "text": "you",
+   "start": 4.12,
+   "end": 4.12
+  },
+  {
+   "text": "have",
+   "start": 4.12,
+   "end": 4.3
+  },
+  {
+   "text": "no",
+   "start": 4.3,
+   "end": 4.62
+  },
+  {
+   "text": "idea",
+   "start": 4.62,
+   "end": 5.22
+  },
+  {
+   "text": "another",
+   "start": 5.22,
+   "end": 5.78
+  },
+  {
+   "text": "group",
+   "start": 5.78,
+   "end": 6.12
+  },
+  {
+   "text": "of",
+   "start": 6.12,
+   "end": 6.3
+  },
+  {
+   "text": "boys",
+   "start": 6.3,
+   "end": 6.56
+  },
+  {
+   "text": "is",
+   "start": 6.56,
+   "end": 6.82
+  },
+  {
+   "text": "camping",
+   "start": 6.82,
+   "end": 7.22
+  },
+  {
+   "text": "across",
+   "start": 7.22,
+   "end": 7.74
+  },
+  {
+   "text": "the",
+   "start": 7.74,
+   "end": 8.0
+  },
+  {
+   "text": "woods.",
+   "start": 8.0,
+   "end": 8.32
+  },
+  {
+   "text": "1954.",
+   "start": 9.56,
+   "end": 10.2
+  },
+  {
+   "text": "22",
+   "start": 11.4,
+   "end": 11.64
+  },
+  {
+   "text": "boys",
+   "start": 11.64,
+   "end": 12.2
+  },
+  {
+   "text": "split",
+   "start": 12.2,
+   "end": 12.78
+  },
+  {
+   "text": "into",
+   "start": 12.78,
+   "end": 13.12
+  },
+  {
+   "text": "two",
+   "start": 13.12,
+   "end": 13.46
+  },
+  {
+   "text": "groups.",
+   "start": 13.46,
+   "end": 13.86
+  },
+  {
+   "text": "Yours",
+   "start": 14.64,
+   "end": 14.94
+  },
+  {
+   "text": "names",
+   "start": 14.94,
+   "end": 15.06
+  },
+  {
+   "text": "itself",
+   "start": 15.06,
+   "end": 15.5
+  },
+  {
+   "text": "the",
+   "start": 15.5,
+   "end": 15.84
+  },
+  {
+   "text": "Eagles.",
+   "start": 15.84,
+   "end": 16.26
+  },
+  {
+   "text": "The",
+   "start": 16.86,
+   "end": 17.02
+  },
+  {
+   "text": "others",
+   "start": 17.02,
+   "end": 17.26
+  },
+  {
+   "text": "call",
+   "start": 17.26,
+   "end": 17.8
+  },
+  {
+   "text": "themselves",
+   "start": 17.8,
+   "end": 18.3
+  },
+  {
+   "text": "the",
+   "start": 18.3,
+   "end": 18.62
+  },
+  {
+   "text": "Rattlers.",
+   "start": 18.62,
+   "end": 19.12
+  },
+  {
+   "text": "Then",
+   "start": 20.34,
+   "end": 20.6
+  },
+  {
+   "text": "the",
+   "start": 20.6,
+   "end": 20.88
+  },
+  {
+   "text": "counselors",
+   "start": 20.88,
+   "end": 21.16
+  },
+  {
+   "text": "announce",
+   "start": 21.16,
+   "end": 21.68
+  },
+  {
+   "text": "a",
+   "start": 21.68,
+   "end": 21.96
+  },
+  {
+   "text": "contest.",
+   "start": 21.96,
+   "end": 22.44
+  },
+  {
+   "text": "Baseball,",
+   "start": 23.12,
+   "end": 23.3
+  },
+  {
+   "text": "tug",
+   "start": 23.96,
+   "end": 23.98
+  },
+  {
+   "text": "-of",
+   "start": 23.98,
+   "end": 24.14
+  },
+  {
+   "text": "-war,",
+   "start": 24.14,
+   "end": 24.42
+  },
+  {
+   "text": "treasure",
+   "start": 24.72,
+   "end": 25.02
+  },
+  {
+   "text": "hunts,",
+   "start": 25.02,
+   "end": 25.36
+  },
+  {
+   "text": "prizes",
+   "start": 25.92,
+   "end": 26.2
+  },
+  {
+   "text": "for",
+   "start": 26.2,
+   "end": 26.44
+  },
+  {
+   "text": "the",
+   "start": 26.44,
+   "end": 26.58
+  },
+  {
+   "text": "winners,",
+   "start": 26.58,
+   "end": 26.76
+  },
+  {
+   "text": "nothing",
+   "start": 27.48,
+   "end": 27.66
+  },
+  {
+   "text": "for",
+   "start": 27.66,
+   "end": 27.96
+  },
+  {
+   "text": "the",
+   "start": 27.96,
+   "end": 28.08
+  },
+  {
+   "text": "losers.",
+   "start": 28.08,
+   "end": 28.28
+  },
+  {
+   "text": "Within",
+   "start": 29.0,
+   "end": 29.7
+  },
+  {
+   "text": "days,",
+   "start": 29.7,
+   "end": 30.36
+  },
+  {
+   "text": "it",
+   "start": 30.78,
+   "end": 31.0
+  },
+  {
+   "text": "turns",
+   "start": 31.0,
+   "end": 31.44
+  },
+  {
+   "text": "ugly.",
+   "start": 31.44,
+   "end": 32.0
+  },
+  {
+   "text": "Your",
+   "start": 32.48,
+   "end": 32.6
+  },
+  {
+   "text": "group",
+   "start": 32.6,
+   "end": 32.94
+  },
+  {
+   "text": "burns",
+   "start": 32.94,
+   "end": 33.44
+  },
+  {
+   "text": "their",
+   "start": 33.44,
+   "end": 33.7
+  },
+  {
+   "text": "flag.",
+   "start": 33.7,
+   "end": 34.1
+  },
+  {
+   "text": "They",
+   "start": 34.48,
+   "end": 34.66
+  },
+  {
+   "text": "raid",
+   "start": 34.66,
+   "end": 35.0
+  },
+  {
+   "text": "your",
+   "start": 35.0,
+   "end": 35.22
+  },
+  {
+   "text": "cabin,",
+   "start": 35.22,
+   "end": 35.66
+  },
+  {
+   "text": "flip",
+   "start": 35.96,
+   "end": 36.2
+  },
+  {
+   "text": "your",
+   "start": 36.2,
+   "end": 36.38
+  },
+  {
+   "text": "beds,",
+   "start": 36.38,
+   "end": 36.74
+  },
+  {
+   "text": "and",
+   "start": 36.94,
+   "end": 37.04
+  },
+  {
+   "text": "steal",
+   "start": 37.04,
+   "end": 37.34
+  },
+  {
+   "text": "your",
+   "start": 37.34,
+   "end": 37.6
+  },
+  {
+   "text": "stuff.",
+   "start": 37.6,
+   "end": 37.98
+  },
+  {
+   "text": "At",
+   "start": 39.06,
+   "end": 39.26
+  },
+  {
+   "text": "the",
+   "start": 39.26,
+   "end": 39.4
+  },
+  {
+   "text": "worst",
+   "start": 39.4,
+   "end": 39.68
+  },
+  {
+   "text": "point,",
+   "start": 39.68,
+   "end": 40.06
+  },
+  {
+   "text": "about",
+   "start": 40.4,
+   "end": 40.6
+  },
+  {
+   "text": "93",
+   "start": 40.6,
+   "end": 41.3
+  },
+  {
+   "text": "%",
+   "start": 41.3,
+   "end": 41.82
+  },
+  {
+   "text": "of",
+   "start": 41.82,
+   "end": 42.14
+  },
+  {
+   "text": "every",
+   "start": 42.14,
+   "end": 42.6
+  },
+  {
+   "text": "boy's",
+   "start": 42.6,
+   "end": 43.0
+  },
+  {
+   "text": "friends",
+   "start": 43.0,
+   "end": 43.24
+  },
+  {
+   "text": "came",
+   "start": 43.24,
+   "end": 43.6
+  },
+  {
+   "text": "from",
+   "start": 43.6,
+   "end": 43.82
+  },
+  {
+   "text": "his",
+   "start": 43.82,
+   "end": 44.0
+  },
+  {
+   "text": "own",
+   "start": 44.0,
+   "end": 44.36
+  },
+  {
+   "text": "group.",
+   "start": 44.36,
+   "end": 44.72
+  },
+  {
+   "text": "The",
+   "start": 45.16,
+   "end": 45.4
+  },
+  {
+   "text": "other",
+   "start": 45.4,
+   "end": 45.58
+  },
+  {
+   "text": "side",
+   "start": 45.58,
+   "end": 45.9
+  },
+  {
+   "text": "was",
+   "start": 45.9,
+   "end": 46.28
+  },
+  {
+   "text": "the",
+   "start": 46.28,
+   "end": 46.46
+  },
+  {
+   "text": "enemy.",
+   "start": 46.46,
+   "end": 46.82
+  },
+  {
+   "text": "So",
+   "start": 47.9,
+   "end": 48.12
+  },
+  {
+   "text": "the",
+   "start": 48.12,
+   "end": 48.28
+  },
+  {
+   "text": "researchers",
+   "start": 48.28,
+   "end": 48.68
+  },
+  {
+   "text": "just",
+   "start": 48.68,
+   "end": 49.12
+  },
+  {
+   "text": "put",
+   "start": 49.12,
+   "end": 49.4
+  },
+  {
+   "text": "everyone",
+   "start": 49.4,
+   "end": 50.02
+  },
+  {
+   "text": "together.",
+   "start": 50.02,
+   "end": 50.54
+  },
+  {
+   "text": "Shared",
+   "start": 51.14,
+   "end": 51.26
+  },
+  {
+   "text": "meals,",
+   "start": 51.26,
+   "end": 51.8
+  },
+  {
+   "text": "movies,",
+   "start": 52.14,
+   "end": 52.56
+  },
+  {
+   "text": "fireworks.",
+   "start": 52.92,
+   "end": 53.26
+  },
+  {
+   "text": "It",
+   "start": 54.08,
+   "end": 54.38
+  },
+  {
+   "text": "got",
+   "start": 54.38,
+   "end": 54.58
+  },
+  {
+   "text": "worse.",
+   "start": 54.58,
+   "end": 54.94
+  },
+  {
+   "text": "The",
+   "start": 55.52,
+   "end": 55.64
+  },
+  {
+   "text": "meals",
+   "start": 55.64,
+   "end": 56.0
+  },
+  {
+   "text": "turned",
+   "start": 56.0,
+   "end": 56.36
+  },
+  {
+   "text": "into",
+   "start": 56.36,
+   "end": 56.62
+  },
+  {
+   "text": "food",
+   "start": 56.62,
+   "end": 56.96
+  },
+  {
+   "text": "fights.",
+   "start": 56.96,
+   "end": 57.3
+  },
+  {
+   "text": "Then",
+   "start": 58.08,
+   "end": 58.72
+  },
+  {
+   "text": "the",
+   "start": 58.72,
+   "end": 59.16
+  },
+  {
+   "text": "water",
+   "start": 59.16,
+   "end": 59.56
+  },
+  {
+   "text": "supply",
+   "start": 59.56,
+   "end": 59.98
+  },
+  {
+   "text": "breaks.",
+   "start": 59.98,
+   "end": 60.44
+  },
+  {
+   "text": "The",
+   "start": 61.04,
+   "end": 61.1
+  },
+  {
+   "text": "food",
+   "start": 61.1,
+   "end": 61.38
+  },
+  {
+   "text": "truck",
+   "start": 61.38,
+   "end": 61.68
+  },
+  {
+   "text": "gets",
+   "start": 61.68,
+   "end": 61.94
+  },
+  {
+   "text": "stuck,",
+   "start": 61.94,
+   "end": 62.46
+  },
+  {
+   "text": "so",
+   "start": 62.94,
+   "end": 63.2
+  },
+  {
+   "text": "both",
+   "start": 63.2,
+   "end": 63.56
+  },
+  {
+   "text": "groups",
+   "start": 63.56,
+   "end": 63.92
+  },
+  {
+   "text": "grab",
+   "start": 63.92,
+   "end": 64.28
+  },
+  {
+   "text": "the",
+   "start": 64.28,
+   "end": 64.48
+  },
+  {
+   "text": "same",
+   "start": 64.48,
+   "end": 64.84
+  },
+  {
+   "text": "rope",
+   "start": 64.84,
+   "end": 65.16
+  },
+  {
+   "text": "and",
+   "start": 65.16,
+   "end": 65.46
+  },
+  {
+   "text": "pull,",
+   "start": 65.46,
+   "end": 65.84
+  },
+  {
+   "text": "together.",
+   "start": 66.26,
+   "end": 66.84
+  },
+  {
+   "text": "Meeting",
+   "start": 67.9,
+   "end": 68.16
+  },
+  {
+   "text": "the",
+   "start": 68.16,
+   "end": 68.42
+  },
+  {
+   "text": "enemy",
+   "start": 68.42,
+   "end": 68.72
+  },
+  {
+   "text": "didn't",
+   "start": 68.72,
+   "end": 69.32
+  },
+  {
+   "text": "end",
+   "start": 69.32,
+   "end": 69.62
+  },
+  {
+   "text": "the",
+   "start": 69.62,
+   "end": 69.82
+  },
+  {
+   "text": "hate.",
+   "start": 69.82,
+   "end": 70.06
+  },
+  {
+   "text": "Needing",
+   "start": 70.88,
+   "end": 71.26
+  },
+  {
+   "text": "them",
+   "start": 71.26,
+   "end": 71.4
+  },
+  {
+   "text": "did.",
+   "start": 71.4,
+   "end": 71.72
+  },
+  {
+   "text": "On",
+   "start": 72.46,
+   "end": 72.64
+  },
+  {
+   "text": "the",
+   "start": 72.64,
+   "end": 72.8
+  },
+  {
+   "text": "last",
+   "start": 72.8,
+   "end": 73.06
+  },
+  {
+   "text": "day,",
+   "start": 73.06,
+   "end": 73.42
+  },
+  {
+   "text": "they",
+   "start": 73.66,
+   "end": 73.78
+  },
+  {
+   "text": "all",
+   "start": 73.78,
+   "end": 74.14
+  },
+  {
+   "text": "asked",
+   "start": 74.14,
+   "end": 74.44
+  },
+  {
+   "text": "to",
+   "start": 74.44,
+   "end": 74.68
+  },
+  {
+   "text": "ride",
+   "start": 74.68,
+   "end": 74.94
+  },
+  {
+   "text": "home",
+   "start": 74.94,
+   "end": 75.26
+  },
+  {
+   "text": "on",
+   "start": 75.26,
+   "end": 75.52
+  },
+  {
+   "text": "one",
+   "start": 75.52,
+   "end": 75.88
+  },
+  {
+   "text": "bus.",
+   "start": 75.88,
+   "end": 76.28
+  },
+  {
+   "text": "Who",
+   "start": 77.28,
+   "end": 77.38
+  },
+  {
+   "text": "is",
+   "start": 77.38,
+   "end": 77.56
+  },
+  {
+   "text": "your",
+   "start": 77.56,
+   "end": 77.72
+  },
+  {
+   "text": "other",
+   "start": 77.72,
+   "end": 78.08
+  },
+  {
+   "text": "group,",
+   "start": 78.08,
+   "end": 78.4
+  },
+  {
+   "text": "and",
+   "start": 78.84,
+   "end": 78.96
+  },
+  {
+   "text": "what",
+   "start": 78.96,
+   "end": 79.18
+  },
+  {
+   "text": "goal",
+   "start": 79.18,
+   "end": 79.54
+  },
+  {
+   "text": "could",
+   "start": 79.54,
+   "end": 79.78
+  },
+  {
+   "text": "you",
+   "start": 79.78,
+   "end": 79.94
+  },
+  {
+   "text": "only",
+   "start": 79.94,
+   "end": 80.22
+  },
+  {
+   "text": "reach",
+   "start": 80.22,
+   "end": 80.72
+  },
+  {
+   "text": "together?",
+   "start": 80.72,
+   "end": 81.26
+  }
+ ]
+}
