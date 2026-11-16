@@ -50,7 +50,18 @@ def main():
     if not linked:
         names = ", ".join(p["name"] for p in pages) or "none"
         sys.exit(f"No Facebook Page with a linked Instagram professional account (pages found: {names}).")
-    page = linked[0]
+    # this login also manages other accounts/pages: only ever pick the channel's own Instagram account
+    wanted = env.get("INSTAGRAM_USERNAME", "mindshift_productivity").strip().lower()
+    found, page = [], None
+    for p in linked:
+        uname = g(p["instagram_business_account"]["id"], fields="username", access_token=p["access_token"]).get("username", "")
+        found.append(f"@{uname} (page: {p['name']})")
+        if uname.lower() == wanted:
+            page = p
+    if not page:
+        sys.exit(f"Instagram account @{wanted} is not linked to any Page you gave the token access to.\n"
+                 f"Accounts reachable with this token: {', '.join(found)}\n"
+                 f"Link @{wanted} to a Facebook Page, then generate the token again and tick that Page + account.")
     ig_id, page_token = page["instagram_business_account"]["id"], page["access_token"]
     info = g("debug_token", input_token=page_token, access_token=f"{app_id}|{secret}")["data"]
     expires = "never" if not info.get("expires_at") else info["expires_at"]

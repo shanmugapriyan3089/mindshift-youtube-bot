@@ -100,6 +100,10 @@ def main():
     if not me:
         print("SKIPPED: Instagram not connected yet — run prototype/instagram_setup.py once (see its docstring).")
         return
+    expected = os.environ.get("INSTAGRAM_USERNAME", "mindshift_productivity").lower()
+    if me.get("username", "").lower() != expected:   # never post to some other account by mistake
+        print(f"SKIPPED: token belongs to @{me.get('username')}, expected @{expected}")
+        return
     todo = due()
     print(f"due for Instagram: {[os.path.basename(p) for p in todo]}")
     if todo:
