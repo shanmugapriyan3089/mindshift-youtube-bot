@@ -42,15 +42,22 @@ def check():
 def caption(piece):
     story = json.load(open(os.path.join(piece, "story.json"), encoding="utf-8"))
     yt = story["youtube"]
-    title = yt["title"].replace("#Shorts", "").strip()
+    title = yt["title"].replace("#Shorts", "").replace("(Full Story)", "").strip()
     hook = yt["description"].split("\n\n")[0].strip()
-    return (f"{title}\n\n{hook}\n\nWould YOU? Tell me below 👇\n\n"
+    if os.path.basename(piece).startswith("long_"):   # a teaser of the long video: send people to YouTube
+        return (f"{title}\n\n{hook}\n\nThe full story (with sources) is on YouTube: search MindShift Productivity, link in bio.\n\n"
+                f"What would YOU have done? Tell me below \U0001F447\n\n{TAGS}")[:2200]
+    return (f"{title}\n\n{hook}\n\nWould YOU? Tell me below \U0001F447\n\n"
             f"More psychology stories on YouTube: @MindShiftProductivity\n\n{TAGS}")[:2200]
 
 
-def video_url(slug):
-    """Public URL of the release asset (follow GitHub's redirect to the direct file URL)."""
-    url = f"https://github.com/{REPO}/releases/download/short-{slug}/{slug}.mp4"
+def video_url(folder):
+    """Public URL of the release asset (follow GitHub's redirect to the direct file URL).
+    Shorts: release short-<slug> / <slug>.mp4.  Long videos: release long-<slug> / <slug>-teaser.mp4 (a <=75 s vertical teaser)."""
+    if folder.startswith("long_"):
+        slug = folder[len("long_"):]; url = f"https://github.com/{REPO}/releases/download/long-{slug}/{slug}-teaser.mp4"
+    else:
+        slug = folder.replace("sketch_", ""); url = f"https://github.com/{REPO}/releases/download/short-{slug}/{slug}.mp4"
     r = requests.head(url, allow_redirects=True, timeout=60)
     if r.status_code != 200:
         raise RuntimeError(f"release asset missing: {url} ({r.status_code})")
@@ -58,9 +65,9 @@ def video_url(slug):
 
 
 def post(piece):
-    slug = os.path.basename(piece).replace("sketch_", "")
-    print(f"posting {slug} to Instagram")
-    container = graph("POST", f"{IG_ID}/media", media_type="REELS", video_url=video_url(slug),
+    folder = os.path.basename(piece)
+    print(f"posting {folder} to Instagram")
+    container = graph("POST", f"{IG_ID}/media", media_type="REELS", video_url=video_url(folder),
                       caption=caption(piece), share_to_feed="true")["id"]
     for _ in range(60):   # Instagram processes the video first (usually < 2 min)
         time.sleep(10)
@@ -81,7 +88,7 @@ def post(piece):
 def due():
     now = dt.datetime.now(dt.timezone.utc)
     out = []
-    for up in sorted(glob.glob(os.path.join(ROOT, "prototype", "sketch_*", "upload.json"))):
+    for up in sorted(glob.glob(os.path.join(ROOT, "prototype", "sketch_*", "upload.json")) + glob.glob(os.path.join(ROOT, "prototype", "long_*", "upload.json"))):
         piece = os.path.dirname(up)
         p = json.load(open(up)).get("publish_at")
         if p and dt.datetime.fromisoformat(p.replace("Z", "+00:00")) <= now and not os.path.exists(os.path.join(piece, "instagram.json")):

@@ -37,7 +37,7 @@ PLAYLIST_DESC = ("Famous psychology experiments and real cases, told from the in
                  "Milgram, Asch, the Stanford Prison Experiment and more. Every story cites its study.")
 
 
-def add_to_playlist(yt, vid):
+def add_to_playlist(yt, vid, PLAYLIST=PLAYLIST, PLAYLIST_DESC=PLAYLIST_DESC):
     """Add the video to the channel's story playlist, creating the playlist the first time."""
     pid = None
     for item in yt.playlists().list(part="snippet", mine=True, maxResults=50).execute().get("items", []):

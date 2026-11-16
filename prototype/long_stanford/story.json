@@ -1,0 +1,658 @@
+{
+ "title": "The Stanford Prison Experiment: What Really Happened",
+ "kind": "long",
+ "youtube": {
+  "title": "The Stanford Prison Experiment: What Really Happened (Full Story)",
+  "description": "In 1971, twenty-four college students were turned into guards and prisoners in a fake prison at Stanford. It was shut down after six days. For 50 years it was taught as proof that good people turn cruel. But the archive tells a different story.\n\nThis is the full story, told from the inside as prisoner 8612, and what researchers found when they opened the archive.\n\nWould you have been the guard, or the prisoner? Tell me in the comments.\n\n{chapters}\n\nSources:\n- Haney, C., Banks, W. C., & Zimbardo, P. G. (1973). Interpersonal dynamics in a simulated prison. International Journal of Criminology and Penology.\n- Le Texier, T. (2019). Debunking the Stanford Prison Experiment. American Psychologist, 74(7), 823-839.\n- Reicher, S., & Haslam, S. A. (2006). Rethinking the psychology of tyranny: The BBC Prison Study. British Journal of Social Psychology.\n\n#psychology #stanfordprisonexperiment #zimbardo #mindset",
+  "tags": [
+   "stanford prison experiment",
+   "zimbardo",
+   "psychology",
+   "social psychology",
+   "psychology experiment",
+   "stanford prison experiment explained",
+   "stanford prison experiment debunked",
+   "authority",
+   "human behavior",
+   "mindshift productivity"
+  ]
+ },
+ "sources": [
+  "Haney, Banks & Zimbardo (1973).",
+  "Le Texier (2019), American Psychologist 74(7): guards were coached; recordings.",
+  "Korpi interview (2017): said he partly faked his breakdown.",
+  "Reicher & Haslam BBC Prison Study (2002/2006)."
+ ],
+ "thumbnail": {
+  "text": "WHAT REALLY HAPPENED",
+  "scene": 3
+ },
+ "scenes": [
+  {
+   "type": "title",
+   "text": [
+    "The Prison",
+    "Experiment"
+   ],
+   "sub": "Stanford, 1971",
+   "who": [
+    {
+     "shirt": "terra",
+     "mood": "calm"
+    }
+   ],
+   "say": "Nineteen seventy-one. Twenty-four healthy college students were turned into guards and prisoners. Within six days, it had to be shut down. This is the real story, and it's stranger than the legend."
+  },
+  {
+   "tag": "The ad",
+   "who": {
+    "shirt": "terra",
+    "mood": "puzzled"
+   },
+   "text": [
+    "WANTED:",
+    "a study of",
+    "prison life",
+    "$15 a day"
+   ],
+   "punch": true,
+   "props": [
+    "dollar"
+   ],
+   "side": "left",
+   "say": "You're a student, short of money. In a Palo Alto newspaper, you spot an ad. Volunteers wanted for a psychological study of prison life. Fifteen dollars a day."
+  },
+  {
+   "type": "stat",
+   "big": "24",
+   "label": [
+    "chosen out of",
+    "about 75 applicants"
+   ],
+   "filled": 32,
+   "say": "Around seventy-five people answer. The researchers interview them and test them, and pick twenty-four who seem healthy and perfectly normal. You're one of them."
+  },
+  {
+   "who": [
+    {
+     "shirt": "khaki",
+     "hair": "short",
+     "shades": true,
+     "outfit": "tee",
+     "name": "guard"
+    },
+    {
+     "outfit": "smock",
+     "name": "prisoner",
+     "mood": "puzzled"
+    }
+   ],
+   "props": [
+    "question"
+   ],
+   "say": "Then a coin flip decides everything. Heads, you're a guard. Tails, you're a prisoner. Nothing about you is different. Only the coin."
+  },
+  {
+   "type": "list",
+   "heading": "Who is behind it?",
+   "items": [
+    "Psychologist Philip Zimbardo",
+    "Stanford University",
+    "Funded by the US Navy"
+   ],
+   "say": "The study is run by a Stanford psychologist, Philip Zimbardo. The US Navy is paying for it, because it wants to understand conflict between guards and prisoners."
+  },
+  {
+   "tag": "The arrest",
+   "who": {
+    "shirt": "terra",
+    "mood": "scared",
+    "arms": [
+     1.2,
+     1.2
+    ]
+   },
+   "text": [
+    "A real police",
+    "car pulls up.",
+    "You are",
+    "arrested."
+   ],
+   "punch": true,
+   "props": [
+    "exclaim"
+   ],
+   "side": "left",
+   "say": "Sunday morning. A real police car pulls up outside your house. You're arrested in front of your neighbours, handcuffed, and driven away."
+  },
+  {
+   "who": {
+    "shirt": "terra",
+    "mood": "puzzled"
+   },
+   "text": [
+    "Fingerprinted.",
+    "Photographed.",
+    "Blindfolded."
+   ],
+   "punch": true,
+   "side": "left",
+   "say": "At the station you're fingerprinted and photographed. Then you're blindfolded and driven to the basement of Stanford's psychology building."
+  },
+  {
+   "tag": "The prison",
+   "type": "list",
+   "heading": "The basement prison",
+   "items": [
+    "Lab doors are now cells",
+    "A closet for solitary",
+    "Hidden cameras record all"
+   ],
+   "props": [
+    "lock"
+   ],
+   "say": "Down there, the hallway has been turned into a prison. The lab doors are now cells. A tiny closet is solitary confinement. And hidden cameras record everything."
+  },
+  {
+   "type": "timeline",
+   "items": [
+    {
+     "when": "10 pm",
+     "what": "lights out"
+    },
+    {
+     "when": "2:30 am",
+     "what": "wake-up count"
+    },
+    {
+     "when": "morning",
+     "what": "another count"
+    }
+   ],
+   "props": [
+    "clock"
+   ],
+   "say": "Life inside runs on counts. Prisoners are woken in the night, lined up, and made to call out their numbers, again and again. It's meant to keep order. It mostly keeps you exhausted and confused about who you are."
+  },
+  {
+   "who": {
+    "outfit": "smock",
+    "mood": "scared",
+    "num": true
+   },
+   "text": [
+    "A smock.",
+    "A stocking cap.",
+    "No underwear.",
+    "A chain on",
+    "your ankle."
+   ],
+   "punch": true,
+   "side": "left",
+   "say": "They strip you, spray you with powder, and hand you a smock, with no underwear. A stocking cap instead of hair. And a chain around one ankle."
+  },
+  {
+   "type": "stamp",
+   "stamp": "8612",
+   "text": [
+    "Your name is gone."
+   ],
+   "at": "prisoner",
+   "say": "And you lose your name. From now on, you are prisoner eight six one two."
+  },
+  {
+   "who": {
+    "shirt": "khaki",
+    "hair": "short",
+    "shades": true,
+    "outfit": "tee",
+    "baton": 1,
+    "mood": "calm",
+    "name": "guard"
+   },
+   "text": [
+    "Khaki uniform.",
+    "A wooden baton.",
+    "A whistle.",
+    "Mirrored",
+    "sunglasses."
+   ],
+   "punch": true,
+   "side": "left",
+   "say": "The guards get khaki uniforms, wooden batons, whistles, and mirrored sunglasses, so no prisoner can ever look them in the eyes."
+  },
+  {
+   "type": "list",
+   "heading": "The rules for guards",
+   "items": [
+    "No hitting",
+    "Keep order",
+    "Make them feel powerless"
+   ],
+   "say": "The rules for the guards sound simple. No physical violence. Keep order. But they can make the prisoners feel bored, afraid, and powerless."
+  },
+  {
+   "tag": "Day 2",
+   "type": "timeline",
+   "items": [
+    {
+     "when": "Day 1",
+     "what": "awkward, like acting"
+    },
+    {
+     "when": "Day 2",
+     "what": "the prisoners rebel"
+    }
+   ],
+   "say": "Day one is quiet, almost awkward. Everyone feels like they're acting. But on the second morning, the prisoners rebel."
+  },
+  {
+   "who": [
+    {
+     "outfit": "smock",
+     "mood": "angry",
+     "name": "prisoners",
+     "arms": [
+      1.2,
+      1.2
+     ]
+    },
+    {
+     "shirt": "khaki",
+     "hair": "short",
+     "shades": true,
+     "outfit": "tee",
+     "mood": "angry",
+     "name": "guards"
+    }
+   ],
+   "say": "They barricade their cells with their beds, and rip off their stocking caps and numbers. The furious guards spray them with a fire extinguisher, strip them, and throw the leader into solitary."
+  },
+  {
+   "type": "list",
+   "heading": "New punishments",
+   "items": [
+    "Push-ups, again and again",
+    "Counting off for hours",
+    "A bucket in the cell"
+   ],
+   "props": [
+    "clock"
+   ],
+   "say": "That night, the guards invent new punishments. Push-ups, again and again. Counting off their numbers for hours. Sometimes a bucket in the cell is the only toilet."
+  },
+  {
+   "who": [
+    {
+     "shirt": "khaki",
+     "hair": "short",
+     "shades": true,
+     "outfit": "tee",
+     "mood": "angry",
+     "name": "night guard"
+    },
+    {
+     "shirt": "blue",
+     "hair": "short",
+     "shades": true,
+     "outfit": "tee",
+     "mood": "calm",
+     "name": "day guard"
+    }
+   ],
+   "props": [
+    "eye"
+   ],
+   "say": "According to Zimbardo, the worst behaviour came on the night shift, when some guards believed no one important was watching. The same men who were mild by day grew harsher in the dark."
+  },
+  {
+   "who": [
+    {
+     "shirt": "khaki",
+     "hair": "short",
+     "shades": true,
+     "outfit": "tee",
+     "mood": "angry",
+     "name": "cruel"
+    },
+    {
+     "shirt": "blue",
+     "hair": "short",
+     "shades": true,
+     "outfit": "tee",
+     "mood": "calm",
+     "name": "fair"
+    },
+    {
+     "outfit": "smock",
+     "mood": "scared",
+     "name": "you",
+     "num": true
+    }
+   ],
+   "say": "Some guards are cruel. Some are fair. Some just go along. And you, prisoner eight six one two, are starting to fall apart."
+  },
+  {
+   "tag": "Breaking point",
+   "who": {
+    "outfit": "smock",
+    "mood": "scream",
+    "num": true,
+    "shake": true
+   },
+   "props": [
+    "exclaim"
+   ],
+   "side": "left",
+   "say": "Less than two days in, you scream that you're going crazy and can't take any more. The researchers let you go. You're the first to leave."
+  },
+  {
+   "type": "stat",
+   "big": "5",
+   "label": [
+    "of 9 prisoners",
+    "left early"
+   ],
+   "filled": 55,
+   "col": "red",
+   "say": "You won't be the last. Over the next few days, four more prisoners are released early, upset or ill. By day five, the ones who remain are slumped, silent and obedient."
+  },
+  {
+   "type": "quote",
+   "quote": [
+    "Prisoner 819 did a bad thing!",
+    "Because of him, you all suffer."
+   ],
+   "who": "what the guards made prisoners chant",
+   "say": "One night, prisoner eight nineteen is crying in the closet. The guards line the others up and make them chant that he did a bad thing, and that they all suffer because of him."
+  },
+  {
+   "who": [
+    {
+     "outfit": "smock",
+     "mood": "puzzled",
+     "name": "prisoner"
+    },
+    {
+     "outfit": "smock",
+     "mood": "puzzled",
+     "shirt": "white",
+     "name": "prisoner"
+    }
+   ],
+   "props": [
+    "dollar"
+   ],
+   "say": "Prisoners are offered a deal: give up all your pay and go home. Most say yes. But when the guards say to go back to your cell, they just walk back in."
+  },
+  {
+   "tag": "The scientist",
+   "who": {
+    "outfit": "coat",
+    "glasses": true,
+    "mood": "puzzled",
+    "name": "Zimbardo"
+   },
+   "text": [
+    "He plays",
+    "superintendent.",
+    "He stops being",
+    "a neutral",
+    "scientist."
+   ],
+   "punch": true,
+   "side": "left",
+   "say": "Zimbardo is lost in the role too. He no longer behaves like a neutral scientist. He acts as the prison's superintendent. When he hears of a rumoured breakout, he even asks the real police to lock the prisoners in the real jail. They refuse."
+  },
+  {
+   "who": [
+    {
+     "outfit": "coat",
+     "glasses": true,
+     "mood": "scared",
+     "shirt": "white",
+     "name": "Maslach"
+    },
+    {
+     "outfit": "smock",
+     "mood": "scared",
+     "name": "prisoner"
+    }
+   ],
+   "props": [
+    "eye"
+   ],
+   "say": "On day five, a young psychologist named Christina Maslach visits. She sees prisoners with bags over their heads, marched to the toilet in chains. Dozens of visitors had walked through. She's the one who says stop."
+  },
+  {
+   "who": [
+    {
+     "outfit": "coat",
+     "glasses": true,
+     "mood": "angry",
+     "shirt": "white",
+     "name": "Maslach"
+    },
+    {
+     "outfit": "coat",
+     "glasses": true,
+     "mood": "puzzled",
+     "name": "Zimbardo"
+    }
+   ],
+   "say": "That night she tells him that what he's doing to those boys is terrible. He had stopped seeing it. She hadn't. Within hours, he shuts the whole thing down."
+  },
+  {
+   "type": "stamp",
+   "stamp": "DAY 6",
+   "text": [
+    "Planned for two weeks.",
+    "Ended after six days."
+   ],
+   "at": "six",
+   "say": "Zimbardo ends the experiment on day six. It was supposed to last two weeks."
+  },
+  {
+   "tag": "The legend",
+   "type": "title",
+   "text": [
+    "The legend",
+    "vs the",
+    "archive"
+   ],
+   "who": [
+    {
+     "outfit": "coat",
+     "glasses": true,
+     "mood": "puzzled"
+    }
+   ],
+   "say": "That's the legend. For fifty years, textbooks said: put good people in a bad system, and they turn cruel. But in two thousand nineteen, a French researcher named Thibault Le Texier went through the archive."
+  },
+  {
+   "type": "list",
+   "heading": "What the archive shows",
+   "items": [
+    "Guards were coached",
+    "A cruel guard was acting",
+    "Prisoner 8612 faked it"
+   ],
+   "props": [
+    "book"
+   ],
+   "say": "The recordings and documents tell a different story. The guards were coached on how to behave. One of the cruellest guards later said he was playing a character from a movie."
+  },
+  {
+   "who": [
+    {
+     "shirt": "khaki",
+     "hair": "short",
+     "shades": true,
+     "outfit": "tee",
+     "mood": "calm",
+     "name": "guard"
+    },
+    {
+     "outfit": "coat",
+     "glasses": true,
+     "mood": "angry",
+     "name": "researcher"
+    }
+   ],
+   "say": "In a briefing before it started, the guards were told to be tough. And according to the archive, when some guards were too gentle, the research team pushed them to be harsher."
+  },
+  {
+   "who": {
+    "outfit": "smock",
+    "mood": "happy",
+    "num": true
+   },
+   "text": [
+    "“I was",
+    "partly",
+    "acting.”"
+   ],
+   "punch": true,
+   "side": "left",
+   "say": "And prisoner eight six one two? His real name is Doug Korpi. Years later, he said his breakdown was partly an act. He wanted out so that he could study for an important exam."
+  },
+  {
+   "type": "list",
+   "heading": "A messy experiment",
+   "items": [
+    "No control group",
+    "Only 24 people",
+    "Scientist inside it",
+    "Volunteers guessed the goal"
+   ],
+   "say": "It also wasn't a clean experiment. There was no control group. Just a handful of volunteers. The lead scientist played a role inside his own study. And the volunteers could guess what the researchers wanted."
+  },
+  {
+   "type": "versus",
+   "left": {
+    "head": "Stanford 1971",
+    "items": [
+     "Guards coached",
+     "Ended on day six"
+    ]
+   },
+   "right": {
+    "head": "BBC 2002",
+    "items": [
+     "Guards held back",
+     "Prisoners organized"
+    ]
+   },
+   "say": "In two thousand two, British psychologists ran a similar prison study for the BBC. This time, the guards did not take over. The prisoners organized instead."
+  },
+  {
+   "tag": "The legacy",
+   "type": "quote",
+   "quote": [
+    "Not bad apples.",
+    "A bad barrel."
+   ],
+   "who": "the lesson most people took from it",
+   "say": "In two thousand four, photos from the Abu Ghraib prison in Iraq shocked the world. Zimbardo testified for one of the soldiers, and his experiment became the explanation everyone reached for. Not bad apples, but a bad barrel."
+  },
+  {
+   "who": {
+    "outfit": "coat",
+    "glasses": true,
+    "mood": "calm",
+    "name": "Zimbardo"
+   },
+   "text": [
+    "“The guards",
+    "were never",
+    "ordered to",
+    "be cruel.”"
+   ],
+   "punch": true,
+   "side": "left",
+   "say": "Zimbardo defended his study until the end, arguing the guards were never ordered to be cruel. So what does it really prove?"
+  },
+  {
+   "tag": "What it means",
+   "type": "list",
+   "heading": "Three real lessons",
+   "items": [
+    "Orders can license cruelty",
+    "Roles make cruelty feel normal",
+    "You still get a choice"
+   ],
+   "say": "Not that anyone becomes a monster in the right uniform. But three things are real. Orders can give people a licence to be cruel. A role can make cruelty feel normal. And even there, some guards still chose to be kind."
+  },
+  {
+   "who": {
+    "shirt": "blue",
+    "hair": "short",
+    "shades": true,
+    "outfit": "tee",
+    "mood": "happy",
+    "name": "kind guard"
+   },
+   "text": [
+    "Some guards",
+    "still chose",
+    "kindness."
+   ],
+   "punch": true,
+   "side": "left",
+   "say": "Remember that. In a place built to make people harsh, some of the guards still did small kindnesses. The situation pushes. But it never completely decides."
+  },
+  {
+   "tag": "You",
+   "who": {
+    "shirt": "terra",
+    "mood": "puzzled"
+   },
+   "text": [
+    "Who are you",
+    "without the",
+    "uniform?"
+   ],
+   "punch": true,
+   "props": [
+    "question"
+   ],
+   "side": "left",
+   "say": "So the next time someone hands you a uniform, a rulebook, or a role, ask yourself. Is this who I am? Or is it just what I've been told to be?"
+  },
+  {
+   "type": "list",
+   "heading": "In one minute",
+   "items": [
+    "A real experiment, a flawed one",
+    "Roles and orders push us",
+    "But we still choose"
+   ],
+   "props": [
+    "bulb"
+   ],
+   "say": "So here's the story in one breath. A real experiment, with real distress, and real flaws. A study that shows how roles and orders push us, and how easily we forget it. But also, that we still choose."
+  },
+  {
+   "who": [
+    {
+     "shirt": "khaki",
+     "hair": "short",
+     "shades": true,
+     "outfit": "tee",
+     "mood": "happy",
+     "name": "guard"
+    },
+    {
+     "outfit": "smock",
+     "mood": "happy",
+     "name": "prisoner",
+     "num": true
+    }
+   ],
+   "props": [
+    "question"
+   ],
+   "say": "If this story changed how you see it, subscribe for the next experiment. And tell me in the comments: would you have been the guard, or the prisoner?"
+  }
+ ]
+}
