@@ -5,7 +5,7 @@ name: Story Shorts — make + schedule
 # Windows runner: the sketchbook style's hand-lettering fonts (Ink Free, Segoe Print) ship with Windows.
 on:
   schedule:
-    - cron: '0 5 * * *'          # daily 10:30 IST — one story per day (free TTS quota)
+    - cron: '30 9 * * *'         # daily 15:00 IST — after the Gemini free quota resets (midnight Pacific = 13:30 IST)
   push:
     paths: ['prototype/sketch_*/src/scenes.js', 'prototype/sketch_*/story.json']
   workflow_dispatch:

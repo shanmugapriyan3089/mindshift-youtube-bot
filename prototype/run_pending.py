@@ -44,6 +44,9 @@ def main():
         quota = "quota" in out.lower()
         if not quota:   # park the story so tomorrow's run moves on; the Sunday writer repairs it
             json.dump({"reason": out[-1500:]}, open(os.path.join(piece, "failed.json"), "w"), indent=1)
+        if quota:   # expected, transient: try again at the next scheduled run (the queue has a buffer)
+            print("::warning::Gemini free quota used up — retrying at the next scheduled run")
+            return
         sys.exit(r.returncode)
 
 
