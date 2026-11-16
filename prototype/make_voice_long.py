@@ -12,7 +12,7 @@ sys.path.insert(0, os.path.dirname(__file__))
 import story_pov as sp
 from make_voice import write_timing_js
 
-CHUNK_CHARS = 1800                                 # ~2 min of speech per TTS request (fewer requests; split in halves if the audio comes back truncated)
+CHUNK_CHARS = 1250                                 # ~2 min of speech per TTS request (split in halves if the audio comes back empty or truncated)
 GAP = 0.45                                         # pause between chunks
 FALLBACK_MODELS = ["gemini-3.1-flash-tts-preview", "gemini-2.5-flash-preview-tts", "gemini-2.5-pro-preview-tts"]
 
@@ -29,9 +29,14 @@ def chunk_scenes(scenes):
     return chunks
 
 
+class TTSEmpty(Exception):
+    pass
+
+
 def tts_chunk(text, path, locked=None):
     """The first chunk picks the model (each has its own free daily quota; first that works wins); every later chunk of the
-    same video must use that same model so the voice stays consistent. Returns the model used."""
+    same video must use that same model so the voice stays consistent. Returns the model used.
+    An answer without audio (text too long / glitch) raises TTSEmpty so the caller can speak the text in smaller pieces."""
     last = None
     for model in ([locked] if locked else list(dict.fromkeys([sp.TTS_MODEL] + FALLBACK_MODELS))):
         sp.TTS_MODEL = model
@@ -41,6 +46,9 @@ def tts_chunk(text, path, locked=None):
             return model
         except SystemExit as e:     # story_pov._post exits on quota exhaustion / API errors
             last = str(e); print(f"    {model}: {last[:120]}")
+        except (KeyError, IndexError, TypeError) as e:
+            print(f"    {model}: no audio in the response ({type(e).__name__})")
+            raise TTSEmpty(f"{model} returned no audio") from e
     sys.exit(f"TTS quota/API failure (quota?): {last}")
 
 
@@ -65,7 +73,13 @@ def main(piece):
         text = " ".join(scenes[i]["say"] for i in idxs)
         if not os.path.exists(p):
             print(f"  [voice] {name} ({len(text)} chars, {len(idxs)} scenes)")
-            locked = tts_chunk(text, p, locked)
+            try:
+                locked = tts_chunk(text, p, locked)
+            except TTSEmpty as e:
+                if len(idxs) < 2: sys.exit(f"TTS quota/API failure (retry): {e}")
+                print(f"    {name}: {e} - speaking the two halves separately")
+                h = len(idxs) // 2
+                return voice(idxs[:h], name + "a") + voice(idxs[h:], name + "b")
             open(mfile, "w").write(locked)
         if sp.wav_len(p) < len(text.split()) / 3.6 and len(idxs) > 1:   # > 215 words/min would mean the clip was cut off
             print(f"    {name}: audio too short ({sp.wav_len(p):.0f}s for {len(text.split())} words) - splitting")

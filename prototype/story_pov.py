@@ -146,7 +146,10 @@ def gen_voice(text, path):
     j = _post(TTS_MODEL, {"contents": [{"parts": [{"text": text}]}],
                           "generationConfig": {"responseModalities": ["AUDIO"],
                                                "speechConfig": {"voiceConfig": {"prebuiltVoiceConfig": {"voiceName": VOICE}}}}})
-    pcm = base64.b64decode(j["candidates"][0]["content"]["parts"][0]["inlineData"]["data"])
+    cand = (j.get("candidates") or [{}])[0]
+    if "content" not in cand:
+        print(f"  [tts] no audio: finishReason={cand.get('finishReason')} promptFeedback={j.get('promptFeedback')}", flush=True)
+    pcm = base64.b64decode(cand["content"]["parts"][0]["inlineData"]["data"])
     with wave.open(path, "wb") as w:
         w.setnchannels(1); w.setsampwidth(2); w.setframerate(24000)
         w.writeframes(_mute_tail_click(pcm, 24000))

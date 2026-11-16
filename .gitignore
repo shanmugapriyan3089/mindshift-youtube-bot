@@ -24,3 +24,11 @@ prototype/**/node_modules/
 prototype/sketch_*/frames/
 prototype/**/review/
 tools/animate/node_modules/
+
+# long videos: only story.json (+ upload.json / failed.json records) belong in git; everything else is rebuilt each run
+prototype/long_*/src/
+prototype/long_*/piece.json
+prototype/long_*/timing.json
+prototype/long_*/voice/
+prototype/long_*/thumbnail.jpg
+prototype/long_*/frames/
