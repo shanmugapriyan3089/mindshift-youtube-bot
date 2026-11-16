@@ -92,7 +92,14 @@ def due():
 def main():
     if "--check" in sys.argv:
         return check()
-    check()
+    try:   # scheduled runs skip quietly (exit 0) while the Instagram token is missing/expired: no failure emails
+        me = graph("GET", IG_ID, fields="username") if IG_ID and TOKEN else None
+    except Exception as e:
+        me = None
+        print(f"Instagram token not working: {e}")
+    if not me:
+        print("SKIPPED: Instagram not connected yet — run prototype/instagram_setup.py once (see its docstring).")
+        return
     todo = due()
     print(f"due for Instagram: {[os.path.basename(p) for p in todo]}")
     if todo:

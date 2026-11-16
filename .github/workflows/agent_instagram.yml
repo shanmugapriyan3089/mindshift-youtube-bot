@@ -5,8 +5,6 @@ name: Instagram Reels — cross-post story Shorts
 on:
   schedule:
     - cron: '40 13 * * *'       # daily 19:10 IST — 10 min after the YouTube publish slot
-  push:
-    paths: ['.github/workflows/agent_instagram.yml', 'prototype/post_instagram.py']
   workflow_dispatch:
 
 concurrency:
@@ -28,21 +26,13 @@ jobs:
 
       - run: pip install -q requests
 
-      - name: Check Instagram access
-        env:
-          INSTAGRAM_ACCOUNT_ID: ${{ secrets.INSTAGRAM_ACCOUNT_ID }}
-          INSTAGRAM_ACCESS_TOKEN: ${{ secrets.INSTAGRAM_ACCESS_TOKEN }}
-        run: python prototype/post_instagram.py --check
-
       - name: Post the next public Short as a Reel
-        if: github.event_name != 'push'
         env:
           INSTAGRAM_ACCOUNT_ID: ${{ secrets.INSTAGRAM_ACCOUNT_ID }}
           INSTAGRAM_ACCESS_TOKEN: ${{ secrets.INSTAGRAM_ACCESS_TOKEN }}
         run: python prototype/post_instagram.py
 
       - name: Commit Instagram records
-        if: github.event_name != 'push'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
