@@ -32,3 +32,6 @@ prototype/long_*/timing.json
 prototype/long_*/voice/
 prototype/long_*/thumbnail.jpg
 prototype/long_*/frames/
+
+# local cleanup log
+cleanup.log

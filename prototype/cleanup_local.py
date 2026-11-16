@@ -4,7 +4,8 @@ Free disk space on THIS machine: delete the rendered media of every video that i
   python prototype/cleanup_local.py            # delete
   python prototype/cleanup_local.py --dry-run  # only list
 
-A story counts as released when its upload.json "publish_at" has passed. Kept: story.json, scenes, timing, upload.json, instagram.json
+A story is cleaned up CLEANUP_HOURS (default 6) after it is live on BOTH platforms: YouTube (upload.json "publish_at" has passed)
+and Instagram (instagram.json "posted_at" exists). Kept: story.json, scenes, timing, upload.json, instagram.json
 (everything tracked in git). Deleted: renders/, frames/, voice/, look.png, index.html, review/, SHORT_*.mp4 / LONG_*.mp4 / LONGTEASER_*.mp4.
 The videos themselves live on YouTube, Instagram and the GitHub Release, and the cloud pipeline re-renders from the story files if ever needed.
 """
@@ -20,6 +21,13 @@ def size(path):
     return sum(os.path.getsize(os.path.join(d, f)) for d, _, fs in os.walk(path) for f in fs)
 
 
+HOURS = float(os.environ.get("CLEANUP_HOURS", "6"))
+
+
+def parse(t):
+    return dt.datetime.fromisoformat(t.replace("Z", "+00:00"))
+
+
 def main():
     now = dt.datetime.now(dt.timezone.utc)
     freed = 0
@@ -27,8 +35,14 @@ def main():
         folder = os.path.dirname(up); name = os.path.basename(folder)
         if not (name.startswith("sketch_") or name.startswith("long_")): continue
         p = json.load(open(up)).get("publish_at")
-        if not p or dt.datetime.fromisoformat(p.replace("Z", "+00:00")) > now:
-            print(f"keep   {name} (not public yet: {p})"); continue
+        ig = os.path.join(folder, "instagram.json")
+        if not p or parse(p) > now:
+            print(f"keep   {name} (not public on YouTube yet: {p})"); continue
+        if not os.path.exists(ig):
+            print(f"keep   {name} (public on YouTube, not on Instagram yet)"); continue
+        live = max(parse(p), parse(json.load(open(ig)).get("posted_at", p)))
+        if now < live + dt.timedelta(hours=HOURS):
+            print(f"keep   {name} (live on both; cleanup at {(live + dt.timedelta(hours=HOURS)).isoformat(timespec='minutes')})"); continue
         targets = [os.path.join(folder, x) for x in ("renders", "frames", "voice", "review", "look.png", "index.html", "thumbnail.jpg")]
         targets += [os.path.join(PROTO, f"{pre}_{name}.mp4") for pre in ("SHORT", "LONG", "LONGTEASER")]
         for t in targets:
