@@ -34,15 +34,16 @@ def main():
     print(f"making: {os.path.basename(piece)}")
     # real timings replace any provisional ones made without the TTS key
     tj = os.path.join(piece, "timing.json")
-    if os.path.exists(tj) and json.load(open(tj)).get("estimated"):
+    if os.path.exists(tj) and json.load(open(tj, encoding="utf-8")).get("estimated"):
         os.remove(tj); os.remove(os.path.join(piece, "src", "timing.js"))
     r = subprocess.run([sys.executable, "-u", os.path.join(PROTO, "make_short.py"), piece, "--upload"],
-                       capture_output=True, text=True)
-    print(r.stdout[-6000:]); print(r.stderr[-3000:])
+                       capture_output=True, encoding="utf-8", errors="replace")
+    print((r.stdout or "")[-6000:]); print((r.stderr or "")[-3000:])
     if r.returncode != 0:
-        quota = "quota" in (r.stdout + r.stderr).lower()
+        out = (r.stdout or "") + (r.stderr or "")
+        quota = "quota" in out.lower()
         if not quota:   # park the story so tomorrow's run moves on; the Sunday writer repairs it
-            json.dump({"reason": (r.stdout + r.stderr)[-1500:]}, open(os.path.join(piece, "failed.json"), "w"), indent=1)
+            json.dump({"reason": out[-1500:]}, open(os.path.join(piece, "failed.json"), "w"), indent=1)
         sys.exit(r.returncode)
 
 

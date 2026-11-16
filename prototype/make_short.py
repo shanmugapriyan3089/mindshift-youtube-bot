@@ -25,7 +25,7 @@ SLOT_UTC = dt.time(13, 30)     # 19:00 IST
 
 def run(cmd, **kw):
     print("  $", " ".join(str(c) for c in cmd)[:140])
-    r = subprocess.run(cmd, text=True, capture_output=True, **kw)
+    r = subprocess.run(cmd, capture_output=True, encoding="utf-8", errors="replace", **kw)
     if r.returncode != 0:
         print(r.stdout[-2000:], r.stderr[-2000:]); sys.exit(f"step failed: {cmd[0]} {cmd[1] if len(cmd) > 1 else ''}")
     return r.stdout
