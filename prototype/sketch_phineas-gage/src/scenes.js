@@ -210,7 +210,7 @@ const SCENES = [
   if (TT >= when('planning')) { handLetter('planning + self-control', 540, 480, 52, { face: 'marker', col: SK.green, key: 'plan', reveal: ev(when('planning'), 0.5) }); }
   pageTag('chile');
   say([[S[7], ['you spent years', 'in Chile...'], [[1, 'Chile...']]], [when('driving'), ['...driving a', 'stagecoach.'], [[1, 'stagecoach.']]],
-       [when('that', 2), ['that takes planning.'], [[0, 'planning.']]]], S[7]);
+       [when('takes'), ['that takes planning.'], [[0, 'planning.']]]], S[7]);
 },
 // ---- 9. who is the real you? -----------------------------------------------------------------------
 () => {
