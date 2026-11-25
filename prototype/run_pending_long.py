@@ -29,6 +29,8 @@ def main():
     print((r.stdout or "")[-6000:]); print((r.stderr or "")[-3000:])
     if r.returncode != 0:
         out = (r.stdout or "") + (r.stderr or "")
+        if "credits are depleted" in out:   # Gemini billing problem: fail visibly, keep the story queued
+            sys.exit("Gemini API key has no credits left: replace GEMINI_API_KEY (or top up), then the next run continues")
         if "quota" in out.lower():
             print("::warning::TTS free quota used up — retrying at the next scheduled run")
             return

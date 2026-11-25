@@ -7,7 +7,7 @@ any human/agent session follow this. **Template to copy: `prototype/sketch_asch/
 - Niche: real psychology experiments and cases, told in the **second person** ("You answer an ad…").
 - Style: hand-drawn **sketchbook** (cth9191/animate skill, copied in `tools/animate`), one doodle *person* per role
   (`person()` in `prototype/sketch_kit/people.js`). Never use the kit's ball-with-asterisk `doodleHero`.
-- 9 scenes, ~55–75 s of narration, vertical 1080×1920. Every object and caption appears **on the word that names it**.
+- 9 scenes, ~55–65 s of narration, vertical 1080×1920. Every object and caption appears **on the word that names it**.
 - Structure: hook in the first sentence → the setup → the shocking moment → the result (a number) → **the twist**
   (what most people don't know) → a closing question to the viewer ("Would YOU…?").
 - Facts: only use facts from `prototype/topics.json` or ones you verify with a web search. Hedge numbers
@@ -28,6 +28,18 @@ any human/agent session follow this. **Template to copy: `prototype/sketch_asch/
 ```
 `prototype/sketch_<slug>/src/scenes.js` → `const SCENES = [ () => { … }, … 9 … ];` (+ optional `const HITS = [when('word'), …]`
 for a low thump on big words, `const PUNCHES = [[t0, t1, zoom, [x, y]]]` for a camera punch-in).
+
+## The first 3 seconds (added Nov 25 2026, from channel results)
+The two Shorts that were picked up (Little Albert 1,323 views, Asch 1,272; the rest 20-100) had plain, concrete titles about one
+obvious human moment. The sample is small, so treat this as the current best guess and review it as numbers come in.
+- **Line 1 is the situation itself**, in the second person, with something at stake ("You're nine months old. They put a soft white
+  rat in front of you."). Never open with a year, a city or a researcher's name; put those in line 2.
+- **The first frame is already full**: at t = 0 draw a large headline (marker, 90-120 px, 3-6 words, `reveal: 1`, no write-on)
+  and a big main character (r >= 110) with a clear emotion. No empty page waiting for the pencil.
+- Something visibly changes within the first 1.5 s (a face, an object arriving).
+- **Length 55-65 s** of narration.
+- **Title**: under 55 characters before `#Shorts`, everyday words, one concrete image or choice
+  ("Everyone Gave the Wrong Answer. Would You?"). No experiment names or jargon.
 
 ## Narration lines (TTS)
 - Plain spoken text only. **Never** put style instructions in a line (the TTS reads them aloud).

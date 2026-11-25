@@ -41,6 +41,8 @@ def main():
     print((r.stdout or "")[-6000:]); print((r.stderr or "")[-3000:])
     if r.returncode != 0:
         out = (r.stdout or "") + (r.stderr or "")
+        if "credits are depleted" in out:   # Gemini billing problem: not the story's fault, so never park it; fail visibly
+            sys.exit("Gemini API key has no credits left: replace GEMINI_API_KEY (or top up), then the next run continues")
         quota = "quota" in out.lower()
         if not quota:   # park the story so tomorrow's run moves on; the Sunday writer repairs it
             json.dump({"reason": out[-1500:]}, open(os.path.join(piece, "failed.json"), "w"), indent=1)
